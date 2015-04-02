@@ -23,20 +23,23 @@ import javax.servlet.annotation.WebServlet;
  * @author Laura
  */
 @Theme("mytheme")
-public class LoginView extends CustomComponent implements View,
-        Button.ClickListener {
+public class LoginView extends CustomComponent implements View{
 
     public static final String NAME = "login";
 
-    private final TextField user;
+    private TextField user;
 
-    private final PasswordField password;
+    private PasswordField password;
 
-    private final Button loginButton;
+    private Button loginButton;
 
-    private Integer privilegio = 0;
-
-    public LoginView() {
+    @Override
+    public void enter(ViewChangeEvent event) {
+        // focus the username field when user arrives to the login view
+        user.focus();
+    }
+    
+    public LoginView()  {
         setSizeFull();
 
         // Create the user input field
@@ -57,13 +60,73 @@ public class LoginView extends CustomComponent implements View,
         password.setNullRepresentation("");
 
         // Create login button
-        loginButton = new Button("Login", this);
+        loginButton = new Button("Login");
+        loginButton.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                //
+        // Validate the fields using the navigator. By using validors for the
+        // fields we reduce the amount of queries we have to use to the database
+        // for wrongly entered passwords
+        //
+        if (!user.isValid() || !password.isValid()) {
+            return;
+        }
+
+        String username = user.getValue();
+        String pass = password.getValue();
+
+        //
+        // Validate username and password with database here. For examples sake
+        // I use a dummy username and password.
+        //
+        boolean isValid = false;
+        //admin
+        if (username.equals("admin@iclass.com") && pass.equals("passw0rd")) {
+            isValid = true;
+        } else if (username.equals("profe@iclass.com") && pass.equals("passw0rd")) { //profesor
+            isValid = true;
+        } else if (username.equals("alumno@iclass.com") && pass.equals("passw0rd")) { //alumno
+            isValid = true;
+        }
+
+        if (isValid) {
+
+            // Store the current user in the service session
+            getSession().setAttribute("user", username);
+
+            if (username.equals("admin@iclass.com")) {
+                // Navigate to admin view
+                getUI().getNavigator().navigateTo(LoginUI.ADMINVIEW);
+            }
+
+            if (username.equals("profe@iclass.com")) {
+                // Navigate to profe view
+                getUI().getNavigator().navigateTo(LoginUI.PROFESORVIEW);
+            }
+
+            if (username.equals("alumno@iclass.com")) {
+                // Navigate to alumno view
+                getUI().getNavigator().navigateTo(LoginUI.ALUMNOVIEW);
+            }
+
+        } else {
+
+            // Wrong password clear the password field and refocuses it
+            user.setValue(null);
+            password.setValue(null);
+            user.focus();
+
+        }
+            }
+        });
 
         // Add both to a panel
         VerticalLayout fields = new VerticalLayout(user, password, loginButton);
         fields.setCaption("Please login to access the application. (admin/profe/alumno@iclass.com / passw0rd)");
         fields.setSpacing(true);
-        fields.setMargin(new MarginInfo(true, true, true, false));
+        fields.setMargin(new MarginInfo(true, true, true, true));
         fields.setSizeUndefined();
 
         // The view root layout
@@ -72,12 +135,6 @@ public class LoginView extends CustomComponent implements View,
         viewLayout.setComponentAlignment(fields, Alignment.MIDDLE_CENTER);
         viewLayout.setStyleName(Reindeer.LAYOUT_BLUE);
         setCompositionRoot(viewLayout);
-    }
-
-    @Override
-    public void enter(ViewChangeEvent event) {
-        // focus the username field when user arrives to the login view
-        user.focus();
     }
 
     // Validator for validating the passwords
@@ -104,70 +161,6 @@ public class LoginView extends CustomComponent implements View,
         @Override
         public Class<String> getType() {
             return String.class;
-        }
-    }
-
-    @Override
-    public void buttonClick(ClickEvent event) {
-
-        //
-        // Validate the fields using the navigator. By using validors for the
-        // fields we reduce the amount of queries we have to use to the database
-        // for wrongly entered passwords
-        //
-        if (!user.isValid() || !password.isValid()) {
-            return;
-        }
-
-        String username = user.getValue();
-        String password = this.password.getValue();
-
-        //
-        // Validate username and password with database here. For examples sake
-        // I use a dummy username and password.
-        //
-        boolean isValid = false;
-        //admin
-        if (username.equals("admin@iclass.com") && password.equals("passw0rd")) {
-            isValid = true;
-            privilegio = 1;
-        } else if (username.equals("profe@iclass.com") && password.equals("passw0rd")) { //profesor
-            isValid = true;
-            privilegio = 2;
-        } else if (username.equals("alumno@iclass.com") && password.equals("passw0rd")) { //alumno
-            isValid = true;
-            privilegio = 3;
-        }
-
-        if (isValid) {
-
-            // Store the current user in the service session
-            getSession().setAttribute("user", username);
-
-            if (username.equals("admin@iclass.com")) {
-                getSession().setAttribute("privilegio", privilegio);
-                // Navigate to admin view
-                getUI().getNavigator().navigateTo(AdminView.NAME);
-            }
-
-            if (username.equals("profe@iclass.com")) {
-                getSession().setAttribute("privilegio", privilegio);
-                // Navigate to profe view
-                getUI().getNavigator().navigateTo(ProfesorView.NAME);
-            }
-
-            if (username.equals("alumno@iclass.com")) {
-                getSession().setAttribute("privilegio", privilegio);
-                // Navigate to alumno view
-                getUI().getNavigator().navigateTo(AlumnoView.NAME);
-            }
-
-        } else {
-
-            // Wrong password clear the password field and refocuses it
-            this.password.setValue(null);
-            this.password.focus();
-
         }
     }
 

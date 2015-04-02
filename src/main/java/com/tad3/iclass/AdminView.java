@@ -14,25 +14,27 @@ import com.vaadin.ui.Label;
  */
 public class AdminView extends CustomComponent implements View {
 
-    public static final String NAME = "";
+    public static final String NAME = "admin";
 
     Label text = new Label();
 
-    Button logout = new Button("Logout", new Button.ClickListener() {
+    private Button logoutButton() {
+        Button button = new Button("Logout", new Button.ClickListener() {
+            @Override
+            public void buttonClick(ClickEvent event) {
+                getUI().getSession().close();
+                getUI().getPage().setLocation(getLogoutPath());
+            }
+        });
+        return button;
+    }
 
-        @Override
-        public void buttonClick(ClickEvent event) {
-
-            // "Logout" the user
-            getSession().setAttribute("user", null);
-
-            // Refresh this view, should redirect to login view
-            getUI().getNavigator().navigateTo(NAME);
-        }
-    });
+    private String getLogoutPath() {
+        return getUI().getPage().getLocation().getPath();
+    }
 
     public AdminView() {
-        setCompositionRoot(new CssLayout(text, logout));
+        setCompositionRoot(new CssLayout(text, logoutButton()));
     }
 
     @Override
