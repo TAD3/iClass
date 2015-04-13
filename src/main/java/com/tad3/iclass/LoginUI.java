@@ -1,5 +1,8 @@
 package com.tad3.iclass;
 
+import com.tad3.iclass.view.AlumnoView;
+import com.tad3.iclass.view.ProfesorView;
+import com.tad3.iclass.view.admin.AdminView;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.ComponentContainerViewDisplay;
 import com.vaadin.navigator.ViewChangeListener;
@@ -33,36 +36,7 @@ public class LoginUI extends UI {
 		navigator.addView(ADMINVIEW, new AdminView());
 		navigator.addView(ALUMNOVIEW, new AlumnoView());
 		navigator.addView(PROFESORVIEW, new ProfesorView());
-
-        //
-        // The initial log view where the user can login to the application
-        //
-//        getNavigator().addView(LoginView.NAME, LoginView.class);//
-        //
-        // Add the main view of the application
-        //
-//        getNavigator().addView(AdminView.NAME, AdminView.class);
-        //Para que vaya a profesor o alumno cambiar la vista, hay que corregirlo
-        /*String priv = (String) session.getAttribute("privilegio");
-
-         switch (priv) {
-         case "1":
-         //getUI().getNavigator().navigateTo(AdminView.NAME);
-         getNavigator().addView(AdminView.NAME, AdminView.class);
-         break;
-         case "2":
-         //getUI().getNavigator().navigateTo(ProfesorView.NAME);
-         getNavigator().addView(ProfesorView.NAME, ProfesorView.class);
-         break;
-         case "3":
-         //getUI().getNavigator().navigateTo(AlumnoView.NAME);
-         getNavigator().addView(AlumnoView.NAME, AlumnoView.class);
-         break;
-         }*/
-        //
-        // We use a view change handler to ensure the user is always redirected
-        // to the login view if the user is not logged in.
-        //
+                
         getNavigator().addViewChangeListener(new ViewChangeListener() {
 
             @Override

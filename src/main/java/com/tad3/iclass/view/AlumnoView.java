@@ -1,4 +1,4 @@
-package com.tad3.iclass;
+package com.tad3.iclass.view;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -12,9 +12,9 @@ import com.vaadin.ui.Label;
  *
  * @author Laura
  */
-public class ProfesorView extends CustomComponent implements View {
+public class AlumnoView extends CustomComponent implements View {
 
-    public static final String NAME = "profesor";
+    public static final String NAME = "alumno";
 
     Label text = new Label();
 
@@ -33,7 +33,7 @@ public class ProfesorView extends CustomComponent implements View {
         return getUI().getPage().getLocation().getPath();
     }
 
-    public ProfesorView() {
+    public AlumnoView() {
         setCompositionRoot(new CssLayout(text, logoutButton()));
     }
 
@@ -43,6 +43,6 @@ public class ProfesorView extends CustomComponent implements View {
         String username = String.valueOf(getSession().getAttribute("user"));
 
         // And show the username
-        text.setValue("Hello Profesor " + username);
+        text.setValue("Hello alumno " + username);
     }
 }
