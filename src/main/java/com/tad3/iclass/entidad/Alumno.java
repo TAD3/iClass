@@ -43,6 +43,10 @@ public class Alumno {
         this.password = password;
         this.foto = foto;
     }
+    
+    public Alumno(){
+        
+    }
 
     public int getIdAlumno() {
         return idAlumno;

@@ -35,21 +35,26 @@ public class AlumnoView extends CustomComponent implements View {
             VerticalLayout panel = new VerticalLayout();
             Label l = new Label();
             Table table = new Table();
-            table.addContainerProperty("idAlumno", int.class, null);
-            table.addContainerProperty("idLugar", int.class, null);
+            table.addContainerProperty("idAlumno", String.class, null);
+            table.addContainerProperty("idLugar", String.class, null);
             table.addContainerProperty("nombre", String.class, null);
             table.addContainerProperty("apellidos", String.class, null);
-            table.addContainerProperty("edad", int.class, null);
+            table.addContainerProperty("edad", String.class, null);
             table.addContainerProperty("curso", String.class, null);
             table.addContainerProperty("email", String.class, null);
             table.addContainerProperty("password", String.class, null);
             table.addContainerProperty("foto", String.class, null);
             try {
                 List<Alumno> lista = alumno.listaAlumnos();
-                Iterator it = lista.iterator();
+                Alumno a;
+                Iterator<Alumno> it = lista.iterator();
+                int i = 1;
                 while(it.hasNext()){
-                    
-                    l.setValue(it.next().toString());
+                    a = it.next();
+                    table.addItem(new Object[]{"1", "1", a.getNombre(), a.getApellidos(), 
+                        "27", a.getCurso(), a.getEmail(), a.getPassword(), a.getFoto()}, i);
+                    i++;
+                    l.setValue(a.getNombre()+ a.getApellidos() + a.getCurso() + a.getEmail() + a.getFoto() + a.getPassword() + a.getEdad() + a.getIdAlumno()+a.getIdLugar());
                 }
             } catch (UnknownHostException ex) {
                 Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
