@@ -1,5 +1,7 @@
 package com.tad3.iclass;
 
+import com.tad3.iclass.dao.AlumnoDAO;
+import com.tad3.iclass.entidad.Alumno;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.validator.AbstractValidator;
@@ -18,6 +20,9 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.Reindeer;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
 
 /**
@@ -95,13 +100,24 @@ public class LoginView extends CustomComponent implements View {
                 // I use a dummy username and password.
                 //
                 boolean isValid = false;
+                boolean isAlumno = false;
+                boolean isProfesor = false;
+                boolean isAdmin = false;
+                AlumnoDAO a = new AlumnoDAO();
+                
+                
                 //admin
                 if (username.equals("admin@iclass.com") && pass.equals("passw0rd")) {
                     isValid = true;
                 } else if (username.equals("profe@iclass.com") && pass.equals("passw0rd")) { //profesor
                     isValid = true;
-                } else if (username.equals("alumno@iclass.com") && pass.equals("passw0rd")) { //alumno
-                    isValid = true;
+                } else try {
+                    if (a.existe(username, pass)) { //alumno
+                        isValid = true;
+                        isAlumno = true;
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
                 if (isValid) {
@@ -121,7 +137,7 @@ public class LoginView extends CustomComponent implements View {
                         getUI().getNavigator().navigateTo(LoginUI.PROFESORVIEW);
                     }
 
-                    if (username.equals("alumno@iclass.com")) {
+                    if (isAlumno) {
                         // Navigate to alumno view
                         Notification.show("Usuario " + username + " logueado");
                         getUI().getNavigator().navigateTo(LoginUI.ALUMNOVIEW);

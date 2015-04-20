@@ -11,17 +11,17 @@ package com.tad3.iclass.entidad;
  * @author francisco
  */
 public class Alumno {
-    private int idAlumno;
-    private int idLugar;
+    private String idAlumno;
+    private String idLugar;
     private String nombre;
     private String apellidos;
-    private int edad;
+    private String edad;
     private String curso;
     private String email;
     private String password;
     private String foto;
 
-    public Alumno(int idAlumno, int idLugar, String nombre, String apellidos, int edad, String curso, String email, String password) {
+    public Alumno(String idAlumno, String idLugar, String nombre, String apellidos, String edad, String curso, String email, String password) {
         this.idAlumno = idAlumno;
         this.idLugar = idLugar;
         this.nombre = nombre;
@@ -32,7 +32,7 @@ public class Alumno {
         this.password = password;
     }
 
-    public Alumno(int idAlumno, int idLugar, String nombre, String apellidos, int edad, String curso, String email, String password, String foto) {
+    public Alumno(String idAlumno, String idLugar, String nombre, String apellidos, String edad, String curso, String email, String password, String foto) {
         this.idAlumno = idAlumno;
         this.idLugar = idLugar;
         this.nombre = nombre;
@@ -48,19 +48,19 @@ public class Alumno {
         
     }
 
-    public int getIdAlumno() {
+    public String getIdAlumno() {
         return idAlumno;
     }
 
-    public void setIdAlumno(int idAlumno) {
+    public void setIdAlumno(String idAlumno) {
         this.idAlumno = idAlumno;
     }
 
-    public int getIdLugar() {
+    public String getIdLugar() {
         return idLugar;
     }
 
-    public void setIdLugar(int idLugar) {
+    public void setIdLugar(String idLugar) {
         this.idLugar = idLugar;
     }
 
@@ -80,11 +80,11 @@ public class Alumno {
         this.apellidos = apellidos;
     }
 
-    public int getEdad() {
+    public String getEdad() {
         return edad;
     }
 
-    public void setEdad(int edad) {
+    public void setEdad(String edad) {
         this.edad = edad;
     }
 
