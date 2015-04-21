@@ -1,4 +1,3 @@
-
 package com.tad3.iclass.entidad;
 
 /**
@@ -6,10 +5,16 @@ package com.tad3.iclass.entidad;
  * @author Laura
  */
 public class Asignatura {
+
     private String idAsignatura;
     private String nombre;
     private String curso;
     private String descripcion;
+
+    @Override
+    public String toString() {
+        return idAsignatura + " - " + nombre + " - " + curso;
+    }
 
     public Asignatura(String idAsignatura, String nombre, String curso, String descripcion) {
         this.idAsignatura = idAsignatura;
@@ -19,7 +24,7 @@ public class Asignatura {
     }
 
     public Asignatura() {
-        
+
     }
 
     public String getIdAsignatura() {
@@ -53,6 +58,5 @@ public class Asignatura {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    
-    
+
 }
