@@ -2,7 +2,6 @@ package com.tad3.iclass.view.admin;
 
 import com.tad3.iclass.dao.AsignaturaDAO;
 import com.tad3.iclass.entidad.Asignatura;
-import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -10,8 +9,6 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -58,15 +55,18 @@ public class AdminView extends CustomComponent implements View {
     ComboBox curso_asig = new ComboBox("Curso: ");
     TextField descripcion_asig = new TextField("Descripción: ");
 
-    FormLayout datosAsignatura = new FormLayout(id_asig, nombre_asig, curso_asig, descripcion_asig);
-
     Button nuevaAsignatura = new Button("Nueva asignatura");
-    Button addAsignatura = new Button("Añadir asignatura");
+    Button addAsignatura = new Button("Añadir");
+    Button deleteAsignatura = new Button("Borrar");
 
-    FormLayout asignaturaNueva = new FormLayout(id_asig, nombre_asig, curso_asig, descripcion_asig, addAsignatura);
+    Asignatura asigTabla = new Asignatura();
+    List<Asignatura> listaAsignaturas = new ArrayList<>();
+
+    HorizontalLayout botones = new HorizontalLayout(addAsignatura, deleteAsignatura);
+    FormLayout asignaturaNueva = new FormLayout(id_asig, nombre_asig, curso_asig, descripcion_asig, botones);
     HorizontalLayout hlasignatura = new HorizontalLayout(buscadorAsignaturas, nuevaAsignatura);
     VerticalSplitPanel vspAsignatura = new VerticalSplitPanel(hlasignatura, tAsignaturas);
-    HorizontalSplitPanel hspAsignatura = new HorizontalSplitPanel(vspAsignatura, datosAsignatura);
+    HorizontalSplitPanel hspAsignatura = new HorizontalSplitPanel(vspAsignatura, asignaturaNueva);
 
     private String getLogoutPath() {
         return getUI().getPage().getLocation().getPath();
@@ -107,8 +107,7 @@ public class AdminView extends CustomComponent implements View {
         menu.addItem("Log out", logoutCommand);
 
         //Asignatura
-
-        String[] columnHeadersAsig = {"Curso", "Descripción","ID", "Asignatura"};
+        String[] columnHeadersAsig = {"Curso", "Descripción", "ID", "Asignatura"};
 
         tAsignaturas.setColumnHeaders(columnHeadersAsig);
         tAsignaturas.setSizeFull();
@@ -116,15 +115,8 @@ public class AdminView extends CustomComponent implements View {
         tAsignaturas.setSelectable(true);
         tAsignaturas.setImmediate(true);
 
-        List<Asignatura> listaAsignaturas = new ArrayList<>();
         AsignaturaDAO asignatura = new AsignaturaDAO();
-        try {
-            listaAsignaturas = asignatura.listaAsignaturas();
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        bAsignatura.addAll(listaAsignaturas);
+        llenarTabla();
 
         Collection<String> cursos = new ArrayList<>();
         cursos.add("4º Primaria");
@@ -147,14 +139,13 @@ public class AdminView extends CustomComponent implements View {
         buscadorAsignaturas.setImmediate(true);
 
         buscadorAsignaturas.setNullSelectionAllowed(false);
-        
-        for(Asignatura asig : listaAsignaturas){
+
+        for (Asignatura asig : listaAsignaturas) {
             buscadorAsignaturas.addItem(asig.getIdAsignatura());
             buscadorAsignaturas.setItemCaption(asig.getIdAsignatura(), asig.toString());
         }
-        
-        //BUSCADOR: realizar accion
 
+        //BUSCADOR: realizar accion
         hlasignatura.setMargin(true);
         hlasignatura.setSizeFull();
         hlasignatura.setComponentAlignment(buscadorAsignaturas, Alignment.MIDDLE_LEFT);
@@ -173,16 +164,11 @@ public class AdminView extends CustomComponent implements View {
         asignaturaNueva.setComponentAlignment(nombre_asig, Alignment.MIDDLE_CENTER);
         asignaturaNueva.setComponentAlignment(curso_asig, Alignment.MIDDLE_CENTER);
         asignaturaNueva.setComponentAlignment(descripcion_asig, Alignment.MIDDLE_CENTER);
+        botones.setComponentAlignment(addAsignatura, Alignment.MIDDLE_LEFT);
+        botones.setComponentAlignment(deleteAsignatura, Alignment.MIDDLE_RIGHT);
         asignaturaNueva.setCaption("Introduzca los datos de la nueva asignatura");
         asignaturaNueva.setMargin(true);
         asignaturaNueva.setSizeFull();
-
-//        datosAsignatura.setComponentAlignment(id_asig, Alignment.MIDDLE_CENTER);
-//        datosAsignatura.setComponentAlignment(nombre_asig, Alignment.MIDDLE_CENTER);
-//        datosAsignatura.setComponentAlignment(curso_asig, Alignment.MIDDLE_CENTER);
-//        datosAsignatura.setComponentAlignment(descripcion_asig, Alignment.MIDDLE_CENTER);
-        datosAsignatura.setMargin(true);
-        datosAsignatura.setReadOnly(true);
 
         vspAsignatura.setSplitPosition(17.5f, Unit.PERCENTAGE);
         vspAsignatura.setLocked(true);
@@ -193,13 +179,14 @@ public class AdminView extends CustomComponent implements View {
         tAsignaturas.addItemClickListener(new ItemClickEvent.ItemClickListener() {
 
             @Override
+
             public void itemClick(ItemClickEvent event) {
                 BeanItem<Asignatura> bi = bAsignatura.getItem(event.getItemId());
-                Asignatura a = bi.getBean();
-                id_asig.setValue(a.getIdAsignatura());
-                nombre_asig.setValue(a.getNombre());
-                curso_asig.setValue(a.getCurso());
-                descripcion_asig.setValue(a.getDescripcion());
+                asigTabla = bi.getBean();
+                id_asig.setValue(asigTabla.getIdAsignatura());
+                nombre_asig.setValue(asigTabla.getNombre());
+                curso_asig.setValue(asigTabla.getCurso());
+                descripcion_asig.setValue(asigTabla.getDescripcion());
             }
         });
 
@@ -209,9 +196,8 @@ public class AdminView extends CustomComponent implements View {
             public void buttonClick(Button.ClickEvent event) {
                 id_asig.setValue("");
                 nombre_asig.setValue("");
-                curso_asig.select("");
+                curso_asig.select(null);
                 descripcion_asig.setValue("");
-                hspAsignatura.setSecondComponent(asignaturaNueva);
             }
         });
 
@@ -221,18 +207,63 @@ public class AdminView extends CustomComponent implements View {
             @Override
             public void buttonClick(Button.ClickEvent event) {
                 Asignatura a = new Asignatura();
-
+                boolean encontrado = false;
                 a.setIdAsignatura(id_asig.getValue());
                 a.setNombre(nombre_asig.getValue());
                 a.setCurso((String) curso_asig.getValue());
                 a.setDescripcion(descripcion_asig.getValue());
                 try {
-                    if (asignatura.crearAsignatura(a)) {
-                        Notification.show("Asignatura creada", "Se ha añadido una nueva "
-                                + "asignatura a la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                    encontrado = asignatura.buscarAsignatura(a.getIdAsignatura());
+                    if (encontrado == true) {
+                        if (asignatura.modificarAsignatura(asigTabla, a)) {
+                            llenarTabla();
+                            Notification.show("Asignatura modificada", "Se ha actualizado la "
+                                    + "asignatura en la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido actualizar la "
+                                    + "asignatura en la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
                     } else {
-                        Notification.show("ERROR", "No se ha podido añadir una nueva "
-                                + "asignatura a la base de datos", Notification.Type.ERROR_MESSAGE);
+                        if (asignatura.crearAsignatura(a)) {
+                            llenarTabla();
+                            Notification.show("Asignatura creada", "Se ha añadido una nueva "
+                                    + "asignatura a la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido añadir una nueva "
+                                    + "asignatura a la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        deleteAsignatura.addClickListener(new Button.ClickListener() {
+            AsignaturaDAO asignatura = new AsignaturaDAO();
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                Asignatura a = new Asignatura();
+                boolean encontrado = false;
+                String id = id_asig.getValue();
+                try {
+                    encontrado = asignatura.buscarAsignatura(id);
+                    if (encontrado == true) {
+                        if (asignatura.borrarAsignatura(id)) {
+                            llenarTabla();
+                            id_asig.setValue("");
+                            nombre_asig.setValue("");
+                            curso_asig.select(null);
+                            descripcion_asig.setValue("");
+                            Notification.show("Asignatura eliminada", "Se ha borrado la "
+                                    + "asignatura de la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido borrar la "
+                                    + "asignatura de la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    } else {
+                        Notification.show("Seleccione una asignatura", "Debe seleccionar una"
+                                + "asignatura para poder eliminarla de la base de datos", Notification.Type.TRAY_NOTIFICATION);
                     }
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
@@ -247,6 +278,19 @@ public class AdminView extends CustomComponent implements View {
                 + " Alumno, Asignatura y Lugar."));
 
         setCompositionRoot(new CssLayout(layout, panel));
+    }
+
+    public final void llenarTabla() {
+        bAsignatura.removeAllItems();
+
+        AsignaturaDAO asignatura = new AsignaturaDAO();
+        try {
+            listaAsignaturas = asignatura.listaAsignaturas();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        bAsignatura.addAll(listaAsignaturas);
     }
 
     @Override

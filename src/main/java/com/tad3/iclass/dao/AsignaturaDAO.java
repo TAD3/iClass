@@ -70,9 +70,9 @@ public class AsignaturaDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("idAsignatura", idAsignatura);
-        DBObject user = coleccion.findOne(query);
+        DBObject asig = coleccion.findOne(query);
         Asignatura a = new Asignatura();
-        BasicDBObject studentObj = (BasicDBObject) user;
+        BasicDBObject studentObj = (BasicDBObject) asig;
         a.setIdAsignatura((studentObj.getString("idAsignatura")));
         a.setNombre((studentObj.getString("nombre")));
         a.setCurso((studentObj.getString("curso")));
@@ -84,10 +84,11 @@ public class AsignaturaDAO {
     /*
      Borrar asignatura
      */
-    public void borrarAsignatura(String idAsignatura) throws UnknownHostException {
+    public boolean borrarAsignatura(String idAsignatura) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("idAsignatura", idAsignatura));
+        return true;
     }
 
     /*
@@ -110,7 +111,7 @@ public class AsignaturaDAO {
     /*
      Actualizar
      */
-    public void modificarAsignatura(Asignatura a1, Asignatura a2) throws UnknownHostException {
+    public boolean modificarAsignatura(Asignatura a1, Asignatura a2) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
 
@@ -121,5 +122,16 @@ public class AsignaturaDAO {
         doc2.put("curso", a2.getCurso());
         doc2.put("descripcion", a2.getDescripcion());
         coleccion.update(query, doc2);
+        
+        return true;
+    }
+
+    public boolean buscarAsignatura(String idAsignatura) throws UnknownHostException {
+        MongoClient conect = conexion();
+        DBCollection coleccion = collection(conect);
+        BasicDBObject query = new BasicDBObject("idAsignatura", idAsignatura);
+        DBObject asig = coleccion.findOne(query);
+        System.out.println(asig);
+        return asig != null;
     }
 }
