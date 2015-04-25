@@ -1,6 +1,7 @@
 package com.tad3.iclass;
 
 import com.tad3.iclass.dao.AlumnoDAO;
+import com.tad3.iclass.dao.ProfesorDAO;
 import com.tad3.iclass.entidad.Alumno;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -104,7 +105,7 @@ public class LoginView extends CustomComponent implements View {
                 boolean isProfesor = false;
                 boolean isAdmin = false;
                 AlumnoDAO a = new AlumnoDAO();
-                
+                ProfesorDAO p = new ProfesorDAO();                
                 
                 //admin
                 if (username.equals("admin@iclass.com") && pass.equals("passw0rd")) {
@@ -115,6 +116,12 @@ public class LoginView extends CustomComponent implements View {
                     if (a.existe(username, pass)) { //alumno
                         isValid = true;
                         isAlumno = true;
+                    }
+                    else {
+                        if (p.existe(username, pass)) { //profesor
+                        isValid = true;
+                        isProfesor = true;
+                    }
                     }
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
