@@ -111,10 +111,12 @@ public class AlumnoDAO {
     /*
      Borrar alumno
      */
-    public void borrar(String correo) throws UnknownHostException {
+    public boolean borrar(String correo) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("email", correo));
+        
+        return true;
     }
 
     /*
@@ -124,8 +126,7 @@ public class AlumnoDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject objeto = new BasicDBObject();
-        
-        
+
         objeto.put("idAlumno", a.getIdAlumno());
         objeto.put("idLugar", a.getIdLugar());
         objeto.put("nombre", a.getNombre());
@@ -136,14 +137,14 @@ public class AlumnoDAO {
         objeto.put("password", a.getPassword());
         objeto.put("foto", a.getFoto());
         coleccion.insert(objeto);
-        
+
         return true;
     }
 
     /*
      Actualizar
      */
-    public void modificar(Alumno a1, Alumno a2) throws UnknownHostException {
+    public boolean modificar(Alumno a1, Alumno a2) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
 
@@ -159,5 +160,16 @@ public class AlumnoDAO {
         doc2.put("password", a2.getPassword());
         doc2.put("foto", a2.getFoto());
         coleccion.update(query, doc2);
+        
+        return true;
+    }
+
+    public boolean buscar(String email) throws UnknownHostException {
+        MongoClient conect = conexion();
+        DBCollection coleccion = collection(conect);
+        BasicDBObject query = new BasicDBObject("email", email);
+        DBObject alum = coleccion.findOne(query);
+        System.out.println(alum);
+        return alum != null;
     }
 }

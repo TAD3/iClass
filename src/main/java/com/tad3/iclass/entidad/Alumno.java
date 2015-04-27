@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tad3.iclass.entidad;
 
 /**
@@ -11,6 +10,7 @@ package com.tad3.iclass.entidad;
  * @author francisco
  */
 public class Alumno {
+
     private String idAlumno;
     private String idLugar;
     private String nombre;
@@ -43,9 +43,14 @@ public class Alumno {
         this.password = password;
         this.foto = foto;
     }
-    
-    public Alumno(){
-        
+
+    @Override
+    public String toString() {
+        return nombre + " " + apellidos + " - " + email;
+    }
+
+    public Alumno() {
+
     }
 
     public String getIdAlumno() {
@@ -119,6 +124,5 @@ public class Alumno {
     public void setFoto(String foto) {
         this.foto = foto;
     }
-    
-    
+
 }

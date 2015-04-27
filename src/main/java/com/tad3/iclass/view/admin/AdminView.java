@@ -1,7 +1,9 @@
 package com.tad3.iclass.view.admin;
 
+import com.tad3.iclass.dao.AlumnoDAO;
 import com.tad3.iclass.dao.AsignaturaDAO;
 import com.tad3.iclass.dao.LugarDAO;
+import com.tad3.iclass.entidad.Alumno;
 import com.tad3.iclass.entidad.Asignatura;
 import com.tad3.iclass.entidad.Lugar;
 import com.vaadin.data.Property;
@@ -81,7 +83,7 @@ public class AdminView extends CustomComponent implements View {
     ComboBox buscadorLugares = new ComboBox("Lugar: ");
 
     TextField id_lugar = new TextField("ID: ");
-    TextField codigo_postal_lugar = new TextField("Código postal: ");
+    TextField codigo_postal_lugar = new TextField("CP: ");
     TextField barrio_lugar = new TextField("Barrio: ");
     TextField ciudad_lugar = new TextField("Ciudad: ");
 
@@ -98,6 +100,38 @@ public class AdminView extends CustomComponent implements View {
     HorizontalLayout hlLugar = new HorizontalLayout(buscadorLugares, allLugar, nuevoLugar);
     VerticalSplitPanel vspLugar = new VerticalSplitPanel(hlLugar, tLugares);
     HorizontalSplitPanel hspLugar = new HorizontalSplitPanel(vspLugar, lugarNuevo);
+
+    //Alumno
+    AlumnoDAO alumno = new AlumnoDAO();
+    BeanItemContainer<Alumno> bAlumno = new BeanItemContainer(Alumno.class);
+    Table tAlumnos = new Table("Alumnos", bAlumno);
+    ComboBox buscadorAlumnos = new ComboBox("Alumno: ");
+
+    TextField id_alumno = new TextField("ID: ");
+    ComboBox id_lugar_alumno = new ComboBox("ID lugar: ");
+    TextField nombre_alumno = new TextField("Nombre: ");
+    TextField apellidos_alumno = new TextField("Apellidos: ");
+    TextField edad_alumno = new TextField("Edad: ");
+    ComboBox curso_alumno = new ComboBox("Curso: ");
+    TextField email_alumno = new TextField("Email: ");
+    TextField password_alumno = new TextField("Contraseña: ");
+    TextField foto_alumno = new TextField("Foto: ");
+
+    Button allAlumno = new Button("Todas los alumnos");
+    Button nuevoAlumno = new Button("Nuevo alumno");
+    Button addAlumno = new Button("Añadir");
+    Button deleteAlumno = new Button("Borrar");
+
+    Alumno alumnoTabla = new Alumno();
+    List<Alumno> listaAlumnos = new ArrayList<>();
+
+    HorizontalLayout botonesAlumno = new HorizontalLayout(addAlumno, deleteAlumno);
+    FormLayout alumnoNuevo = new FormLayout(id_alumno, id_lugar_alumno,
+            nombre_alumno, apellidos_alumno, edad_alumno, curso_alumno, email_alumno,
+            password_alumno, foto_alumno, botonesAlumno);
+    HorizontalLayout hlAlumno = new HorizontalLayout(buscadorAlumnos, allAlumno, nuevoAlumno);
+    VerticalSplitPanel vspAlumno = new VerticalSplitPanel(hlAlumno, tAlumnos);
+    HorizontalSplitPanel hspAlumno = new HorizontalSplitPanel(vspAlumno, alumnoNuevo);
 
     private String getLogoutPath() {
         return getUI().getPage().getLocation().getPath();
@@ -122,6 +156,9 @@ public class AdminView extends CustomComponent implements View {
                         break;
                     case "Lugares":
                         panel.setContent(hspLugar);
+                        break;
+                    case "Alumnos":
+                        panel.setContent(hspAlumno);
                         break;
                 }
             }
@@ -168,12 +205,9 @@ public class AdminView extends CustomComponent implements View {
         buscadorAsignaturas.setInputPrompt("Ninguna asignatura seleccionada");
 
         buscadorAsignaturas.setWidth(100.0f, Unit.PERCENTAGE);
-        buscadorAsignaturas.setSizeFull();
 
         buscadorAsignaturas.setFilteringMode(FilteringMode.CONTAINS);
         buscadorAsignaturas.setImmediate(true);
-
-        buscadorAsignaturas.setNullSelectionAllowed(false);
 
         for (Asignatura asig : listaAsignaturas) {
             buscadorAsignaturas.addItem(asig.getIdAsignatura());
@@ -186,11 +220,14 @@ public class AdminView extends CustomComponent implements View {
             public void valueChange(Property.ValueChangeEvent event) {
                 String select = (String) event.getProperty().getValue();
                 bAsignatura.removeAllItems();
-
-                try {
-                    bAsignatura.addItem(asignatura.asignatura(select));
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                if (select != null) {
+                    try {
+                        bAsignatura.addItem(asignatura.asignatura(select));
+                    } catch (UnknownHostException ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    llenarTablaAsig();
                 }
             }
         });
@@ -355,12 +392,9 @@ public class AdminView extends CustomComponent implements View {
         buscadorLugares.setInputPrompt("Ningún lugar seleccionado");
 
         buscadorLugares.setWidth(100.0f, Unit.PERCENTAGE);
-        buscadorLugares.setSizeFull();
 
         buscadorLugares.setFilteringMode(FilteringMode.CONTAINS);
         buscadorLugares.setImmediate(true);
-
-        buscadorLugares.setNullSelectionAllowed(false);
 
         for (Lugar lug : listaLugares) {
             buscadorLugares.addItem(lug.getIdLugar());
@@ -373,11 +407,14 @@ public class AdminView extends CustomComponent implements View {
             public void valueChange(Property.ValueChangeEvent event) {
                 String select = (String) event.getProperty().getValue();
                 bLugar.removeAllItems();
-
-                try {
-                    bLugar.addItem(lugar.lugar(select));
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                if (select != null) {
+                    try {
+                        bLugar.addItem(lugar.lugar(select));
+                    } catch (UnknownHostException ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    llenarTablaLugar();
                 }
             }
         });
@@ -528,6 +565,248 @@ public class AdminView extends CustomComponent implements View {
             }
         });
 
+        //Alumno
+        String[] columnHeadersAlumno = {"Apellidos", "Curso", "Edad", "Email", "Foto", "ID", "ID lugar", "Nombre", "Contraseña",};
+
+        tAlumnos.setColumnHeaders(columnHeadersAlumno);
+        tAlumnos.setSizeFull();
+        tAlumnos.setPageLength(tAlumnos.size());
+        tAlumnos.setSelectable(true);
+        tAlumnos.setImmediate(true);
+
+        llenarTablaAlumno();
+
+        curso_alumno.addItems(cursos);
+        curso_alumno.setFilteringMode(FilteringMode.CONTAINS);
+        curso_alumno.setImmediate(true);
+
+        for (Lugar lug : listaLugares) {
+            id_lugar_alumno.addItem(lug.getIdLugar());
+            id_lugar_alumno.setItemCaption(lug.getIdLugar(), lug.toString());
+        }
+        id_lugar_alumno.setFilteringMode(FilteringMode.CONTAINS);
+        id_lugar_alumno.setImmediate(true);
+        id_lugar_alumno.setNullSelectionAllowed(true);
+        id_lugar_alumno.setWidth(75.0f, Unit.PERCENTAGE);
+
+        buscadorAlumnos.setInputPrompt("Ningún alumno seleccionado");
+
+        buscadorAlumnos.setWidth(100.0f, Unit.PERCENTAGE);
+        buscadorAlumnos.setFilteringMode(FilteringMode.CONTAINS);
+        buscadorAlumnos.setImmediate(true);
+
+        for (Alumno alum : listaAlumnos) {
+            buscadorAlumnos.addItem(alum.getEmail());
+            buscadorAlumnos.setItemCaption(alum.getEmail(), alum.toString());
+        }
+
+        buscadorAlumnos.addValueChangeListener(new ComboBox.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                String select = (String) event.getProperty().getValue();
+                bAlumno.removeAllItems();
+                if (select != null) {
+                    try {
+                        bAlumno.addItem(alumno.alumno(select));
+                    } catch (UnknownHostException ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    llenarTablaAlumno();
+                }
+            }
+        });
+
+        hlAlumno.setMargin(true);
+        hlAlumno.setSizeFull();
+        hlAlumno.setComponentAlignment(buscadorAlumnos, Alignment.MIDDLE_LEFT);
+        hlAlumno.setComponentAlignment(allAlumno, Alignment.MIDDLE_RIGHT);
+        hlAlumno.setComponentAlignment(nuevoAlumno, Alignment.MIDDLE_RIGHT);
+
+        id_alumno.setRequired(true);
+        id_alumno.setInputPrompt("ID alumno");
+        //id_alumno.setReadOnly(true);
+        id_lugar_alumno.setRequired(true);
+        id_lugar_alumno.setInputPrompt("ID lugar");
+        nombre_alumno.setRequired(true);
+        nombre_alumno.setInputPrompt("Nombre");
+        apellidos_alumno.setRequired(true);
+        apellidos_alumno.setInputPrompt("Apellidos");
+        edad_alumno.setRequired(true);
+        edad_alumno.setInputPrompt("Edad");
+        email_alumno.setRequired(true);
+        email_alumno.setInputPrompt("Correo electrónico");
+        curso_alumno.setRequired(true);
+        curso_alumno.setInputPrompt("Curso");
+        password_alumno.setRequired(true);
+        password_alumno.setInputPrompt("Contraseña");
+        foto_alumno.setRequired(false);
+        foto_alumno.setInputPrompt("Fotografía");
+
+        alumnoNuevo.setComponentAlignment(id_alumno, Alignment.MIDDLE_CENTER);
+        alumnoNuevo.setComponentAlignment(id_lugar_alumno, Alignment.MIDDLE_CENTER);
+        alumnoNuevo.setComponentAlignment(nombre_alumno, Alignment.MIDDLE_CENTER);
+        alumnoNuevo.setComponentAlignment(apellidos_alumno, Alignment.MIDDLE_CENTER);
+        alumnoNuevo.setComponentAlignment(edad_alumno, Alignment.MIDDLE_CENTER);
+        alumnoNuevo.setComponentAlignment(email_alumno, Alignment.MIDDLE_CENTER);
+        alumnoNuevo.setComponentAlignment(curso_alumno, Alignment.MIDDLE_CENTER);
+        alumnoNuevo.setComponentAlignment(password_alumno, Alignment.MIDDLE_CENTER);
+        alumnoNuevo.setComponentAlignment(foto_alumno, Alignment.MIDDLE_CENTER);
+        botonesAlumno.setComponentAlignment(addAlumno, Alignment.MIDDLE_LEFT);
+        botonesAlumno.setComponentAlignment(deleteAlumno, Alignment.MIDDLE_RIGHT);
+        alumnoNuevo.setCaption("Introduzca los datos del nuevo alumno");
+        alumnoNuevo.setMargin(true);
+        alumnoNuevo.setSizeFull();
+
+        vspAlumno.setSplitPosition(17.5f, Unit.PERCENTAGE);
+        vspAlumno.setLocked(true);
+        hspAlumno.setSplitPosition(75.0f, Unit.PERCENTAGE);
+        hspAlumno.setLocked(true);
+
+        //Datos Alumno
+        tAlumnos.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+
+            @Override
+
+            public void itemClick(ItemClickEvent event) {
+                BeanItem<Alumno> bia = bAlumno.getItem(event.getItemId());
+                alumnoTabla = bia.getBean();
+                id_alumno.setReadOnly(false);
+                id_alumno.setValue(alumnoTabla.getIdAlumno());
+                id_alumno.setReadOnly(true);
+                id_lugar_alumno.setValue(alumnoTabla.getIdLugar());
+                nombre_alumno.setValue(alumnoTabla.getNombre());
+                apellidos_alumno.setValue(alumnoTabla.getApellidos());
+                edad_alumno.setValue(alumnoTabla.getEdad());
+                curso_alumno.setValue(alumnoTabla.getCurso());
+                email_alumno.setValue(alumnoTabla.getEmail());
+                password_alumno.setValue(alumnoTabla.getPassword());
+                foto_alumno.setValue(alumnoTabla.getFoto());
+            }
+        });
+
+        allAlumno.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                llenarTablaAlumno();
+            }
+        });
+
+        nuevoAlumno.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                int cont = listaAlumnos.size() + 1;
+                System.out.println("cont=" + cont);
+                id_alumno.setReadOnly(false);
+                id_alumno.setValue(String.valueOf(cont));
+                id_alumno.setReadOnly(true);
+                id_lugar_alumno.select(null);
+                nombre_alumno.setValue("");
+                apellidos_alumno.setValue("");
+                curso_alumno.select(null);
+                email_alumno.setValue("");
+                edad_alumno.setValue("");
+                password_alumno.setValue("");
+                foto_alumno.setValue("");
+            }
+        });
+
+        addAlumno.addClickListener(new Button.ClickListener() {
+            AlumnoDAO alumno = new AlumnoDAO();
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                Alumno a = new Alumno();
+                boolean encontrado = false;
+                int cont = listaAlumnos.size() + 1;
+                a.setIdAlumno(String.valueOf(cont));
+                a.setIdLugar((String) id_lugar_alumno.getValue());
+                a.setNombre(nombre_alumno.getValue());
+                a.setApellidos(apellidos_alumno.getValue());
+                a.setEdad(edad_alumno.getValue());
+                a.setCurso((String) curso_alumno.getValue());
+                a.setEmail(email_alumno.getValue());
+                a.setPassword(password_alumno.getValue());
+                a.setFoto(foto_alumno.getValue());
+                try {
+                    encontrado = alumno.buscar(a.getIdAlumno());
+                    if (encontrado == true) {
+                        if (alumno.modificar(alumnoTabla, a)) {
+                            llenarTablaAlumno();
+                            for (Alumno alum : listaAlumnos) {
+                                buscadorAlumnos.addItem(alum.getEmail());
+                                buscadorAlumnos.setItemCaption(alum.getEmail(), alum.toString());
+                            }
+                            Notification.show("Alumno modificado", "Se ha actualizado el "
+                                    + "alumno en la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido actualizar el "
+                                    + "alumno en la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    } else {
+                        if (alumno.crear(a)) {
+                            llenarTablaAlumno();
+                            for (Alumno alum : listaAlumnos) {
+                                buscadorAlumnos.addItem(alum.getEmail());
+                                buscadorAlumnos.setItemCaption(alum.getEmail(), alum.toString());
+                            }
+                            Notification.show("Alumno creado", "Se ha añadido un nuevo "
+                                    + "alumno a la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido añadir un nuevo "
+                                    + "alumno a la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        deleteAlumno.addClickListener(new Button.ClickListener() {
+            AlumnoDAO alumno = new AlumnoDAO();
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                Alumno a = new Alumno();
+                boolean encontrado = false;
+                String email = email_alumno.getValue();
+                try {
+                    encontrado = alumno.buscar(email);
+                    if (encontrado == true) {
+                        if (alumno.borrar(email)) {
+                            llenarTablaAlumno();
+                            id_alumno.setValue("");
+                            id_lugar_alumno.select(null);
+                            nombre_alumno.setValue("");
+                            apellidos_alumno.setValue("");
+                            curso_alumno.select(null);
+                            email_alumno.setValue("");
+                            edad_alumno.setValue("");
+                            password_alumno.setValue("");
+                            foto_alumno.setValue("");
+                            for (Alumno alum : listaAlumnos) {
+                                buscadorAlumnos.addItem(alum.getEmail());
+                                buscadorAlumnos.setItemCaption(alum.getEmail(), alum.toString());
+                            }
+                            Notification.show("Alumno eliminado", "Se ha borrado el "
+                                    + "alumno de la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido borrar el "
+                                    + "alumno de la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    } else {
+                        Notification.show("Seleccione un alumno", "Debe seleccionar un "
+                                + "alumno para poder eliminarlo de la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         panel.setWidth(String.valueOf(Page.getCurrent().getBrowserWindowWidth()) + "px");
         panel.setHeight(String.valueOf(Page.getCurrent().getBrowserWindowHeight() * 0.9) + "px");
         panel.setContent(new Label("Este es el panel de administración de la "
@@ -559,6 +838,18 @@ public class AdminView extends CustomComponent implements View {
         }
 
         bLugar.addAll(listaLugares);
+    }
+
+    public final void llenarTablaAlumno() {
+        bAlumno.removeAllItems();
+
+        try {
+            listaAlumnos = alumno.listaAlumnos();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        bAlumno.addAll(listaAlumnos);
     }
 
     @Override
