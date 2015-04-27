@@ -2,6 +2,7 @@ package com.tad3.iclass.view.admin;
 
 import com.tad3.iclass.dao.AsignaturaDAO;
 import com.tad3.iclass.entidad.Asignatura;
+import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
@@ -46,6 +47,7 @@ public class AdminView extends CustomComponent implements View {
     Panel panel = new Panel("Bienvenido a la página de administración");
 
     //Asignatura
+    AsignaturaDAO asignatura = new AsignaturaDAO();
     BeanItemContainer<Asignatura> bAsignatura = new BeanItemContainer(Asignatura.class);
     Table tAsignaturas = new Table("Asignaturas", bAsignatura);
     ComboBox buscadorAsignaturas = new ComboBox("Asignatura: ");
@@ -55,6 +57,7 @@ public class AdminView extends CustomComponent implements View {
     ComboBox curso_asig = new ComboBox("Curso: ");
     TextField descripcion_asig = new TextField("Descripción: ");
 
+    Button allAsignatura = new Button("Todas las asignaturas");
     Button nuevaAsignatura = new Button("Nueva asignatura");
     Button addAsignatura = new Button("Añadir");
     Button deleteAsignatura = new Button("Borrar");
@@ -64,7 +67,7 @@ public class AdminView extends CustomComponent implements View {
 
     HorizontalLayout botones = new HorizontalLayout(addAsignatura, deleteAsignatura);
     FormLayout asignaturaNueva = new FormLayout(id_asig, nombre_asig, curso_asig, descripcion_asig, botones);
-    HorizontalLayout hlasignatura = new HorizontalLayout(buscadorAsignaturas, nuevaAsignatura);
+    HorizontalLayout hlasignatura = new HorizontalLayout(buscadorAsignaturas, allAsignatura, nuevaAsignatura);
     VerticalSplitPanel vspAsignatura = new VerticalSplitPanel(hlasignatura, tAsignaturas);
     HorizontalSplitPanel hspAsignatura = new HorizontalSplitPanel(vspAsignatura, asignaturaNueva);
 
@@ -115,7 +118,6 @@ public class AdminView extends CustomComponent implements View {
         tAsignaturas.setSelectable(true);
         tAsignaturas.setImmediate(true);
 
-        AsignaturaDAO asignatura = new AsignaturaDAO();
         llenarTabla();
 
         Collection<String> cursos = new ArrayList<>();
@@ -145,10 +147,25 @@ public class AdminView extends CustomComponent implements View {
             buscadorAsignaturas.setItemCaption(asig.getIdAsignatura(), asig.toString());
         }
 
-        //BUSCADOR: realizar accion
+        buscadorAsignaturas.addValueChangeListener(new ComboBox.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                String select = (String) event.getProperty().getValue();
+                bAsignatura.removeAllItems();
+
+                try {
+                    bAsignatura.addItem(asignatura.asignatura(select));
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         hlasignatura.setMargin(true);
         hlasignatura.setSizeFull();
         hlasignatura.setComponentAlignment(buscadorAsignaturas, Alignment.MIDDLE_LEFT);
+        hlasignatura.setComponentAlignment(allAsignatura, Alignment.MIDDLE_RIGHT);
         hlasignatura.setComponentAlignment(nuevaAsignatura, Alignment.MIDDLE_RIGHT);
 
         id_asig.setRequired(true);
@@ -187,6 +204,14 @@ public class AdminView extends CustomComponent implements View {
                 nombre_asig.setValue(asigTabla.getNombre());
                 curso_asig.setValue(asigTabla.getCurso());
                 descripcion_asig.setValue(asigTabla.getDescripcion());
+            }
+        });
+        
+        allAsignatura.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                llenarTabla();
             }
         });
 
@@ -283,7 +308,6 @@ public class AdminView extends CustomComponent implements View {
     public final void llenarTabla() {
         bAsignatura.removeAllItems();
 
-        AsignaturaDAO asignatura = new AsignaturaDAO();
         try {
             listaAsignaturas = asignatura.listaAsignaturas();
         } catch (UnknownHostException ex) {
