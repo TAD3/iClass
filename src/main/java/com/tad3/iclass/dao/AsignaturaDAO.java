@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.tad3.iclass.dao;
 
 import com.mongodb.BasicDBObject;
@@ -92,7 +88,7 @@ public class AsignaturaDAO {
     }
 
     /*
-     Crear un asignatura nuevo
+     Crear un asignatura
      */
     public boolean crearAsignatura(Asignatura a) throws UnknownHostException {
         MongoClient conect = conexion();

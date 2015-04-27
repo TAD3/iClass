@@ -1,4 +1,3 @@
-
 package com.tad3.iclass.entidad;
 
 /**
@@ -6,10 +5,16 @@ package com.tad3.iclass.entidad;
  * @author Laura
  */
 public class Lugar {
+
     private String idLugar;
     private String codigoPostal;
     private String barrio;
     private String ciudad;
+
+    @Override
+    public String toString() {
+        return codigoPostal + " - " + barrio + " - " + ciudad;
+    }
 
     public Lugar(String idLugar, String codigoPostal, String barrio, String ciudad) {
         this.idLugar = idLugar;
@@ -19,7 +24,7 @@ public class Lugar {
     }
 
     public Lugar() {
-        
+
     }
 
     public String getIdLugar() {
@@ -53,6 +58,5 @@ public class Lugar {
     public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
     }
-    
-    
+
 }

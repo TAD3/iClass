@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.tad3.iclass.dao;
 
 import com.mongodb.BasicDBObject;
@@ -84,10 +79,11 @@ public class LugarDAO {
     /*
      Borrar lugar
      */
-    public void borrarLugar(String idLugar) throws UnknownHostException {
+    public boolean borrarLugar(String idLugar) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("idLugar", idLugar));
+        return true;
     }
 
     /*
@@ -110,7 +106,7 @@ public class LugarDAO {
     /*
      Actualizar
      */
-    public void modificarLugar(Lugar l1, Lugar l2) throws UnknownHostException {
+    public boolean modificarLugar(Lugar l1, Lugar l2) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
 
@@ -121,5 +117,14 @@ public class LugarDAO {
         doc2.put("barrio", l2.getBarrio());
         doc2.put("ciudad", l2.getCiudad());
         coleccion.update(query, doc2);
+        return true; 
+    }
+
+    public boolean buscarLugar(String idLugar) throws UnknownHostException {
+        MongoClient conect = conexion();
+        DBCollection coleccion = collection(conect);
+        BasicDBObject query = new BasicDBObject("idLugar", idLugar);
+        DBObject lugar = coleccion.findOne(query);
+        return lugar != null;
     }
 }

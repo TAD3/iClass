@@ -1,7 +1,9 @@
 package com.tad3.iclass.view.admin;
 
 import com.tad3.iclass.dao.AsignaturaDAO;
+import com.tad3.iclass.dao.LugarDAO;
 import com.tad3.iclass.entidad.Asignatura;
+import com.tad3.iclass.entidad.Lugar;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -25,6 +27,7 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalSplitPanel;
 import java.net.UnknownHostException;
@@ -55,7 +58,7 @@ public class AdminView extends CustomComponent implements View {
     TextField id_asig = new TextField("ID: ");
     TextField nombre_asig = new TextField("Nombre: ");
     ComboBox curso_asig = new ComboBox("Curso: ");
-    TextField descripcion_asig = new TextField("Descripción: ");
+    TextArea descripcion_asig = new TextArea("Descripción: ");
 
     Button allAsignatura = new Button("Todas las asignaturas");
     Button nuevaAsignatura = new Button("Nueva asignatura");
@@ -70,6 +73,31 @@ public class AdminView extends CustomComponent implements View {
     HorizontalLayout hlasignatura = new HorizontalLayout(buscadorAsignaturas, allAsignatura, nuevaAsignatura);
     VerticalSplitPanel vspAsignatura = new VerticalSplitPanel(hlasignatura, tAsignaturas);
     HorizontalSplitPanel hspAsignatura = new HorizontalSplitPanel(vspAsignatura, asignaturaNueva);
+
+    //Lugar
+    LugarDAO lugar = new LugarDAO();
+    BeanItemContainer<Lugar> bLugar = new BeanItemContainer(Lugar.class);
+    Table tLugares = new Table("Lugares", bLugar);
+    ComboBox buscadorLugares = new ComboBox("Lugar: ");
+
+    TextField id_lugar = new TextField("ID: ");
+    TextField codigo_postal_lugar = new TextField("Código postal: ");
+    TextField barrio_lugar = new TextField("Barrio: ");
+    TextField ciudad_lugar = new TextField("Ciudad: ");
+
+    Button allLugar = new Button("Todas los lugares");
+    Button nuevoLugar = new Button("Nuevo lugar");
+    Button addLugar = new Button("Añadir");
+    Button deleteLugar = new Button("Borrar");
+
+    Lugar lugarTabla = new Lugar();
+    List<Lugar> listaLugares = new ArrayList<>();
+
+    HorizontalLayout botonesLugar = new HorizontalLayout(addLugar, deleteLugar);
+    FormLayout lugarNuevo = new FormLayout(id_lugar, codigo_postal_lugar, barrio_lugar, ciudad_lugar, botonesLugar);
+    HorizontalLayout hlLugar = new HorizontalLayout(buscadorLugares, allLugar, nuevoLugar);
+    VerticalSplitPanel vspLugar = new VerticalSplitPanel(hlLugar, tLugares);
+    HorizontalSplitPanel hspLugar = new HorizontalSplitPanel(vspLugar, lugarNuevo);
 
     private String getLogoutPath() {
         return getUI().getPage().getLocation().getPath();
@@ -88,8 +116,13 @@ public class AdminView extends CustomComponent implements View {
         MenuBar.Command mycommand = new MenuBar.Command() {
             @Override
             public void menuSelected(MenuItem selectedItem) {
-                if (selectedItem.getText().equals("Asignaturas")) {
-                    panel.setContent(hspAsignatura);
+                switch (selectedItem.getText()) {
+                    case "Asignaturas":
+                        panel.setContent(hspAsignatura);
+                        break;
+                    case "Lugares":
+                        panel.setContent(hspLugar);
+                        break;
                 }
             }
         };
@@ -118,7 +151,7 @@ public class AdminView extends CustomComponent implements View {
         tAsignaturas.setSelectable(true);
         tAsignaturas.setImmediate(true);
 
-        llenarTabla();
+        llenarTablaAsig();
 
         Collection<String> cursos = new ArrayList<>();
         cursos.add("4º Primaria");
@@ -206,12 +239,12 @@ public class AdminView extends CustomComponent implements View {
                 descripcion_asig.setValue(asigTabla.getDescripcion());
             }
         });
-        
+
         allAsignatura.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                llenarTabla();
+                llenarTablaAsig();
             }
         });
 
@@ -241,7 +274,11 @@ public class AdminView extends CustomComponent implements View {
                     encontrado = asignatura.buscarAsignatura(a.getIdAsignatura());
                     if (encontrado == true) {
                         if (asignatura.modificarAsignatura(asigTabla, a)) {
-                            llenarTabla();
+                            llenarTablaAsig();
+                            for (Asignatura asig : listaAsignaturas) {
+                                buscadorAsignaturas.addItem(asig.getIdAsignatura());
+                                buscadorAsignaturas.setItemCaption(asig.getIdAsignatura(), asig.toString());
+                            }
                             Notification.show("Asignatura modificada", "Se ha actualizado la "
                                     + "asignatura en la base de datos", Notification.Type.TRAY_NOTIFICATION);
                         } else {
@@ -250,7 +287,11 @@ public class AdminView extends CustomComponent implements View {
                         }
                     } else {
                         if (asignatura.crearAsignatura(a)) {
-                            llenarTabla();
+                            llenarTablaAsig();
+                            for (Asignatura asig : listaAsignaturas) {
+                                buscadorAsignaturas.addItem(asig.getIdAsignatura());
+                                buscadorAsignaturas.setItemCaption(asig.getIdAsignatura(), asig.toString());
+                            }
                             Notification.show("Asignatura creada", "Se ha añadido una nueva "
                                     + "asignatura a la base de datos", Notification.Type.TRAY_NOTIFICATION);
                         } else {
@@ -275,10 +316,14 @@ public class AdminView extends CustomComponent implements View {
                     encontrado = asignatura.buscarAsignatura(id);
                     if (encontrado == true) {
                         if (asignatura.borrarAsignatura(id)) {
-                            llenarTabla();
+                            llenarTablaAsig();
                             id_asig.setValue("");
                             nombre_asig.setValue("");
                             curso_asig.select(null);
+                            for (Asignatura asig : listaAsignaturas) {
+                                buscadorAsignaturas.addItem(asig.getIdAsignatura());
+                                buscadorAsignaturas.setItemCaption(asig.getIdAsignatura(), asig.toString());
+                            }
                             descripcion_asig.setValue("");
                             Notification.show("Asignatura eliminada", "Se ha borrado la "
                                     + "asignatura de la base de datos", Notification.Type.TRAY_NOTIFICATION);
@@ -296,6 +341,193 @@ public class AdminView extends CustomComponent implements View {
             }
         });
 
+        //Lugar
+        String[] columnHeadersLugar = {"Barrio", "Ciudad", "Codigo Postal", "ID"};
+
+        tLugares.setColumnHeaders(columnHeadersLugar);
+        tLugares.setSizeFull();
+        tLugares.setPageLength(tLugares.size());
+        tLugares.setSelectable(true);
+        tLugares.setImmediate(true);
+
+        llenarTablaLugar();
+
+        buscadorLugares.setInputPrompt("Ningún lugar seleccionado");
+
+        buscadorLugares.setWidth(100.0f, Unit.PERCENTAGE);
+        buscadorLugares.setSizeFull();
+
+        buscadorLugares.setFilteringMode(FilteringMode.CONTAINS);
+        buscadorLugares.setImmediate(true);
+
+        buscadorLugares.setNullSelectionAllowed(false);
+
+        for (Lugar lug : listaLugares) {
+            buscadorLugares.addItem(lug.getIdLugar());
+            buscadorLugares.setItemCaption(lug.getIdLugar(), lug.toString());
+        }
+
+        buscadorLugares.addValueChangeListener(new ComboBox.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                String select = (String) event.getProperty().getValue();
+                bLugar.removeAllItems();
+
+                try {
+                    bLugar.addItem(lugar.lugar(select));
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        hlLugar.setMargin(true);
+        hlLugar.setSizeFull();
+        hlLugar.setComponentAlignment(buscadorLugares, Alignment.MIDDLE_LEFT);
+        hlLugar.setComponentAlignment(allLugar, Alignment.MIDDLE_RIGHT);
+        hlLugar.setComponentAlignment(nuevoLugar, Alignment.MIDDLE_RIGHT);
+
+        id_lugar.setRequired(true);
+        id_lugar.setInputPrompt("CP + 3BARRIO + 3CIUDAD");
+        codigo_postal_lugar.setRequired(true);
+        codigo_postal_lugar.setInputPrompt("Código postal");
+        barrio_lugar.setRequired(true);
+        barrio_lugar.setInputPrompt("Barrio");
+        ciudad_lugar.setRequired(true);
+        ciudad_lugar.setInputPrompt("Ciudad");
+
+        lugarNuevo.setComponentAlignment(id_lugar, Alignment.MIDDLE_CENTER);
+        lugarNuevo.setComponentAlignment(codigo_postal_lugar, Alignment.MIDDLE_CENTER);
+        lugarNuevo.setComponentAlignment(barrio_lugar, Alignment.MIDDLE_CENTER);
+        lugarNuevo.setComponentAlignment(ciudad_lugar, Alignment.MIDDLE_CENTER);
+        botonesLugar.setComponentAlignment(addLugar, Alignment.MIDDLE_LEFT);
+        botonesLugar.setComponentAlignment(deleteLugar, Alignment.MIDDLE_RIGHT);
+        lugarNuevo.setCaption("Introduzca los datos del nuevo lugar");
+        lugarNuevo.setMargin(true);
+        lugarNuevo.setSizeFull();
+
+        vspLugar.setSplitPosition(17.5f, Unit.PERCENTAGE);
+        vspLugar.setLocked(true);
+        hspLugar.setSplitPosition(75.0f, Unit.PERCENTAGE);
+        hspLugar.setLocked(true);
+
+        //Datos Lugar
+        tLugares.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+
+            @Override
+
+            public void itemClick(ItemClickEvent event) {
+                BeanItem<Lugar> bil = bLugar.getItem(event.getItemId());
+                lugarTabla = bil.getBean();
+                id_lugar.setValue(lugarTabla.getIdLugar());
+                codigo_postal_lugar.setValue(lugarTabla.getCodigoPostal());
+                barrio_lugar.setValue(lugarTabla.getBarrio());
+                ciudad_lugar.setValue(lugarTabla.getCiudad());
+            }
+        });
+
+        allLugar.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                llenarTablaLugar();
+            }
+        });
+
+        nuevoLugar.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                id_lugar.setValue("");
+                codigo_postal_lugar.setValue("");
+                barrio_lugar.setValue("");
+                ciudad_lugar.setValue("");
+            }
+        });
+
+        addLugar.addClickListener(new Button.ClickListener() {
+            LugarDAO lugar = new LugarDAO();
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                Lugar l = new Lugar();
+                boolean encontrado = false;
+                l.setIdLugar(id_lugar.getValue());
+                l.setCodigoPostal(codigo_postal_lugar.getValue());
+                l.setBarrio(barrio_lugar.getValue());
+                l.setCiudad(ciudad_lugar.getValue());
+                try {
+                    encontrado = lugar.buscarLugar(l.getIdLugar());
+                    if (encontrado == true) {
+                        if (lugar.modificarLugar(lugarTabla, l)) {
+                            llenarTablaLugar();
+                            for (Lugar lug : listaLugares) {
+                                buscadorLugares.addItem(lug.getIdLugar());
+                                buscadorLugares.setItemCaption(lug.getIdLugar(), lug.toString());
+                            }
+                            Notification.show("Lugar modificado", "Se ha actualizado el "
+                                    + "lugar en la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido actualizar el "
+                                    + "lugar en la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    } else {
+                        if (lugar.crearLugar(l)) {
+                            llenarTablaLugar();
+                            for (Lugar lug : listaLugares) {
+                                buscadorLugares.addItem(lug.getIdLugar());
+                                buscadorLugares.setItemCaption(lug.getIdLugar(), lug.toString());
+                            }
+                            Notification.show("Lugar creado", "Se ha añadido un nuevo "
+                                    + "lugar a la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido añadir un nuevo "
+                                    + "lugar a la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        deleteLugar.addClickListener(new Button.ClickListener() {
+            LugarDAO lugar = new LugarDAO();
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                Lugar l = new Lugar();
+                boolean encontrado = false;
+                String id = id_lugar.getValue();
+                try {
+                    encontrado = lugar.buscarLugar(id);
+                    if (encontrado == true) {
+                        if (lugar.borrarLugar(id)) {
+                            llenarTablaLugar();
+                            id_lugar.setValue("");
+                            codigo_postal_lugar.setValue("");
+                            barrio_lugar.setValue("");
+                            ciudad_lugar.setValue("");
+                            for (Lugar lug : listaLugares) {
+                                buscadorLugares.addItem(lug.getIdLugar());
+                                buscadorLugares.setItemCaption(lug.getIdLugar(), lug.toString());
+                            }
+                            Notification.show("Lugar eliminado", "Se ha borrado el "
+                                    + "lugar de la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido borrar el "
+                                    + "lugar de la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    } else {
+                        Notification.show("Seleccione un lugar", "Debe seleccionar un "
+                                + "lugar para poder eliminarlo de la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         panel.setWidth(String.valueOf(Page.getCurrent().getBrowserWindowWidth()) + "px");
         panel.setHeight(String.valueOf(Page.getCurrent().getBrowserWindowHeight() * 0.9) + "px");
         panel.setContent(new Label("Este es el panel de administración de la "
@@ -305,7 +537,7 @@ public class AdminView extends CustomComponent implements View {
         setCompositionRoot(new CssLayout(layout, panel));
     }
 
-    public final void llenarTabla() {
+    public final void llenarTablaAsig() {
         bAsignatura.removeAllItems();
 
         try {
@@ -315,6 +547,18 @@ public class AdminView extends CustomComponent implements View {
         }
 
         bAsignatura.addAll(listaAsignaturas);
+    }
+
+    public final void llenarTablaLugar() {
+        bLugar.removeAllItems();
+
+        try {
+            listaLugares = lugar.listaLugares();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        bLugar.addAll(listaLugares);
     }
 
     @Override
