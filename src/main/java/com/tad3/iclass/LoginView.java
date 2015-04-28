@@ -2,7 +2,6 @@ package com.tad3.iclass;
 
 import com.tad3.iclass.dao.AlumnoDAO;
 import com.tad3.iclass.dao.ProfesorDAO;
-import com.tad3.iclass.entidad.Alumno;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.validator.AbstractValidator;
@@ -62,8 +61,7 @@ public class LoginView extends CustomComponent implements View {
         user = new TextField("Usuario: ");
 
         user.setWidth("300px");
-        user.setRequired(
-                true);
+        user.setRequired(true);
         user.setInputPrompt("Tu correo electrónico (miguel@email.com)");
         user.addValidator(new EmailValidator("El nombre de usuario debe ser un correo electrónico"));
         user.setInvalidAllowed(false);
@@ -105,26 +103,26 @@ public class LoginView extends CustomComponent implements View {
                 boolean isProfesor = false;
                 boolean isAdmin = false;
                 AlumnoDAO a = new AlumnoDAO();
-                ProfesorDAO p = new ProfesorDAO();                
-                
+                ProfesorDAO p = new ProfesorDAO();
+
                 //admin
                 if (username.equals("admin@iclass.com") && pass.equals("passw0rd")) {
                     isValid = true;
-                } else if (username.equals("profe@iclass.com") && pass.equals("passw0rd")) { //profesor
-                    isValid = true;
-                } else try {
-                    if (a.existe(username, pass)) { //alumno
-                        isValid = true;
-                        isAlumno = true;
+                    isAdmin = true;
+//                } else if (username.equals("profe@iclass.com") && pass.equals("passw0rd")) { //profesor
+//                    isValid = true;
+                } else {
+                    try {
+                        if (a.existe(username, pass)) { //alumno
+                            isValid = true;
+                            isAlumno = true;
+                        } else if (p.existe(username, pass)) { //profesor
+                            isValid = true;
+                            isProfesor = true;
+                        }
+                    } catch (UnknownHostException ex) {
+                        Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    else {
-                        if (p.existe(username, pass)) { //profesor
-                        isValid = true;
-                        isProfesor = true;
-                    }
-                    }
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
                 if (isValid) {
@@ -132,13 +130,13 @@ public class LoginView extends CustomComponent implements View {
                     // Store the current user in the service session
                     getSession().setAttribute("user", username);
 
-                    if (username.equals("admin@iclass.com")) {
+                    if (isAdmin) {
                         // Navigate to admin view
                         Notification.show("Usuario " + username + " logueado");
                         getUI().getNavigator().navigateTo(LoginUI.ADMINVIEW);
                     }
 
-                    if (username.equals("profe@iclass.com")) {
+                    if (isProfesor) {
                         // Navigate to profe view
                         Notification.show("Usuario " + username + " logueado");
                         getUI().getNavigator().navigateTo(LoginUI.PROFESORVIEW);
@@ -153,7 +151,7 @@ public class LoginView extends CustomComponent implements View {
                 } else {
 
                     // Wrong password clear the password field and refocuses it
-                    user.setValue(null);
+                    user.setValue("");
                     password.setValue(null);
                     user.focus();
 

@@ -2,20 +2,27 @@ package com.tad3.iclass.view;
 
 import com.tad3.iclass.dao.ProfesorDAO;
 import com.tad3.iclass.entidad.Profesor;
+import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Calendar;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
@@ -33,14 +40,41 @@ public class ProfesorView extends CustomComponent implements View {
     public static final String NAME = "profesor";
     ProfesorDAO profesor = new ProfesorDAO();
 
-    VerticalLayout panelPrincipal = new VerticalLayout();
-    HorizontalSplitPanel panelSubPrincipal = new HorizontalSplitPanel();
-    VerticalLayout panelIzquierdo = new VerticalLayout();
+    //Profesor
+    TextField id_profesor = new TextField("ID: ");
+    ComboBox id_lugar_profesor = new ComboBox("ID lugar: ");
+    TextField nombre_profesor = new TextField("Nombre: ");
+    TextField apellidos_profesor = new TextField("Apellidos: ");
+    TextField edad_profesor = new TextField("Edad: ");
+    TextField email_profesor = new TextField("Email: ");
+    TextField movil_profesor = new TextField("Móvil: ");
+    TextField password_profesor = new TextField("Contraseña: ");
+    TextField descripcion_profesor = new TextField("Descripción: ");
+    TextField horario_profesor = new TextField("Horario: ");
+    TextField evaluacion_profesor = new TextField("Evaluación: ");
+    TextField votos_profesor = new TextField("Nº votos: ");
+    TextField foto_profesor = new TextField("Foto: ");
+
+    Button modifyme = new Button("Actualizar");
+    Button saveme = new Button("Guardar");
+    Button deleteme = new Button("Borrar cuenta");
+
+    HorizontalLayout botonesProfesor = new HorizontalLayout(saveme, deleteme);
+    FormLayout datosProfesor = new FormLayout(modifyme, id_profesor, id_lugar_profesor,
+            nombre_profesor, apellidos_profesor, edad_profesor, email_profesor, movil_profesor,
+            descripcion_profesor, horario_profesor, evaluacion_profesor, votos_profesor,
+            password_profesor, foto_profesor, botonesProfesor);
+
     VerticalLayout panelDerecho = new VerticalLayout();
     Layout layaoutArriba = new HorizontalLayout();
     MenuBar menuBar = new MenuBar();
     TextField curso = new TextField();
     TextField asignatura = new TextField();
+    VerticalLayout panelPrincipal = new VerticalLayout();
+    HorizontalSplitPanel panelSubPrincipal = new HorizontalSplitPanel(datosProfesor, panelDerecho);
+    Panel panel = new Panel(panelSubPrincipal);
+
+    Profesor me = new Profesor();
 
     Label text = new Label();
 
@@ -61,138 +95,125 @@ public class ProfesorView extends CustomComponent implements View {
         /*
          Menu Bar
          */
+        layaoutArriba.setSizeFull();
         menuBar.setSizeFull();
+
+        misDatos();
+
+        panelSubPrincipal.setSplitPosition(23.0f, Unit.PERCENTAGE);
+        panelSubPrincipal.setLocked(true);
+
+        datosProfesor.setComponentAlignment(modifyme, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(id_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(id_lugar_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(nombre_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(apellidos_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(edad_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(email_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(movil_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(password_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(descripcion_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(horario_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(evaluacion_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(votos_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(foto_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(botonesProfesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setMargin(true);
+
+        id_profesor.setRequired(true);
+        id_lugar_profesor.setRequired(true);
+        nombre_profesor.setRequired(true);
+        apellidos_profesor.setRequired(true);
+        edad_profesor.setRequired(true);
+        email_profesor.setRequired(true);
+        movil_profesor.setRequired(true);
+        password_profesor.setRequired(true);
+        descripcion_profesor.setRequired(false);
+        horario_profesor.setRequired(true);
+
+        readOnly();
+
+        modifyme.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                id_profesor.setReadOnly(true);
+                id_lugar_profesor.setReadOnly(false);
+                nombre_profesor.setReadOnly(false);
+                apellidos_profesor.setReadOnly(false);
+                edad_profesor.setReadOnly(false);
+                email_profesor.setReadOnly(true);
+                movil_profesor.setReadOnly(false);
+                password_profesor.setReadOnly(false);
+                descripcion_profesor.setReadOnly(false);
+                horario_profesor.setReadOnly(false);
+                evaluacion_profesor.setReadOnly(true);
+                votos_profesor.setReadOnly(true);
+                foto_profesor.setReadOnly(false);
+            }
+        });
+
+        saveme.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                Profesor p = new Profesor();
+                p.setIdProfesor(id_profesor.getValue());
+                p.setIdLugar((String) id_lugar_profesor.getValue());
+                p.setNombre(nombre_profesor.getValue());
+                p.setApellidos(apellidos_profesor.getValue());
+                p.setEdad(edad_profesor.getValue());
+                p.setEmail(email_profesor.getValue());
+                p.setMovil(movil_profesor.getValue());
+                p.setPassword(password_profesor.getValue());
+                p.setDescripcion(descripcion_profesor.getValue());
+                p.setHorario(horario_profesor.getValue());
+                p.setEvaluacion(evaluacion_profesor.getValue());
+                p.setNumVotos(votos_profesor.getValue());
+                p.setFoto(foto_profesor.getValue());
+                boolean encontrado = false;
+                try {
+                    encontrado = profesor.buscarProfesor(me.getEmail());
+                    if (encontrado == true) {
+                        profesor.modificar(me, p);
+                        me = p;
+                        readOnly();
+                        Notification.show("Profesor modificado", "Se ha actualizado el "
+                                + "profesor en la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        deleteme.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                Profesor p = new Profesor();
+                boolean encontrado = false;
+                String email = email_profesor.getValue();
+                try {
+                    encontrado = profesor.buscarProfesor(email);
+                    if (encontrado == true) {
+                        profesor.borrar(email);
+                        getUI().getSession().close();
+                        getUI().getPage().setLocation(getLogoutPath());
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
 
         MenuBar.Command profesorCommand = new MenuBar.Command() {
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
-                panelIzquierdo.removeAllComponents();
-
-                final Table table = new Table();
-                table.setPageLength(table.size());
-                table.setSelectable(true);
-                table.setImmediate(true);
-                table.addContainerProperty("idProfesor", String.class, null);
-                table.addContainerProperty("idLugar", String.class, null);
-                table.addContainerProperty("nombre", String.class, null);
-                table.addContainerProperty("apellidos", String.class, null);
-                table.addContainerProperty("edad", String.class, null);
-                table.addContainerProperty("curso", String.class, null);
-                table.addContainerProperty("email", String.class, null);
-                table.addContainerProperty("password", String.class, null);
-                table.addContainerProperty("foto", String.class, null);
-
-                try {
-                    Profesor p = profesor.profesor((String) getSession().getAttribute("user"));
-                    table.addItem(new Object[]{p.getIdProfesor(), p.getIdLugar(), p.getNombre(), p.getApellidos(),
-                        p.getEdad(), p.getEmail(), p.getMovil(), p.getPassword(), p.getHorario(),
-                        p.getDescripcion(), p.getEvaluacion(), p.getNumVotos(), p.getFoto()}, 1);
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
-                }
-
-                table.addItemClickListener(new ItemClickEvent.ItemClickListener() {
-
-                    @Override
-                    public void itemClick(ItemClickEvent event) {
-                        panelDerecho.removeAllComponents();
-                        final TextField idProfesor = new TextField("IdProfesor");
-                        final TextField idLugar = new TextField("IdLugar");
-                        final TextField nombre = new TextField("Nombre");
-                        final TextField apellidos = new TextField("Apellidos");
-                        final TextField edad = new TextField("Edad");
-                        final TextField email = new TextField();
-                        final TextField movil = new TextField();
-                        final PasswordField pass = new PasswordField();
-                        final PasswordField pass2 = new PasswordField();
-                        final Calendar horario = new Calendar();
-                        final TextField descripcion = new TextField();
-                        final TextField foto = new TextField();
-                        try {
-
-                            Profesor p = profesor.profesor((String) getSession().getAttribute("user"));
-                            idProfesor.setValue(p.getIdProfesor());
-                            idLugar.setValue(p.getIdLugar());
-                            nombre.setValue(p.getNombre());
-                            apellidos.setValue(p.getApellidos());
-                            edad.setValue(p.getEdad());
-                            email.setValue(p.getEmail());
-                            pass.setValue(p.getPassword());
-                            pass2.setValue(p.getPassword());
-                            descripcion.setValue(p.getDescripcion());
-                            foto.setValue(p.getFoto());
-
-                        } catch (UnknownHostException ex) {
-                            Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-
-                        Button modificar = new Button("Guardar", new Button.ClickListener() {
-                            @Override
-                            public void buttonClick(ClickEvent event) {
-                                Profesor p2 = new Profesor();
-                                p2.setIdProfesor(idProfesor.getValue());
-                                p2.setIdLugar(idLugar.getValue());
-                                p2.setNombre(nombre.getValue());
-                                p2.setApellidos(apellidos.getValue());
-                                p2.setEdad(edad.getValue());
-                                p2.setMovil(movil.getValue());
-                                p2.setPassword(pass.getValue());
-                                p2.setHorario(horario.toString());
-                                p2.setEvaluacion("0.0");
-                                p2.setNumVotos("0");
-                                p2.setFoto(foto.getValue());
-                                if (pass.getValue().equals(pass2.getValue())) {
-                                    p2.setPassword(pass.getValue());
-                                    try {
-                                        Profesor a1 = profesor.profesor((String) getSession().getAttribute("user"));
-                                        profesor.modificar(a1, p2);
-                                        panelDerecho.removeAllComponents();
-                                        panelIzquierdo.removeAllComponents();
-                                        panelIzquierdo.addComponent(new Label("Actualizado"));
-                                    } catch (UnknownHostException ex) {
-                                        Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
-                                } else {
-                                    pass2.setValue("no son iguales");
-                                }
-
-                            }
-                        });
-
-                        Button borrar = new Button("Borrar", new Button.ClickListener() {
-
-                            @Override
-                            public void buttonClick(ClickEvent event) {
-                                try {
-                                    Profesor a3 = profesor.profesor((String) getSession().getAttribute("user"));
-                                    profesor.borrar(a3.getEmail());
-                                    getUI().getSession().close();
-                                    getUI().getPage().setLocation(getLogoutPath());
-                                } catch (UnknownHostException ex) {
-                                    Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-                        });
-                        panelDerecho.addComponent(idProfesor);
-                        panelDerecho.addComponent(idLugar);
-                        panelDerecho.addComponent(nombre);
-                        panelDerecho.addComponent(apellidos);
-                        panelDerecho.addComponent(edad);
-                        panelDerecho.addComponent(email);
-                        panelDerecho.addComponent(pass);
-                        panelDerecho.addComponent(pass2);
-                        panelDerecho.addComponent(horario);
-                        panelDerecho.addComponent(descripcion);
-                        panelDerecho.addComponent(foto);
-                        panelDerecho.addComponent(modificar);
-                        panelDerecho.addComponent(borrar);
-                    }
-                });
-
-                panelIzquierdo.addComponent(table);
 
             }
         };
+
         MenuBar.Command logoutCommand = new MenuBar.Command() {
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
@@ -200,28 +221,56 @@ public class ProfesorView extends CustomComponent implements View {
                 getUI().getPage().setLocation(getLogoutPath());
             }
         };
-
+        menuBar.addItem("Profesor", profesorCommand);
         menuBar.addItem("Log out", logoutCommand);
 
         layaoutArriba.addComponent(menuBar);
-        panelPrincipal.addComponent(layaoutArriba);
-        panelPrincipal.addComponent(panelSubPrincipal);
 
-        panelSubPrincipal.setFirstComponent(panelIzquierdo);
-        panelSubPrincipal.setSecondComponent(panelDerecho);
-        //panelPrincipal.setWidth(String.valueOf(Page.getCurrent().getBrowserWindowWidth()) + "px");
-        //panelPrincipal.setHeight(String.valueOf(Page.getCurrent().getBrowserWindowHeight() * 0.9) + "px");
-        panelSubPrincipal.setHeight(String.valueOf(Page.getCurrent().getBrowserWindowHeight() * 0.9) + "px");
+        panel.setWidth(String.valueOf(Page.getCurrent().getBrowserWindowWidth()) + "px");
+        panel.setHeight(String.valueOf(Page.getCurrent().getBrowserWindowHeight() * 0.9) + "px");
+        setCompositionRoot(new CssLayout(layaoutArriba, panel));
+    }
 
-        setCompositionRoot(new CssLayout(panelPrincipal));
+    public final void readOnly() {
+        id_profesor.setReadOnly(true);
+        id_lugar_profesor.setReadOnly(true);
+        nombre_profesor.setReadOnly(true);
+        apellidos_profesor.setReadOnly(true);
+        edad_profesor.setReadOnly(true);
+        email_profesor.setReadOnly(true);
+        movil_profesor.setReadOnly(true);
+        password_profesor.setReadOnly(true);
+        descripcion_profesor.setReadOnly(true);
+        horario_profesor.setReadOnly(true);
+        evaluacion_profesor.setReadOnly(true);
+        votos_profesor.setReadOnly(true);
+        foto_profesor.setReadOnly(true);
+    }
+
+    public void misDatos() {
+        try {
+            String username = "profesor@gmail.com";//String.valueOf(getSession().getAttribute("user"));
+            me = profesor.profesor(username); 
+            id_profesor.setValue(me.getIdProfesor());
+            id_lugar_profesor.setValue(me.getIdLugar());
+            nombre_profesor.setValue(me.getNombre());
+            apellidos_profesor.setValue(me.getApellidos());
+            edad_profesor.setValue(me.getEdad());
+            email_profesor.setValue(me.getEmail());
+            movil_profesor.setValue(me.getMovil());
+            password_profesor.setValue(me.getPassword());
+            descripcion_profesor.setValue(me.getDescripcion());
+            horario_profesor.setValue(me.getHorario());
+            evaluacion_profesor.setValue(me.getEvaluacion());
+            votos_profesor.setValue(me.getNumVotos());
+            foto_profesor.setValue(me.getFoto());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
     public void enter(ViewChangeEvent event) {
-        // Get the user name from the session
         String username = String.valueOf(getSession().getAttribute("user"));
-
-        // And show the username
-        text.setValue("Hello profesor " + username);
     }
 }

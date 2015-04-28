@@ -172,4 +172,13 @@ public class ProfesorDAO {
         doc2.put("foto", p2.getFoto());
         coleccion.update(query, doc2);
     }
+    
+     public boolean buscarProfesor(String email) throws UnknownHostException {
+        MongoClient conect = conexion();
+        DBCollection coleccion = collection(conect);
+        BasicDBObject query = new BasicDBObject("email", email);
+        DBObject profe = coleccion.findOne(query);
+        System.out.println(profe);
+        return profe != null;
+    }
 }
