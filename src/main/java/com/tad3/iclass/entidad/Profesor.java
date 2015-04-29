@@ -24,6 +24,11 @@ public class Profesor {
     private String evaluacion;
     private String numVotos;
     private String foto;
+
+    @Override
+    public String toString() {
+        return nombre + " " + apellidos + " - " + email;
+    }
     
     public Profesor(){}   
 

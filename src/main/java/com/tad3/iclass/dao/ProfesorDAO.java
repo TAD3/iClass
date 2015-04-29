@@ -115,10 +115,12 @@ public class ProfesorDAO {
     /*
      Borrar alumno
      */
-    public void borrar(String correo) throws UnknownHostException {
+    public boolean borrar(String correo) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("email", correo));
+        
+        return true;
     }
 
     /*
@@ -127,22 +129,22 @@ public class ProfesorDAO {
     public boolean crear(Profesor p) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
-        BasicDBObject professorObj = new BasicDBObject();
+        BasicDBObject objeto = new BasicDBObject();
 
-        p.setIdProfesor((professorObj.getString("idProfesor")));
-        p.setIdLugar((professorObj.getString("idLugar")));
-        p.setNombre((professorObj.getString("nombre")));
-        p.setApellidos((professorObj.getString("apellidos")));
-        p.setEdad((professorObj.getString("edad")));
-        p.setEmail((professorObj.getString("email")));
-        p.setMovil((professorObj.getString("movil")));
-        p.setPassword((professorObj.getString("password")));
-        p.setHorario((professorObj.getString("horario")));
-        p.setDescripcion((professorObj.getString("descripcion")));
-        p.setEvaluacion((professorObj.getString("evaluacion")));
-        p.setNumVotos((professorObj.getString("numVotos")));
-        p.setFoto((professorObj.getString("foto")));
-        coleccion.insert(professorObj);
+        objeto.put("idProfesor", p.getIdProfesor());
+        objeto.put("idLugar", p.getIdLugar());
+        objeto.put("nombre", p.getNombre());
+        objeto.put("apellidos", p.getApellidos());
+        objeto.put("edad", p.getEdad());
+        objeto.put("movil", p.getMovil());
+        objeto.put("email", p.getEmail());
+        objeto.put("horario", p.getHorario());
+        objeto.put("descripcion", p.getDescripcion());
+        objeto.put("evaluacion", p.getEvaluacion());
+        objeto.put("numVotos", p.getNumVotos());
+        objeto.put("password", p.getPassword());
+        objeto.put("foto", p.getFoto());
+        coleccion.insert(objeto);
 
         return true;
     }
@@ -150,7 +152,7 @@ public class ProfesorDAO {
     /*
      Actualizar
      */
-    public void modificar(Profesor p1, Profesor p2) throws UnknownHostException {
+    public boolean modificar(Profesor p1, Profesor p2) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
 
@@ -171,6 +173,8 @@ public class ProfesorDAO {
         doc2.put("numVotos", p2.getNumVotos());
         doc2.put("foto", p2.getFoto());
         coleccion.update(query, doc2);
+        
+        return true;
     }
     
      public boolean buscarProfesor(String email) throws UnknownHostException {

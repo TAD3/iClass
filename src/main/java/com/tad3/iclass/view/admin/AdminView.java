@@ -3,9 +3,11 @@ package com.tad3.iclass.view.admin;
 import com.tad3.iclass.dao.AlumnoDAO;
 import com.tad3.iclass.dao.AsignaturaDAO;
 import com.tad3.iclass.dao.LugarDAO;
+import com.tad3.iclass.dao.ProfesorDAO;
 import com.tad3.iclass.entidad.Alumno;
 import com.tad3.iclass.entidad.Asignatura;
 import com.tad3.iclass.entidad.Lugar;
+import com.tad3.iclass.entidad.Profesor;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
@@ -133,6 +135,43 @@ public class AdminView extends CustomComponent implements View {
     VerticalSplitPanel vspAlumno = new VerticalSplitPanel(hlAlumno, tAlumnos);
     HorizontalSplitPanel hspAlumno = new HorizontalSplitPanel(vspAlumno, alumnoNuevo);
 
+    //Profesor
+    ProfesorDAO profesor = new ProfesorDAO();
+    BeanItemContainer<Profesor> bProfesor = new BeanItemContainer(Profesor.class);
+    Table tProfesores = new Table("Profesores", bProfesor);
+    ComboBox buscadorProfesores = new ComboBox("Profesor: ");
+
+    TextField id_profesor = new TextField("ID: ");
+    ComboBox id_lugar_profesor = new ComboBox("ID lugar: ");
+    TextField nombre_profesor = new TextField("Nombre: ");
+    TextField apellidos_profesor = new TextField("Apellidos: ");
+    TextField edad_profesor = new TextField("Edad: ");
+    TextField email_profesor = new TextField("Email: ");
+    TextField movil_profesor = new TextField("Móvil: ");
+    TextField password_profesor = new TextField("Contraseña: ");
+    TextField descripcion_profesor = new TextField("Descripción: ");
+    TextField horario_profesor = new TextField("Horario: ");
+    TextField evaluacion_profesor = new TextField("Evaluación: ");
+    TextField votos_profesor = new TextField("Nº votos: ");
+    TextField foto_profesor = new TextField("Foto: ");
+
+    Button allProfesor = new Button("Todas los profesores");
+    Button nuevoProfesor = new Button("Nuevo profesor");
+    Button addProfesor = new Button("Añadir");
+    Button deleteProfesor = new Button("Borrar");
+
+    Profesor profesorTabla = new Profesor();
+    List<Profesor> listaProfesores = new ArrayList<>();
+
+    HorizontalLayout botonesProfesor = new HorizontalLayout(addProfesor, deleteProfesor);
+    FormLayout profesorNuevo = new FormLayout(id_profesor, id_lugar_profesor,
+            nombre_profesor, apellidos_profesor, edad_profesor, movil_profesor, email_profesor,
+            password_profesor, descripcion_profesor, horario_profesor, evaluacion_profesor,
+            votos_profesor, foto_profesor, botonesProfesor);
+    HorizontalLayout hlProfesor = new HorizontalLayout(buscadorProfesores, allProfesor, nuevoProfesor);
+    VerticalSplitPanel vspProfesor = new VerticalSplitPanel(hlProfesor, tProfesores);
+    HorizontalSplitPanel hspProfesor = new HorizontalSplitPanel(vspProfesor, profesorNuevo);
+
     private String getLogoutPath() {
         return getUI().getPage().getLocation().getPath();
     }
@@ -159,6 +198,9 @@ public class AdminView extends CustomComponent implements View {
                         break;
                     case "Alumnos":
                         panel.setContent(hspAlumno);
+                        break;
+                    case "Profesores":
+                        panel.setContent(hspProfesor);
                         break;
                 }
             }
@@ -732,7 +774,7 @@ public class AdminView extends CustomComponent implements View {
                 a.setPassword(password_alumno.getValue());
                 a.setFoto(foto_alumno.getValue());
                 try {
-                    encontrado = alumno.buscar(a.getIdAlumno());
+                    encontrado = alumno.buscar(a.getEmail());
                     if (encontrado == true) {
                         if (alumno.modificar(alumnoTabla, a)) {
                             llenarTablaAlumno();
@@ -807,6 +849,277 @@ public class AdminView extends CustomComponent implements View {
             }
         });
 
+        //Profesor
+        String[] columnHeadersProfesor = {"Apellidos", "Descripcion", "Edad", "Email",
+            "Evaluación", "Foto", "Horario", "ID lugar", "ID", "Móvil", "Nombre", "Nº votos", "Contraseña",};
+
+        tProfesores.setColumnHeaders(columnHeadersProfesor);
+        tProfesores.setSizeFull();
+        tProfesores.setPageLength(tProfesores.size());
+        tProfesores.setSelectable(true);
+        tProfesores.setImmediate(true);
+
+        llenarTablaProfesor();
+
+        for (Lugar lug : listaLugares) {
+            id_lugar_profesor.addItem(lug.getIdLugar());
+            id_lugar_profesor.setItemCaption(lug.getIdLugar(), lug.toString());
+        }
+        id_lugar_profesor.setFilteringMode(FilteringMode.CONTAINS);
+        id_lugar_profesor.setImmediate(true);
+        id_lugar_profesor.setNullSelectionAllowed(true);
+        id_lugar_profesor.setWidth(75.0f, Unit.PERCENTAGE);
+
+        buscadorProfesores.setInputPrompt("Ningún profesor seleccionado");
+
+        buscadorProfesores.setWidth(100.0f, Unit.PERCENTAGE);
+        buscadorProfesores.setFilteringMode(FilteringMode.CONTAINS);
+        buscadorProfesores.setImmediate(true);
+
+        for (Profesor prof : listaProfesores) {
+            buscadorProfesores.addItem(prof.getEmail());
+            buscadorProfesores.setItemCaption(prof.getEmail(), prof.toString());
+        }
+
+        buscadorProfesores.addValueChangeListener(new ComboBox.ValueChangeListener() {
+
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                String select = (String) event.getProperty().getValue();
+                bProfesor.removeAllItems();
+                if (select != null) {
+                    try {
+                        bProfesor.addItem(profesor.profesor(select));
+                    } catch (UnknownHostException ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    llenarTablaProfesor();
+                }
+            }
+        });
+
+        hlProfesor.setMargin(true);
+        hlProfesor.setSizeFull();
+        hlProfesor.setComponentAlignment(buscadorProfesores, Alignment.MIDDLE_LEFT);
+        hlProfesor.setComponentAlignment(allProfesor, Alignment.MIDDLE_RIGHT);
+        hlProfesor.setComponentAlignment(nuevoProfesor, Alignment.MIDDLE_RIGHT);
+
+        id_profesor.setRequired(true);
+        id_profesor.setInputPrompt("ID profesor");
+        //id_profesor.setReadOnly(true);
+        id_lugar_profesor.setRequired(true);
+        id_lugar_profesor.setInputPrompt("ID lugar");
+        nombre_profesor.setRequired(true);
+        nombre_profesor.setInputPrompt("Nombre");
+        apellidos_profesor.setRequired(true);
+        apellidos_profesor.setInputPrompt("Apellidos");
+        edad_profesor.setRequired(true);
+        edad_profesor.setInputPrompt("Edad");
+        email_profesor.setRequired(true);
+        email_profesor.setInputPrompt("Correo electrónico");
+        descripcion_profesor.setRequired(false);
+        descripcion_profesor.setInputPrompt("Descripción");
+        movil_profesor.setRequired(true);
+        movil_profesor.setInputPrompt("Móvil");
+        horario_profesor.setRequired(true);
+        horario_profesor.setInputPrompt("Horario");
+        evaluacion_profesor.setRequired(true);
+        evaluacion_profesor.setInputPrompt("Evaluación");
+        votos_profesor.setRequired(true);
+        votos_profesor.setInputPrompt("Votos");
+        password_profesor.setRequired(true);
+        password_profesor.setInputPrompt("Contraseña");
+        foto_profesor.setRequired(false);
+        foto_profesor.setInputPrompt("Fotografía");
+
+        profesorNuevo.setComponentAlignment(id_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(id_lugar_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(nombre_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(apellidos_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(edad_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(email_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(movil_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(horario_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(descripcion_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(votos_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(evaluacion_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(password_profesor, Alignment.MIDDLE_CENTER);
+        profesorNuevo.setComponentAlignment(foto_profesor, Alignment.MIDDLE_CENTER);
+        botonesProfesor.setComponentAlignment(addProfesor, Alignment.MIDDLE_LEFT);
+        botonesProfesor.setComponentAlignment(deleteProfesor, Alignment.MIDDLE_RIGHT);
+        profesorNuevo.setCaption("Introduzca los datos del nuevo profesor");
+        profesorNuevo.setMargin(true);
+        profesorNuevo.setSizeFull();
+
+        vspProfesor.setSplitPosition(17.5f, Unit.PERCENTAGE);
+        vspProfesor.setLocked(true);
+        hspProfesor.setSplitPosition(75.0f, Unit.PERCENTAGE);
+        hspProfesor.setLocked(true);
+
+        //Datos Profesor
+        tProfesores.addItemClickListener(new ItemClickEvent.ItemClickListener() {
+
+            @Override
+
+            public void itemClick(ItemClickEvent event) {
+                BeanItem<Profesor> bia = bProfesor.getItem(event.getItemId());
+                profesorTabla = bia.getBean();
+                id_profesor.setReadOnly(false);
+                id_profesor.setValue(profesorTabla.getIdProfesor());
+                id_profesor.setReadOnly(true);
+                id_lugar_profesor.setValue(profesorTabla.getIdLugar());
+                nombre_profesor.setValue(profesorTabla.getNombre());
+                apellidos_profesor.setValue(profesorTabla.getApellidos());
+                edad_profesor.setValue(profesorTabla.getEdad());
+                movil_profesor.setValue(profesorTabla.getMovil());
+                email_profesor.setReadOnly(false);
+                email_profesor.setValue(profesorTabla.getEmail());
+                email_profesor.setReadOnly(true);
+                horario_profesor.setValue(profesorTabla.getHorario());
+                descripcion_profesor.setValue(profesorTabla.getDescripcion());
+                evaluacion_profesor.setValue(profesorTabla.getEvaluacion());
+                votos_profesor.setValue(profesorTabla.getNumVotos());
+                password_profesor.setValue(profesorTabla.getPassword());
+                foto_profesor.setValue(profesorTabla.getFoto());
+            }
+        });
+
+        allProfesor.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                llenarTablaProfesor();
+            }
+        });
+
+        nuevoProfesor.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                int cont = listaProfesores.size() + 1;
+                System.out.println("cont=" + cont);
+                id_profesor.setReadOnly(false);
+                id_profesor.setValue(String.valueOf(cont));
+                id_profesor.setReadOnly(true);
+                id_lugar_profesor.select(null);
+                nombre_profesor.setValue("");
+                apellidos_profesor.setValue("");
+                movil_profesor.setValue("");
+                email_profesor.setReadOnly(false);
+                email_profesor.setValue("");
+                edad_profesor.setValue("");
+                horario_profesor.setValue("");
+                descripcion_profesor.setValue("");
+                evaluacion_profesor.setValue("");
+                votos_profesor.setValue("");
+                password_profesor.setValue("");
+                foto_profesor.setValue("");
+            }
+        });
+
+        addProfesor.addClickListener(new Button.ClickListener() {
+            ProfesorDAO profesor = new ProfesorDAO();
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                Profesor p = new Profesor();
+                boolean encontrado = false;
+                int cont = listaProfesores.size() + 1;
+                p.setIdProfesor(String.valueOf(cont));
+                p.setIdLugar((String) id_lugar_profesor.getValue());
+                p.setNombre(nombre_profesor.getValue());
+                p.setApellidos(apellidos_profesor.getValue());
+                p.setEdad(edad_profesor.getValue());
+                p.setMovil(movil_profesor.getValue());
+                p.setHorario(horario_profesor.getValue());
+                p.setDescripcion(descripcion_profesor.getValue());
+                p.setEvaluacion(evaluacion_profesor.getValue());
+                p.setNumVotos(votos_profesor.getValue());
+                p.setEmail(email_profesor.getValue());
+                p.setPassword(password_profesor.getValue());
+                p.setFoto(foto_profesor.getValue());
+                try {
+                    encontrado = profesor.buscarProfesor(p.getEmail());
+                    if (encontrado == true) {
+                        if (profesor.modificar(profesorTabla, p)) {
+                            llenarTablaProfesor();
+                            for (Profesor prof : listaProfesores) {
+                                buscadorProfesores.addItem(prof.getEmail());
+                                buscadorProfesores.setItemCaption(prof.getEmail(), prof.toString());
+                            }
+                            Notification.show("Profesor modificado", "Se ha actualizado el "
+                                    + "profesor en la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido actualizar el "
+                                    + "profesor en la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    } else {
+                        if (profesor.crear(p)) {
+                            llenarTablaProfesor();
+                            for (Profesor prof : listaProfesores) {
+                                buscadorProfesores.addItem(prof.getEmail());
+                                buscadorProfesores.setItemCaption(prof.getEmail(), prof.toString());
+                            }
+                            Notification.show("Profesor creado", "Se ha añadido un nuevo "
+                                    + "profesor a la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido añadir un nuevo "
+                                    + "profesor a la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        deleteProfesor.addClickListener(new Button.ClickListener() {
+            ProfesorDAO profesor = new ProfesorDAO();
+
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                boolean encontrado = false;
+                String email = email_profesor.getValue();
+                try {
+                    encontrado = profesor.buscarProfesor(email);
+                    if (encontrado == true) {
+                        if (profesor.borrar(email)) {
+                            llenarTablaProfesor();
+                            id_profesor.setReadOnly(false);
+                            id_profesor.setValue("");
+                            id_lugar_profesor.select(null);
+                            nombre_profesor.setValue("");
+                            apellidos_profesor.setValue("");
+                            movil_profesor.setValue("");
+                            horario_profesor.setValue("");
+                            descripcion_profesor.setValue("");
+                            evaluacion_profesor.setValue("");
+                            votos_profesor.setValue("");
+                            email_profesor.setReadOnly(false);
+                            email_profesor.setValue("");
+                            edad_profesor.setValue("");
+                            password_profesor.setValue("");
+                            foto_profesor.setValue("");
+                            for (Profesor prof : listaProfesores) {
+                                buscadorProfesores.addItem(prof.getEmail());
+                                buscadorProfesores.setItemCaption(prof.getEmail(), prof.toString());
+                            }
+                            Notification.show("Profesor eliminado", "Se ha borrado el "
+                                    + "profesor de la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                        } else {
+                            Notification.show("ERROR", "No se ha podido borrar el "
+                                    + "profesor de la base de datos", Notification.Type.ERROR_MESSAGE);
+                        }
+                    } else {
+                        Notification.show("Seleccione un profesor", "Debe seleccionar un "
+                                + "profesor para poder eliminarlo de la base de datos", Notification.Type.TRAY_NOTIFICATION);
+                    }
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
         panel.setWidth(String.valueOf(Page.getCurrent().getBrowserWindowWidth()) + "px");
         panel.setHeight(String.valueOf(Page.getCurrent().getBrowserWindowHeight() * 0.9) + "px");
         panel.setContent(new Label("Este es el panel de administración de la "
@@ -850,6 +1163,18 @@ public class AdminView extends CustomComponent implements View {
         }
 
         bAlumno.addAll(listaAlumnos);
+    }
+
+    public final void llenarTablaProfesor() {
+        bProfesor.removeAllItems();
+
+        try {
+            listaProfesores = profesor.listaProfesores();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        bProfesor.addAll(listaProfesores);
     }
 
     @Override
