@@ -8,8 +8,10 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.tad3.iclass.entidad.Asignatura;
+import com.tad3.iclass.util.CustomComparator;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -56,6 +58,8 @@ public class AsignaturaDAO {
             cursor.close();
             conect.close();
         }
+        CustomComparator comparador = new CustomComparator();
+        Collections.sort(lista, comparador);        
         return lista;
     }
 
