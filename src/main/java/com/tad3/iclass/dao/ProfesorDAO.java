@@ -135,7 +135,7 @@ public class ProfesorDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("email", correo));
-        
+
         return true;
     }
 
@@ -172,7 +172,6 @@ public class ProfesorDAO {
 
         DBObject query = new BasicDBObject("email", p1.getEmail());
         DBObject doc2 = new BasicDBObject();
-        
         doc2.put("_id", p2.getIdProfesor());
         doc2.put("idLugar", p2.getIdLugar());
         doc2.put("nombre", p2.getNombre());
@@ -185,16 +184,67 @@ public class ProfesorDAO {
         doc2.put("descripcion", p2.getDescripcion());
         doc2.put("asignaturas", p2.getAsignaturas());
         coleccion.update(query, doc2);
-        
+
         return true;
     }
-    
-     public boolean buscarProfesor(String email) throws UnknownHostException {
+
+    public boolean buscarProfesor(String email) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("email", email);
         DBObject profe = coleccion.findOne(query);
         System.out.println(profe);
         return profe != null;
+    }
+
+    public List<Profesor> buscarProfAsig(String idLugar, String asignatura, String sitio) throws UnknownHostException {
+        MongoClient conect = conexion();
+        DBCollection coleccion = collection(conect);
+
+        List<Profesor> lista = new ArrayList<>();
+        if (sitio.equals("daIgual")) {
+            idLugar = "";
+            BasicDBObject query = new BasicDBObject("idLugar", idLugar);
+            DBCursor cursor = coleccion.find(query);
+            while (cursor.hasNext()) {
+                Profesor p = new Profesor();
+                DBObject cur = cursor.next();
+                BasicDBObject professorObj = (BasicDBObject) cur;
+                p.setIdProfesor((professorObj.getString("idProfesor")));
+                p.setIdLugar((professorObj.getString("idLugar")));
+                p.setNombre((professorObj.getString("nombre")));
+                p.setApellidos((professorObj.getString("apellidos")));
+                p.setEdad((professorObj.getString("edad")));
+                p.setEmail((professorObj.getString("email")));
+                p.setMovil((professorObj.getString("movil")));
+                p.setPassword((professorObj.getString("password")));
+                p.setHorario((professorObj.getString("horario")));
+                p.setDescripcion((professorObj.getString("descripcion")));
+
+                lista.add(p);
+            }
+        } else {
+            BasicDBObject query = new BasicDBObject("idLugar", idLugar).append("nombre", asignatura);
+            DBCursor cursor = coleccion.find(query);
+            while (cursor.hasNext()) {
+                Profesor p = new Profesor();
+                DBObject cur = cursor.next();
+                BasicDBObject professorObj = (BasicDBObject) cur;
+                p.setIdProfesor((professorObj.getString("idProfesor")));
+                p.setIdLugar((professorObj.getString("idLugar")));
+                p.setNombre((professorObj.getString("nombre")));
+                p.setApellidos((professorObj.getString("apellidos")));
+                p.setEdad((professorObj.getString("edad")));
+                p.setEmail((professorObj.getString("email")));
+                p.setMovil((professorObj.getString("movil")));
+                p.setPassword((professorObj.getString("password")));
+                p.setHorario((professorObj.getString("horario")));
+                p.setDescripcion((professorObj.getString("descripcion")));
+
+                lista.add(p);
+            }
+            //BasicDBObject query = new BasicDBObject("asignatura", email);
+        }
+        return lista;
     }
 }
