@@ -43,6 +43,7 @@ import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 import java.io.Serializable;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -69,11 +70,9 @@ public class ProfesorView extends CustomComponent implements View {
     TextField password_profesor = new TextField("Contraseña: ");
     TextField descripcion_profesor = new TextField("Descripción: ");
     TextField horario_profesor = new TextField("Horario: ");
-    TextField evaluacion_profesor = new TextField("Evaluación: ");
-    TextField votos_profesor = new TextField("Nº votos: ");
-    TextField foto_profesor = new TextField("Foto: ");
     Tree tree;
-    Table table;
+    Table tableAsignaturas;
+    Table tableDragDrop;
 
     Button modifyme = new Button("Actualizar");
     Button saveme = new Button("Guardar");
@@ -83,8 +82,7 @@ public class ProfesorView extends CustomComponent implements View {
     HorizontalLayout botonesProfesor = new HorizontalLayout(saveme, deleteme);
     FormLayout datosProfesor = new FormLayout(modifyme, id_profesor, id_lugar_profesor,
             nombre_profesor, apellidos_profesor, edad_profesor, email_profesor, movil_profesor,
-            descripcion_profesor, horario_profesor, evaluacion_profesor, votos_profesor,
-            password_profesor, foto_profesor, manageCourses, botonesProfesor);
+            descripcion_profesor, horario_profesor, password_profesor, manageCourses, botonesProfesor);
 
     VerticalLayout panelDerecho = new VerticalLayout();
     Layout layaoutArriba = new HorizontalLayout();
@@ -135,9 +133,6 @@ public class ProfesorView extends CustomComponent implements View {
         datosProfesor.setComponentAlignment(password_profesor, Alignment.MIDDLE_CENTER);
         datosProfesor.setComponentAlignment(descripcion_profesor, Alignment.MIDDLE_CENTER);
         datosProfesor.setComponentAlignment(horario_profesor, Alignment.MIDDLE_CENTER);
-        datosProfesor.setComponentAlignment(evaluacion_profesor, Alignment.MIDDLE_CENTER);
-        datosProfesor.setComponentAlignment(votos_profesor, Alignment.MIDDLE_CENTER);
-        datosProfesor.setComponentAlignment(foto_profesor, Alignment.MIDDLE_CENTER);
         datosProfesor.setComponentAlignment(botonesProfesor, Alignment.MIDDLE_CENTER);
         datosProfesor.setMargin(true);
 
@@ -168,9 +163,6 @@ public class ProfesorView extends CustomComponent implements View {
                 password_profesor.setReadOnly(false);
                 descripcion_profesor.setReadOnly(false);
                 horario_profesor.setReadOnly(false);
-                evaluacion_profesor.setReadOnly(true);
-                votos_profesor.setReadOnly(true);
-                foto_profesor.setReadOnly(false);
             }
         });
 
@@ -189,9 +181,6 @@ public class ProfesorView extends CustomComponent implements View {
                 p.setPassword(password_profesor.getValue());
                 p.setDescripcion(descripcion_profesor.getValue());
                 p.setHorario(horario_profesor.getValue());
-                p.setEvaluacion(evaluacion_profesor.getValue());
-                p.setNumVotos(votos_profesor.getValue());
-                p.setFoto(foto_profesor.getValue());
                 boolean encontrado = false;
                 try {
                     encontrado = profesor.buscarProfesor(me.getEmail());
@@ -232,6 +221,7 @@ public class ProfesorView extends CustomComponent implements View {
 
             @Override
             public void buttonClick(ClickEvent event) {
+                cargarAsignaturas();
                 dragAndDrop();
             }
         });
@@ -263,7 +253,27 @@ public class ProfesorView extends CustomComponent implements View {
         setCompositionRoot(
                 new CssLayout(layaoutArriba, panel));
     }
-
+    
+    public void cargarAsignaturas() {
+        ArrayList<Asignatura> asignaturasProfesor = new ArrayList();
+        try {
+            System.out.println("id profe " + id_profesor.getValue() );
+            asignaturasProfesor = (ArrayList)profesor.listaAsignaturasPorProfesor(id_profesor.getValue());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        tableAsignaturas.addContainerProperty("Curso",String.class, null);
+        tableAsignaturas.addContainerProperty("Asignatura", String.class, null);
+        Iterator it = asignaturasProfesor.iterator();
+        Asignatura a ;
+        int i = 0;
+        while (it.hasNext()){
+            a = (Asignatura)it.next();
+            tableAsignaturas.addItem(new Object[]{a.getCurso(),a.getAsignatura()}, i);
+            i++;    
+        }
+    }
+    
     public final void readOnly() {
         id_profesor.setReadOnly(true);
         id_lugar_profesor.setReadOnly(true);
@@ -275,9 +285,6 @@ public class ProfesorView extends CustomComponent implements View {
         password_profesor.setReadOnly(true);
         descripcion_profesor.setReadOnly(true);
         horario_profesor.setReadOnly(true);
-        evaluacion_profesor.setReadOnly(true);
-        votos_profesor.setReadOnly(true);
-        foto_profesor.setReadOnly(true);
     }
 
     public void misDatos() {
@@ -294,9 +301,6 @@ public class ProfesorView extends CustomComponent implements View {
             password_profesor.setValue(me.getPassword());
             descripcion_profesor.setValue(me.getDescripcion());
             horario_profesor.setValue(me.getHorario());
-            evaluacion_profesor.setValue(me.getEvaluacion());
-            votos_profesor.setValue(me.getNumVotos());
-            foto_profesor.setValue(me.getFoto());
         } catch (UnknownHostException ex) {
             Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -306,19 +310,19 @@ public class ProfesorView extends CustomComponent implements View {
     public static class Asignatura implements Serializable {
 
         private String curso;
-        private String nombre;
+        private String asignatura;
 
-        public Asignatura(String curso, String nombre) {
+        public Asignatura(String curso, String asignatura) {
             this.curso = curso;
-            this.nombre = nombre;
+            this.asignatura = asignatura;
         }
 
-        public void setNombre(String nombre) {
-            this.nombre = nombre;
+        public void setAsignatura(String asignatura) {
+            this.asignatura = asignatura;
         }
 
-        public String getNombre() {
-            return nombre;
+        public String getAsignatura() {
+            return asignatura;
         }
 
         public void setCurso(String curso) {
@@ -335,19 +339,20 @@ public class ProfesorView extends CustomComponent implements View {
 
         // First create the components to be able to refer to them as allowed
         // drag sources
-        tree = new Tree("Drag from tree to table");
-        table = new Table("Drag from table to tree");
-        table.setWidth("100%");
+        tree = new Tree("Selecciona la asignatura y arrastrala a la tabla");
+        tableDragDrop = new Table("Arrastra aqui asignaturas desde la lista");
+        tableDragDrop.setWidth("100%");
 
         // Populate the tree and set up drag & drop
-        initializeTree(new SourceIs(table));
+        initializeTree(new SourceIs(tableDragDrop));
 
-        // Populate the table and set up drag & drop
+        // Populate the tableDragDrop and set up drag & drop
         initializeTable(new SourceIs(tree));
 
         // Add components
+        panelDerecho.addComponent(tableAsignaturas);
         panelDerecho.addComponent(tree);
-        panelDerecho.addComponent(table);
+        panelDerecho.addComponent(tableDragDrop);
     }
 
     private void initializeTree(final ClientSideCriterion acceptCriterion) {
@@ -366,7 +371,7 @@ public class ProfesorView extends CustomComponent implements View {
                 Container sourceContainer = t.getSourceContainer();
                 Object sourceItemId = t.getItemId();
                 Item sourceItem = sourceContainer.getItem(sourceItemId);
-                String nombre = sourceItem.getItemProperty("nombre").toString();
+                String asignatura = sourceItem.getItemProperty("asignatura").toString();
                 String curso = sourceItem.getItemProperty("curso").toString();
 
                 AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent
@@ -374,14 +379,14 @@ public class ProfesorView extends CustomComponent implements View {
                 Object targetItemId = dropData.getItemIdOver();
 
                 // find curso in target: the target node itself or its parent
-                if (targetItemId != null && nombre != null && curso != null) {
+                if (targetItemId != null && asignatura != null && curso != null) {
                     String treeCurso = getTreeNodeName(tree, targetItemId);
                     if (curso.equals(treeCurso)) {
-                        // move item from table to curso'
+                        // move item from tableDragDrop to curso'
                         Object newItemId = tree.addItem();
                         tree.getItem(newItemId)
                                 .getItemProperty(ExampleUtil.as_PROPERTY_NAME)
-                                .setValue(nombre);
+                                .setValue(asignatura);
                         tree.setParent(newItemId, targetItemId);
                         tree.setChildrenAllowed(newItemId, false);
 
@@ -401,15 +406,15 @@ public class ProfesorView extends CustomComponent implements View {
     }
 
     private void initializeTable(final ClientSideCriterion acceptCriterion) {
-        final BeanItemContainer<Asignatura> tableContainer = new BeanItemContainer<>(
+        final BeanItemContainer<Asignatura> tableDragDropContainer = new BeanItemContainer<>(
                 Asignatura.class);        
         // lista asignaturas del profesor
-        table.setContainerDataSource(tableContainer);
-        table.setVisibleColumns(new Object[]{"curso", "asignatura"});
+        tableDragDrop.setContainerDataSource(tableDragDropContainer);
+        tableDragDrop.setVisibleColumns(new Object[]{"curso", "asignatura"});
 
-        // Handle drop in table: move hardware item or subtree to the table
-        table.setDragMode(TableDragMode.ROW);
-        table.setDropHandler(new DropHandler() {
+        // Handle drop in tableDragDrop: move hardware item or subtree to the tableDragDrop
+        tableDragDrop.setDragMode(TableDragMode.ROW);
+        tableDragDrop.setDropHandler(new DropHandler() {
             public void drop(DragAndDropEvent dropEvent) {
                 // criteria verify that this is safe
                 DataBoundTransferable t = (DataBoundTransferable) dropEvent
@@ -432,9 +437,9 @@ public class ProfesorView extends CustomComponent implements View {
                     Collection<?> children = source.getChildren(sourceItemId);
                     if (children != null) {
                         for (Object childId : children) {
-                            String nombre = getTreeNodeName(source, childId);
+                            String asignatura = getTreeNodeName(source, childId);
                             asignaturaMap.put(childId, new Asignatura(curso,
-                                    nombre));
+                                    asignatura));
                         }
                     }
                 } else {
@@ -444,7 +449,7 @@ public class ProfesorView extends CustomComponent implements View {
                     asignaturaMap.put(sourceItemId, new Asignatura(name, curso));
                 }
 
-                // move item(s) to the correct location in the table
+                // move item(s) to the correct location in the tableDragDrop
                 AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                 Object targetItemId = dropData.getItemIdOver();
 
@@ -453,17 +458,17 @@ public class ProfesorView extends CustomComponent implements View {
                     if (targetItemId != null) {
                         switch (dropData.getDropLocation()) {
                             case BOTTOM:
-                                tableContainer.addItemAfter(targetItemId, asignatura);
+                                tableDragDropContainer.addItemAfter(targetItemId, asignatura);
                                 break;
                             case MIDDLE:
                             case TOP:
-                                Object prevItemId = tableContainer
+                                Object prevItemId = tableDragDropContainer
                                         .prevItemId(targetItemId);
-                                tableContainer.addItemAfter(prevItemId, asignatura);
+                                tableDragDropContainer.addItemAfter(prevItemId, asignatura);
                                 break;
                         }
                     } else {
-                        tableContainer.addItem(asignatura);
+                        tableDragDropContainer.addItem(asignatura);
                     }
                     source.removeItem(sourceId);
                 }

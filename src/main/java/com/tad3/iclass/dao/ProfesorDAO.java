@@ -11,9 +11,12 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.tad3.iclass.entidad.Asignatura;
 import com.tad3.iclass.entidad.Profesor;
+import com.tad3.iclass.util.CustomComparator;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -59,9 +62,6 @@ public class ProfesorDAO {
                 p.setPassword((professorObj.getString("password")));
                 p.setHorario((professorObj.getString("horario")));
                 p.setDescripcion((professorObj.getString("descripcion")));
-                p.setEvaluacion((professorObj.getString("evaluacion")));
-                p.setNumVotos((professorObj.getString("numVotos")));
-                p.setFoto((professorObj.getString("foto")));
 
                 lista.add(p);
                 //System.out.println(p.toString());
@@ -93,9 +93,6 @@ public class ProfesorDAO {
         p.setPassword((professorObj.getString("password")));
         p.setHorario((professorObj.getString("horario")));
         p.setDescripcion((professorObj.getString("descripcion")));
-        p.setEvaluacion((professorObj.getString("evaluacion")));
-        p.setNumVotos((professorObj.getString("numVotos")));
-        p.setFoto((professorObj.getString("foto")));
 
         return p;
     }
@@ -111,7 +108,24 @@ public class ProfesorDAO {
 
         return user != null;
     }
+    /*
+     Traer lista de asignaturas por profesor de mongo
+     */
+    public List<Asignatura> listaAsignaturasPorProfesor(String idProfesor) throws UnknownHostException {
 
+        MongoClient conect = conexion();
+        DBCollection coleccion = collection(conect);
+        BasicDBObject query = new BasicDBObject("_id", idProfesor);
+        DBObject profe = coleccion.findOne(query);
+        List<Asignatura> lista = new ArrayList<>();
+        lista = (ArrayList) profe.get("asignaturas");
+        conect.close();
+        CustomComparator comparador = new CustomComparator();
+        Collections.sort(lista, comparador);
+        return lista;
+    }
+
+    
     /*
      Borrar alumno
      */
@@ -140,10 +154,7 @@ public class ProfesorDAO {
         objeto.put("email", p.getEmail());
         objeto.put("horario", p.getHorario());
         objeto.put("descripcion", p.getDescripcion());
-        objeto.put("evaluacion", p.getEvaluacion());
-        objeto.put("numVotos", p.getNumVotos());
         objeto.put("password", p.getPassword());
-        objeto.put("foto", p.getFoto());
         coleccion.insert(objeto);
 
         return true;
@@ -169,9 +180,6 @@ public class ProfesorDAO {
         doc2.put("password", p2.getPassword());
         doc2.put("horario", p2.getHorario());
         doc2.put("descripcion", p2.getDescripcion());
-        doc2.put("evaluacion", p2.getEvaluacion());
-        doc2.put("numVotos", p2.getNumVotos());
-        doc2.put("foto", p2.getFoto());
         coleccion.update(query, doc2);
         
         return true;
