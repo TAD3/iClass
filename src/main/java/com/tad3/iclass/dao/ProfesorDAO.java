@@ -203,8 +203,8 @@ public class ProfesorDAO {
 
         List<Profesor> lista = new ArrayList<>();
         if (sitio.equals("daIgual")) {
-            idLugar = "";
-            BasicDBObject query = new BasicDBObject("idLugar", idLugar);
+            
+            BasicDBObject query = new BasicDBObject("asignaturas._id", asignatura);
             DBCursor cursor = coleccion.find(query);
             while (cursor.hasNext()) {
                 Profesor p = new Profesor();
@@ -224,7 +224,7 @@ public class ProfesorDAO {
                 lista.add(p);
             }
         } else {
-            BasicDBObject query = new BasicDBObject("idLugar", idLugar).append("nombre", asignatura);
+            BasicDBObject query = new BasicDBObject("idLugar", idLugar).append("asignaturas._id", asignatura);
             DBCursor cursor = coleccion.find(query);
             while (cursor.hasNext()) {
                 Profesor p = new Profesor();
