@@ -49,7 +49,7 @@ public class ProfesorDAO {
                 Profesor p = new Profesor();
                 DBObject cur = cursor.next();
                 BasicDBObject professorObj = (BasicDBObject) cur;
-                p.setIdProfesor((professorObj.getString("idProfesor")));
+                p.setIdProfesor((professorObj.getString("_id")));
                 p.setIdLugar((professorObj.getString("idLugar")));
                 p.setNombre((professorObj.getString("nombre")));
                 p.setApellidos((professorObj.getString("apellidos")));
@@ -83,7 +83,7 @@ public class ProfesorDAO {
         DBObject user = coleccion.findOne(query);
         Profesor p = new Profesor();
         BasicDBObject professorObj = (BasicDBObject) user;
-        p.setIdProfesor((professorObj.getString("idProfesor")));
+        p.setIdProfesor((professorObj.getString("_id")));
         p.setIdLugar((professorObj.getString("idLugar")));
         p.setNombre((professorObj.getString("nombre")));
         p.setApellidos((professorObj.getString("apellidos")));
@@ -131,7 +131,7 @@ public class ProfesorDAO {
         DBCollection coleccion = collection(conect);
         BasicDBObject objeto = new BasicDBObject();
 
-        objeto.put("idProfesor", p.getIdProfesor());
+        objeto.put("_id", p.getIdProfesor());
         objeto.put("idLugar", p.getIdLugar());
         objeto.put("nombre", p.getNombre());
         objeto.put("apellidos", p.getApellidos());
@@ -159,7 +159,7 @@ public class ProfesorDAO {
         DBObject query = new BasicDBObject("email", p1.getEmail());
         DBObject doc2 = new BasicDBObject();
         
-        doc2.put("idProfesor", p2.getIdProfesor());
+        doc2.put("_id", p2.getIdProfesor());
         doc2.put("idLugar", p2.getIdLugar());
         doc2.put("nombre", p2.getNombre());
         doc2.put("apellidos", p2.getApellidos());

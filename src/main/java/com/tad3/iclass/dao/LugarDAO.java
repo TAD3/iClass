@@ -44,7 +44,7 @@ public class LugarDAO {
                 Lugar l = new Lugar();
                 DBObject cur = barrior.next();
                 BasicDBObject studentObj = (BasicDBObject) cur;
-                l.setIdLugar((studentObj.getString("idLugar")));
+                l.setIdLugar((studentObj.getString("_id")));
                 l.setCodigoPostal((studentObj.getString("codigoPostal")));
                 l.setBarrio((studentObj.getString("barrio")));
                 l.setCiudad((studentObj.getString("ciudad")));
@@ -64,7 +64,7 @@ public class LugarDAO {
     public Lugar lugar(String idLugar) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
-        BasicDBObject query = new BasicDBObject("idLugar", idLugar);
+        BasicDBObject query = new BasicDBObject("_id", idLugar);
         DBObject user = coleccion.findOne(query);
         Lugar l = new Lugar();
         BasicDBObject studentObj = (BasicDBObject) user;
@@ -82,7 +82,7 @@ public class LugarDAO {
     public boolean borrarLugar(String idLugar) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
-        coleccion.remove(new BasicDBObject("idLugar", idLugar));
+        coleccion.remove(new BasicDBObject("_id", idLugar));
         return true;
     }
 
@@ -94,7 +94,7 @@ public class LugarDAO {
         DBCollection coleccion = collection(conect);
         BasicDBObject objeto = new BasicDBObject();
 
-        objeto.put("idLugar", l.getIdLugar());
+        objeto.put("_id", l.getIdLugar());
         objeto.put("codigoPostal", l.getCodigoPostal());
         objeto.put("barrio", l.getBarrio());
         objeto.put("ciudad", l.getCiudad());
@@ -110,9 +110,9 @@ public class LugarDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
 
-        DBObject query = new BasicDBObject("idLugar", l1.getIdLugar());
+        DBObject query = new BasicDBObject("_id", l1.getIdLugar());
         DBObject doc2 = new BasicDBObject();
-        doc2.put("idLugar", l2.getIdLugar());
+        doc2.put("_id", l2.getIdLugar());
         doc2.put("codigoPostal", l2.getCodigoPostal());
         doc2.put("barrio", l2.getBarrio());
         doc2.put("ciudad", l2.getCiudad());
@@ -123,7 +123,7 @@ public class LugarDAO {
     public boolean buscarLugar(String idLugar) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
-        BasicDBObject query = new BasicDBObject("idLugar", idLugar);
+        BasicDBObject query = new BasicDBObject("_id", idLugar);
         DBObject lugar = coleccion.findOne(query);
         return lugar != null;
     }

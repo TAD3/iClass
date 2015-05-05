@@ -47,7 +47,7 @@ public class AsignaturaDAO {
                 Asignatura a = new Asignatura();
                 DBObject cur = cursor.next();
                 BasicDBObject studentObj = (BasicDBObject) cur;
-                a.setIdAsignatura((studentObj.getString("idAsignatura")));
+                a.setIdAsignatura((studentObj.getString("_id")));
                 a.setNombre((studentObj.getString("nombre")));
                 a.setCurso((studentObj.getString("curso")));
                 a.setDescripcion((studentObj.getString("descripcion")));
@@ -69,11 +69,11 @@ public class AsignaturaDAO {
     public Asignatura asignatura(String idAsignatura) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
-        BasicDBObject query = new BasicDBObject("idAsignatura", idAsignatura);
+        BasicDBObject query = new BasicDBObject("_id", idAsignatura);
         DBObject asig = coleccion.findOne(query);
         Asignatura a = new Asignatura();
         BasicDBObject studentObj = (BasicDBObject) asig;
-        a.setIdAsignatura((studentObj.getString("idAsignatura")));
+        a.setIdAsignatura((studentObj.getString("_id")));
         a.setNombre((studentObj.getString("nombre")));
         a.setCurso((studentObj.getString("curso")));
         a.setDescripcion((studentObj.getString("descripcion")));
@@ -87,7 +87,7 @@ public class AsignaturaDAO {
     public boolean borrarAsignatura(String idAsignatura) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
-        coleccion.remove(new BasicDBObject("idAsignatura", idAsignatura));
+        coleccion.remove(new BasicDBObject("_id", idAsignatura));
         return true;
     }
 
@@ -99,7 +99,7 @@ public class AsignaturaDAO {
         DBCollection coleccion = collection(conect);
         BasicDBObject objeto = new BasicDBObject();
 
-        objeto.put("idAsignatura", a.getIdAsignatura());
+        objeto.put("_id", a.getIdAsignatura());
         objeto.put("nombre", a.getNombre());
         objeto.put("curso", a.getCurso());
         objeto.put("descripcion", a.getDescripcion());
@@ -115,9 +115,9 @@ public class AsignaturaDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
 
-        DBObject query = new BasicDBObject("idAsignatura", a1.getIdAsignatura());
+        DBObject query = new BasicDBObject("_id", a1.getIdAsignatura());
         DBObject doc2 = new BasicDBObject();
-        doc2.put("idAsignatura", a2.getIdAsignatura());
+        doc2.put("_id", a2.getIdAsignatura());
         doc2.put("nombre", a2.getNombre());
         doc2.put("curso", a2.getCurso());
         doc2.put("descripcion", a2.getDescripcion());
@@ -129,7 +129,7 @@ public class AsignaturaDAO {
     public boolean buscarAsignatura(String idAsignatura) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
-        BasicDBObject query = new BasicDBObject("idAsignatura", idAsignatura);
+        BasicDBObject query = new BasicDBObject("_id", idAsignatura);
         DBObject asig = coleccion.findOne(query);
         System.out.println(asig);
         return asig != null;
