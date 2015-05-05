@@ -19,7 +19,6 @@ public class Alumno {
     private String curso;
     private String email;
     private String password;
-    private String foto;
 
     public Alumno(String idAlumno, String idLugar, String nombre, String apellidos, String edad, String curso, String email, String password) {
         this.idAlumno = idAlumno;
@@ -30,18 +29,6 @@ public class Alumno {
         this.curso = curso;
         this.email = email;
         this.password = password;
-    }
-
-    public Alumno(String idAlumno, String idLugar, String nombre, String apellidos, String edad, String curso, String email, String password, String foto) {
-        this.idAlumno = idAlumno;
-        this.idLugar = idLugar;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.edad = edad;
-        this.curso = curso;
-        this.email = email;
-        this.password = password;
-        this.foto = foto;
     }
 
     @Override
@@ -115,14 +102,6 @@ public class Alumno {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getFoto() {
-        return foto;
-    }
-
-    public void setFoto(String foto) {
-        this.foto = foto;
     }
 
 }

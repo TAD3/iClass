@@ -78,12 +78,11 @@ public class AlumnoView extends CustomComponent implements View {
                 table.addContainerProperty("curso", String.class, null);
                 table.addContainerProperty("email", String.class, null);
                 table.addContainerProperty("password", String.class, null);
-                table.addContainerProperty("foto", String.class, null);
 
                 try {
                     Alumno a = alumno.alumno((String) getSession().getAttribute("user"));
                     table.addItem(new Object[]{a.getIdAlumno(), a.getIdLugar(), a.getNombre(), a.getApellidos(),
-                        a.getEdad(), a.getCurso(), a.getEmail(), a.getPassword(), a.getFoto()}, 1);
+                        a.getEdad(), a.getCurso(), a.getEmail(), a.getPassword()}, 1);
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -115,7 +114,6 @@ public class AlumnoView extends CustomComponent implements View {
                             corr.setValue(a.getEmail());
                             cont.setValue(a.getPassword());
                             cont2.setValue(a.getPassword());
-                            fot.setValue(a.getFoto());
 
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,7 +130,6 @@ public class AlumnoView extends CustomComponent implements View {
                                 a2.setEdad(eda.getValue());
                                 a2.setCurso(curs.getValue());
                                 a2.setEmail(corr.getValue());
-                                a2.setFoto(fot.getValue());
                                 if (cont.getValue().equals(cont2.getValue())) {
                                     a2.setPassword(cont.getValue());
                                     try {

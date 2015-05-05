@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.tad3.iclass.entidad;
 
 /**
@@ -11,6 +10,7 @@ package com.tad3.iclass.entidad;
  * @author Juanlu
  */
 public class Profesor {
+
     private String idProfesor;
     private String idLugar;
     private String nombre;
@@ -21,35 +21,17 @@ public class Profesor {
     private String password;
     private String horario;
     private String descripcion;
-    private String evaluacion;
-    private String numVotos;
-    private String foto;
 
     @Override
     public String toString() {
         return nombre + " " + apellidos + " - " + email;
     }
-    
-    public Profesor(){}   
 
-    public Profesor(String idProfesor, String idLugar, String nombre, String apellidos, String edad, String email,
-            String movil,String password, String horario, String descripcion, String evaluacion, String numVotos) {
-        this.idProfesor = idProfesor;
-        this.idLugar = idLugar;
-        this.nombre = nombre;
-        this.apellidos = apellidos;
-        this.edad = edad;
-        this.email = email;
-        this.movil = movil;
-        this.password = password;
-        this.horario = horario;
-        this.descripcion = descripcion;
-        this.evaluacion = evaluacion;
-        this.numVotos = numVotos;
+    public Profesor() {
     }
 
-       public Profesor(String idProfesor, String idLugar, String nombre, String apellidos, String edad, String email,
-            String movil,String password, String horario, String descripcion, String evaluacion, String numVotos, String foto) {
+    public Profesor(String idProfesor, String idLugar, String nombre, String apellidos, String edad, String email,
+            String movil, String password, String horario, String descripcion, String evaluacion, String numVotos) {
         this.idProfesor = idProfesor;
         this.idLugar = idLugar;
         this.nombre = nombre;
@@ -60,9 +42,6 @@ public class Profesor {
         this.password = password;
         this.horario = horario;
         this.descripcion = descripcion;
-        this.evaluacion = evaluacion;
-        this.numVotos = numVotos;
-        this.foto = foto;
     }
 
     /**
@@ -205,46 +184,4 @@ public class Profesor {
         this.descripcion = descripcion;
     }
 
-    /**
-     * @return the evaluacion
-     */
-    public String getEvaluacion() {
-        return evaluacion;
-    }
-
-    /**
-     * @param evaluacion the evaluacion to set
-     */
-    public void setEvaluacion(String evaluacion) {
-        this.evaluacion = evaluacion;
-    }
-
-    /**
-     * @return the numVotos
-     */
-    public String getNumVotos() {
-        return numVotos;
-    }
-
-    /**
-     * @param numVotos the numVotos to set
-     */
-    public void setNumVotos(String numVotos) {
-        this.numVotos = numVotos;
-    }
-
-    /**
-     * @return the foto
-     */
-    public String getFoto() {
-        return foto;
-    }
-
-    /**
-     * @param foto the foto to set
-     */
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }     
-       
 }

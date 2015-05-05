@@ -14,16 +14,21 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
@@ -33,8 +38,17 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Upload;
+import com.vaadin.ui.Upload.Receiver;
+import com.vaadin.ui.Upload.SucceededEvent;
+import com.vaadin.ui.Upload.SucceededListener;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -117,7 +131,6 @@ public class AdminView extends CustomComponent implements View {
     ComboBox curso_alumno = new ComboBox("Curso: ");
     TextField email_alumno = new TextField("Email: ");
     TextField password_alumno = new TextField("Contraseña: ");
-    TextField foto_alumno = new TextField("Foto: ");
 
     Button allAlumno = new Button("Todas los alumnos");
     Button nuevoAlumno = new Button("Nuevo alumno");
@@ -130,7 +143,7 @@ public class AdminView extends CustomComponent implements View {
     HorizontalLayout botonesAlumno = new HorizontalLayout(addAlumno, deleteAlumno);
     FormLayout alumnoNuevo = new FormLayout(id_alumno, id_lugar_alumno,
             nombre_alumno, apellidos_alumno, edad_alumno, curso_alumno, email_alumno,
-            password_alumno, foto_alumno, botonesAlumno);
+            password_alumno, botonesAlumno);
     HorizontalLayout hlAlumno = new HorizontalLayout(buscadorAlumnos, allAlumno, nuevoAlumno);
     VerticalSplitPanel vspAlumno = new VerticalSplitPanel(hlAlumno, tAlumnos);
     HorizontalSplitPanel hspAlumno = new HorizontalSplitPanel(vspAlumno, alumnoNuevo);
@@ -151,9 +164,6 @@ public class AdminView extends CustomComponent implements View {
     TextField password_profesor = new TextField("Contraseña: ");
     TextField descripcion_profesor = new TextField("Descripción: ");
     TextField horario_profesor = new TextField("Horario: ");
-    TextField evaluacion_profesor = new TextField("Evaluación: ");
-    TextField votos_profesor = new TextField("Nº votos: ");
-    TextField foto_profesor = new TextField("Foto: ");
 
     Button allProfesor = new Button("Todas los profesores");
     Button nuevoProfesor = new Button("Nuevo profesor");
@@ -166,8 +176,7 @@ public class AdminView extends CustomComponent implements View {
     HorizontalLayout botonesProfesor = new HorizontalLayout(addProfesor, deleteProfesor);
     FormLayout profesorNuevo = new FormLayout(id_profesor, id_lugar_profesor,
             nombre_profesor, apellidos_profesor, edad_profesor, movil_profesor, email_profesor,
-            password_profesor, descripcion_profesor, horario_profesor, evaluacion_profesor,
-            votos_profesor, foto_profesor, botonesProfesor);
+            password_profesor, descripcion_profesor, horario_profesor, botonesProfesor);
     HorizontalLayout hlProfesor = new HorizontalLayout(buscadorProfesores, allProfesor, nuevoProfesor);
     VerticalSplitPanel vspProfesor = new VerticalSplitPanel(hlProfesor, tProfesores);
     HorizontalSplitPanel hspProfesor = new HorizontalSplitPanel(vspProfesor, profesorNuevo);
@@ -608,7 +617,7 @@ public class AdminView extends CustomComponent implements View {
         });
 
         //Alumno
-        String[] columnHeadersAlumno = {"Apellidos", "Curso", "Edad", "Email", "Foto", "ID", "ID lugar", "Nombre", "Contraseña",};
+        String[] columnHeadersAlumno = {"Apellidos", "Curso", "Edad", "Email", "ID", "ID lugar", "Nombre", "Contraseña"};
 
         tAlumnos.setColumnHeaders(columnHeadersAlumno);
         tAlumnos.setSizeFull();
@@ -665,7 +674,7 @@ public class AdminView extends CustomComponent implements View {
         hlAlumno.setComponentAlignment(buscadorAlumnos, Alignment.MIDDLE_LEFT);
         hlAlumno.setComponentAlignment(allAlumno, Alignment.MIDDLE_RIGHT);
         hlAlumno.setComponentAlignment(nuevoAlumno, Alignment.MIDDLE_RIGHT);
-
+        
         id_alumno.setRequired(true);
         id_alumno.setInputPrompt("ID alumno");
         //id_alumno.setReadOnly(true);
@@ -683,8 +692,6 @@ public class AdminView extends CustomComponent implements View {
         curso_alumno.setInputPrompt("Curso");
         password_alumno.setRequired(true);
         password_alumno.setInputPrompt("Contraseña");
-        foto_alumno.setRequired(false);
-        foto_alumno.setInputPrompt("Fotografía");
 
         alumnoNuevo.setComponentAlignment(id_alumno, Alignment.MIDDLE_CENTER);
         alumnoNuevo.setComponentAlignment(id_lugar_alumno, Alignment.MIDDLE_CENTER);
@@ -694,7 +701,6 @@ public class AdminView extends CustomComponent implements View {
         alumnoNuevo.setComponentAlignment(email_alumno, Alignment.MIDDLE_CENTER);
         alumnoNuevo.setComponentAlignment(curso_alumno, Alignment.MIDDLE_CENTER);
         alumnoNuevo.setComponentAlignment(password_alumno, Alignment.MIDDLE_CENTER);
-        alumnoNuevo.setComponentAlignment(foto_alumno, Alignment.MIDDLE_CENTER);
         botonesAlumno.setComponentAlignment(addAlumno, Alignment.MIDDLE_LEFT);
         botonesAlumno.setComponentAlignment(deleteAlumno, Alignment.MIDDLE_RIGHT);
         alumnoNuevo.setCaption("Introduzca los datos del nuevo alumno");
@@ -724,7 +730,6 @@ public class AdminView extends CustomComponent implements View {
                 curso_alumno.setValue(alumnoTabla.getCurso());
                 email_alumno.setValue(alumnoTabla.getEmail());
                 password_alumno.setValue(alumnoTabla.getPassword());
-                foto_alumno.setValue(alumnoTabla.getFoto());
             }
         });
 
@@ -752,7 +757,6 @@ public class AdminView extends CustomComponent implements View {
                 email_alumno.setValue("");
                 edad_alumno.setValue("");
                 password_alumno.setValue("");
-                foto_alumno.setValue("");
             }
         });
 
@@ -763,8 +767,7 @@ public class AdminView extends CustomComponent implements View {
             public void buttonClick(Button.ClickEvent event) {
                 Alumno a = new Alumno();
                 boolean encontrado = false;
-                int cont = listaAlumnos.size() + 1;
-                a.setIdAlumno(String.valueOf(cont));
+                a.setIdAlumno(id_alumno.getValue());
                 a.setIdLugar((String) id_lugar_alumno.getValue());
                 a.setNombre(nombre_alumno.getValue());
                 a.setApellidos(apellidos_alumno.getValue());
@@ -772,7 +775,6 @@ public class AdminView extends CustomComponent implements View {
                 a.setCurso((String) curso_alumno.getValue());
                 a.setEmail(email_alumno.getValue());
                 a.setPassword(password_alumno.getValue());
-                a.setFoto(foto_alumno.getValue());
                 try {
                     encontrado = alumno.buscar(a.getEmail());
                     if (encontrado == true) {
@@ -828,7 +830,6 @@ public class AdminView extends CustomComponent implements View {
                             email_alumno.setValue("");
                             edad_alumno.setValue("");
                             password_alumno.setValue("");
-                            foto_alumno.setValue("");
                             for (Alumno alum : listaAlumnos) {
                                 buscadorAlumnos.addItem(alum.getEmail());
                                 buscadorAlumnos.setItemCaption(alum.getEmail(), alum.toString());
@@ -851,7 +852,7 @@ public class AdminView extends CustomComponent implements View {
 
         //Profesor
         String[] columnHeadersProfesor = {"Apellidos", "Descripcion", "Edad", "Email",
-            "Evaluación", "Foto", "Horario", "ID lugar", "ID", "Móvil", "Nombre", "Nº votos", "Contraseña",};
+            "Horario", "ID lugar", "ID", "Móvil", "Nombre", "Contraseña",};
 
         tProfesores.setColumnHeaders(columnHeadersProfesor);
         tProfesores.setSizeFull();
@@ -924,14 +925,8 @@ public class AdminView extends CustomComponent implements View {
         movil_profesor.setInputPrompt("Móvil");
         horario_profesor.setRequired(true);
         horario_profesor.setInputPrompt("Horario");
-        evaluacion_profesor.setRequired(true);
-        evaluacion_profesor.setInputPrompt("Evaluación");
-        votos_profesor.setRequired(true);
-        votos_profesor.setInputPrompt("Votos");
         password_profesor.setRequired(true);
         password_profesor.setInputPrompt("Contraseña");
-        foto_profesor.setRequired(false);
-        foto_profesor.setInputPrompt("Fotografía");
 
         profesorNuevo.setComponentAlignment(id_profesor, Alignment.MIDDLE_CENTER);
         profesorNuevo.setComponentAlignment(id_lugar_profesor, Alignment.MIDDLE_CENTER);
@@ -942,10 +937,7 @@ public class AdminView extends CustomComponent implements View {
         profesorNuevo.setComponentAlignment(movil_profesor, Alignment.MIDDLE_CENTER);
         profesorNuevo.setComponentAlignment(horario_profesor, Alignment.MIDDLE_CENTER);
         profesorNuevo.setComponentAlignment(descripcion_profesor, Alignment.MIDDLE_CENTER);
-        profesorNuevo.setComponentAlignment(votos_profesor, Alignment.MIDDLE_CENTER);
-        profesorNuevo.setComponentAlignment(evaluacion_profesor, Alignment.MIDDLE_CENTER);
         profesorNuevo.setComponentAlignment(password_profesor, Alignment.MIDDLE_CENTER);
-        profesorNuevo.setComponentAlignment(foto_profesor, Alignment.MIDDLE_CENTER);
         botonesProfesor.setComponentAlignment(addProfesor, Alignment.MIDDLE_LEFT);
         botonesProfesor.setComponentAlignment(deleteProfesor, Alignment.MIDDLE_RIGHT);
         profesorNuevo.setCaption("Introduzca los datos del nuevo profesor");
@@ -978,10 +970,7 @@ public class AdminView extends CustomComponent implements View {
                 email_profesor.setReadOnly(true);
                 horario_profesor.setValue(profesorTabla.getHorario());
                 descripcion_profesor.setValue(profesorTabla.getDescripcion());
-                evaluacion_profesor.setValue(profesorTabla.getEvaluacion());
-                votos_profesor.setValue(profesorTabla.getNumVotos());
                 password_profesor.setValue(profesorTabla.getPassword());
-                foto_profesor.setValue(profesorTabla.getFoto());
             }
         });
 
@@ -1011,10 +1000,7 @@ public class AdminView extends CustomComponent implements View {
                 edad_profesor.setValue("");
                 horario_profesor.setValue("");
                 descripcion_profesor.setValue("");
-                evaluacion_profesor.setValue("");
-                votos_profesor.setValue("");
                 password_profesor.setValue("");
-                foto_profesor.setValue("");
             }
         });
 
@@ -1025,8 +1011,7 @@ public class AdminView extends CustomComponent implements View {
             public void buttonClick(Button.ClickEvent event) {
                 Profesor p = new Profesor();
                 boolean encontrado = false;
-                int cont = listaProfesores.size() + 1;
-                p.setIdProfesor(String.valueOf(cont));
+                p.setIdProfesor(id_profesor.getValue());
                 p.setIdLugar((String) id_lugar_profesor.getValue());
                 p.setNombre(nombre_profesor.getValue());
                 p.setApellidos(apellidos_profesor.getValue());
@@ -1034,11 +1019,8 @@ public class AdminView extends CustomComponent implements View {
                 p.setMovil(movil_profesor.getValue());
                 p.setHorario(horario_profesor.getValue());
                 p.setDescripcion(descripcion_profesor.getValue());
-                p.setEvaluacion(evaluacion_profesor.getValue());
-                p.setNumVotos(votos_profesor.getValue());
                 p.setEmail(email_profesor.getValue());
                 p.setPassword(password_profesor.getValue());
-                p.setFoto(foto_profesor.getValue());
                 try {
                     encontrado = profesor.buscarProfesor(p.getEmail());
                     if (encontrado == true) {
@@ -1093,13 +1075,10 @@ public class AdminView extends CustomComponent implements View {
                             movil_profesor.setValue("");
                             horario_profesor.setValue("");
                             descripcion_profesor.setValue("");
-                            evaluacion_profesor.setValue("");
-                            votos_profesor.setValue("");
                             email_profesor.setReadOnly(false);
                             email_profesor.setValue("");
                             edad_profesor.setValue("");
                             password_profesor.setValue("");
-                            foto_profesor.setValue("");
                             for (Profesor prof : listaProfesores) {
                                 buscadorProfesores.addItem(prof.getEmail());
                                 buscadorProfesores.setItemCaption(prof.getEmail(), prof.toString());

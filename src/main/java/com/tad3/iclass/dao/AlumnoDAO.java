@@ -57,7 +57,6 @@ public class AlumnoDAO {
                 a.setCurso((studentObj.getString("curso")));
                 a.setEmail((studentObj.getString("email")));
                 a.setPassword((studentObj.getString("password")));
-                a.setFoto((studentObj.getString("foto")));
 
                 lista.add(a);
                 //System.out.println(a.toString());
@@ -87,7 +86,6 @@ public class AlumnoDAO {
         a.setCurso((studentObj.getString("curso")));
         a.setEmail((studentObj.getString("email")));
         a.setPassword((studentObj.getString("password")));
-        a.setFoto((studentObj.getString("foto")));
 
         return a;
     }
@@ -135,7 +133,6 @@ public class AlumnoDAO {
         objeto.put("curso", a.getCurso());
         objeto.put("email", a.getEmail());
         objeto.put("password", a.getPassword());
-        objeto.put("foto", a.getFoto());
         coleccion.insert(objeto);
 
         return true;
@@ -158,7 +155,6 @@ public class AlumnoDAO {
         doc2.put("curso", a2.getCurso());
         doc2.put("email", a2.getEmail());
         doc2.put("password", a2.getPassword());
-        doc2.put("foto", a2.getFoto());
         coleccion.update(query, doc2);
         
         return true;

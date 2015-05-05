@@ -84,7 +84,6 @@ public class NuevoAlumnoView extends CustomComponent implements View {
                             a.setCurso(curso.getValue());
                             a.setEmail(email.getValue());
                             a.setPassword(pass.getValue());
-                            a.setFoto(foto.getValue());
                             try {
                                 if(alumno.crear(a)){
                                     panelPrincipal.addComponent(new Label("Usuario creado"));

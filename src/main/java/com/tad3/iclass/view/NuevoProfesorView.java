@@ -81,9 +81,6 @@ public class NuevoProfesorView extends CustomComponent implements View {
                     p.setMovil(movil.getValue());
                     p.setPassword(pass.getValue());
                     p.setHorario(horario.toString());
-                    p.setEvaluacion("0.0");
-                    p.setNumVotos("0");
-                    p.setFoto(foto.getValue());
                     try {
                         if (profesor.crear(p)) {
                             panelPrincipal.addComponent(new Label("Usuario creado"));
