@@ -14,21 +14,16 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
@@ -38,17 +33,8 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -851,8 +837,8 @@ public class AdminView extends CustomComponent implements View {
         });
 
         //Profesor
-        String[] columnHeadersProfesor = {"Apellidos", "Descripcion", "Edad", "Email",
-            "Horario", "ID lugar", "ID", "Móvil", "Nombre", "Contraseña",};
+        String[] columnHeadersProfesor = {"Apellidos", "Asignaturas", "Descripcion", "Edad", "Email",
+            "Horario", "ID lugar", "ID", "Móvil", "Nombre", "Contraseña"};
 
         tProfesores.setColumnHeaders(columnHeadersProfesor);
         tProfesores.setSizeFull();

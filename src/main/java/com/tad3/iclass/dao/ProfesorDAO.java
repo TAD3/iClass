@@ -62,6 +62,7 @@ public class ProfesorDAO {
                 p.setPassword((professorObj.getString("password")));
                 p.setHorario((professorObj.getString("horario")));
                 p.setDescripcion((professorObj.getString("descripcion")));
+                p.setAsignaturas((ArrayList)professorObj.get("asignaturas"));
 
                 lista.add(p);
                 //System.out.println(p.toString());
@@ -93,6 +94,7 @@ public class ProfesorDAO {
         p.setPassword((professorObj.getString("password")));
         p.setHorario((professorObj.getString("horario")));
         p.setDescripcion((professorObj.getString("descripcion")));
+        p.setAsignaturas((ArrayList)professorObj.get("asignaturas"));
 
         return p;
     }
@@ -155,6 +157,7 @@ public class ProfesorDAO {
         objeto.put("horario", p.getHorario());
         objeto.put("descripcion", p.getDescripcion());
         objeto.put("password", p.getPassword());
+        objeto.put("asignaturas", p.getAsignaturas());
         coleccion.insert(objeto);
 
         return true;
@@ -180,6 +183,7 @@ public class ProfesorDAO {
         doc2.put("password", p2.getPassword());
         doc2.put("horario", p2.getHorario());
         doc2.put("descripcion", p2.getDescripcion());
+        doc2.put("asignaturas", p2.getAsignaturas());
         coleccion.update(query, doc2);
         
         return true;

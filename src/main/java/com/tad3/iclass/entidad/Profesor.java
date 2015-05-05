@@ -5,6 +5,8 @@
  */
 package com.tad3.iclass.entidad;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Juanlu
@@ -21,6 +23,7 @@ public class Profesor {
     private String password;
     private String horario;
     private String descripcion;
+    private ArrayList<Asignatura> asignaturas;
 
     @Override
     public String toString() {
@@ -31,7 +34,7 @@ public class Profesor {
     }
 
     public Profesor(String idProfesor, String idLugar, String nombre, String apellidos, String edad, String email,
-            String movil, String password, String horario, String descripcion, String evaluacion, String numVotos) {
+            String movil, String password, String horario, String descripcion, ArrayList asignaturas) {
         this.idProfesor = idProfesor;
         this.idLugar = idLugar;
         this.nombre = nombre;
@@ -42,6 +45,7 @@ public class Profesor {
         this.password = password;
         this.horario = horario;
         this.descripcion = descripcion;
+        this.asignaturas = asignaturas;
     }
 
     /**
@@ -182,6 +186,14 @@ public class Profesor {
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public ArrayList<Asignatura> getAsignaturas() {
+        return asignaturas;
+    }
+
+    public void setAsignaturas(ArrayList<Asignatura> asignaturas) {
+        this.asignaturas = asignaturas;
     }
 
 }
