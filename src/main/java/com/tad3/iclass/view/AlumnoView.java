@@ -55,17 +55,16 @@ public class AlumnoView extends CustomComponent implements View {
     TextField email_alumno = new TextField("Email: ");
     TextField password_alumno = new TextField("Contraseña: ");
     TextField repassword_alumno = new TextField("Repetir contraseña: ");
-    Table table = new Table();
-    //Table table1 = new Table();
 
     Button modifyme = new Button("Actualizar");
     Button saveme = new Button("Guardar");
     Button deleteme = new Button("Borrar cuenta");
     Button cancel = new Button("Cancelar");
     Button buscar = new Button("Buscar Profesor");
-    Button buscarTodo = new Button("Buscar Profesor todo lugares");
+    Button buscarTodo = new Button("BP todos lugares");
 
     HorizontalLayout botonesAlumno = new HorizontalLayout(saveme, deleteme, cancel);
+    HorizontalLayout botonesBuscar = new HorizontalLayout(buscar, buscarTodo);
     VerticalLayout panelPrincipal = new VerticalLayout();
     VerticalLayout panelIzquierdo = new VerticalLayout();
     VerticalLayout panelDerecho = new VerticalLayout();
@@ -95,7 +94,7 @@ public class AlumnoView extends CustomComponent implements View {
          */
         layaoutArriba.setSizeFull();
         menuBar.setSizeFull();
-
+        panelIzquierdo.setMargin(true);
         panelSubPrincipal.setSplitPosition(23.0f, Unit.PERCENTAGE);
         panelSubPrincipal.setLocked(true);
         curso_asig.setInputPrompt("Curso");
@@ -207,6 +206,21 @@ public class AlumnoView extends CustomComponent implements View {
                         curso_asig.setReadOnly(false);
                         password_alumno.setReadOnly(false);
 
+                        try {
+                            Alumno a = alumno.alumno((String) getSession().getAttribute("user"));
+                            id_alumno.setValue(a.getIdAlumno());
+                            id_lugar_alumno.setValue(a.getIdLugar());
+                            nombre_alumno.setValue(a.getNombre());
+                            apellidos_alumno.setValue(a.getApellidos());
+                            edad_alumno.setValue(a.getEdad());
+                            curso_asig.setValue(a.getCurso());
+                            email_alumno.setValue(a.getEmail());
+                            password_alumno.setValue(a.getPassword());
+                            repassword_alumno.setValue(a.getPassword());
+
+                        } catch (UnknownHostException ex) {
+                            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                         panelIzquierdo.addComponent(modifyme);
                         panelIzquierdo.addComponent(id_alumno);
                         panelIzquierdo.addComponent(id_lugar_alumno);
@@ -279,6 +293,21 @@ public class AlumnoView extends CustomComponent implements View {
                     public void buttonClick(ClickEvent event) {
                         panelIzquierdo.removeComponent(repassword_alumno);
                         panelIzquierdo.removeComponent(botonesAlumno);
+                        try {
+                            Alumno a = alumno.alumno((String) getSession().getAttribute("user"));
+                            id_alumno.setValue(a.getIdAlumno());
+                            id_lugar_alumno.setValue(a.getIdLugar());
+                            nombre_alumno.setValue(a.getNombre());
+                            apellidos_alumno.setValue(a.getApellidos());
+                            edad_alumno.setValue(a.getEdad());
+                            curso_asig.setValue(a.getCurso());
+                            email_alumno.setValue(a.getEmail());
+                            password_alumno.setValue(a.getPassword());
+                            repassword_alumno.setValue(a.getPassword());
+
+                        } catch (UnknownHostException ex) {
+                            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        }
 
                         id_alumno.setReadOnly(true);
                         id_lugar_alumno.setReadOnly(true);
@@ -324,29 +353,38 @@ public class AlumnoView extends CustomComponent implements View {
                     @Override
                     public void buttonClick(ClickEvent event) {
                         panelDerecho.removeAllComponents();
+                        Table table = new Table();
+                        table.setWidth("1100");
                         try {
                             table.addContainerProperty("Nombre", String.class, null);
                             table.addContainerProperty("Apellidos", String.class, null);
                             table.addContainerProperty("Edad", String.class, null);
                             table.addContainerProperty("Movil", String.class, null);
                             table.addContainerProperty("Correo", String.class, null);
+                            table.addContainerProperty("Direccion", String.class, null);
                             table.addContainerProperty("Horario", String.class, null);
-                            
+
                             ProfesorDAO alumnoDAO = new ProfesorDAO();
                             Alumno a1 = alumno.alumno((String) getSession().getAttribute("user"));
-                            System.out.println(a1.getIdLugar());
-                            Iterator<Profesor> it3 = alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "si").iterator();
-                            int i=1;
-                            while (it3.hasNext()) {
-                                Profesor p = it3.next();
-                                table.addItem(new Object[]{p.getNombre(), p.getApellidos(), p.getEdad(), p.getMovil(), p.getEmail(), p.getHorario()}, i);
-                                i++;
+                            Iterator<Profesor> it3 = alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "daIgual").iterator();
+                            int i = 1;
+                            if (alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "").size() == 0) {
+                                panelDerecho.addComponent(new Label("No hay datos"));
+                            } else {
+                                while (it3.hasNext()) {
+                                    Profesor p = it3.next();
+                                    Lugar l = new Lugar();
+                                    LugarDAO lugarDAO = new LugarDAO();
+                                    l = lugarDAO.lugar(p.getIdLugar());
+                                    table.addItem(new Object[]{p.getNombre(), p.getApellidos(), p.getEdad(), p.getMovil(), p.getEmail(),l.getBarrio(), p.getHorario()}, i);
+                                    i++;
+                                }
+                                panelDerecho.addComponent(table);
                             }
 
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        panelDerecho.addComponent(table);
 
                     }
                 });
@@ -356,35 +394,44 @@ public class AlumnoView extends CustomComponent implements View {
                     @Override
                     public void buttonClick(ClickEvent event) {
                         panelDerecho.removeAllComponents();
+                        Table table = new Table();
+                        table.setWidth("1100");
                         try {
                             table.addContainerProperty("Nombre", String.class, null);
                             table.addContainerProperty("Apellidos", String.class, null);
                             table.addContainerProperty("Edad", String.class, null);
                             table.addContainerProperty("Movil", String.class, null);
                             table.addContainerProperty("Correo", String.class, null);
+                            table.addContainerProperty("Direccion", String.class, null);
                             table.addContainerProperty("Horario", String.class, null);
-                            
+
                             ProfesorDAO alumnoDAO = new ProfesorDAO();
                             Alumno a1 = alumno.alumno((String) getSession().getAttribute("user"));
-                            System.out.println(a1.getIdLugar());
                             Iterator<Profesor> it3 = alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "daIgual").iterator();
-                            int i=1;
-                            while (it3.hasNext()) {
-                                Profesor p = it3.next();
-                                table.addItem(new Object[]{p.getNombre(), p.getApellidos(), p.getEdad(), p.getMovil(), p.getEmail(), p.getHorario()}, i);
-                                i++;
+                            int i = 1;
+                            if (alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "daIgual").size() == 0) {
+                                panelDerecho.addComponent(new Label("No hay datos"));
+                            } else {
+                                while (it3.hasNext()) {
+                                    Profesor p = it3.next();
+                                    Lugar l = new Lugar();
+                                    LugarDAO lugarDAO = new LugarDAO();
+                                    l = lugarDAO.lugar(p.getIdLugar());
+                                    table.addItem(new Object[]{p.getNombre(), p.getApellidos(), p.getEdad(), p.getMovil(), p.getEmail(),l.getBarrio(), p.getHorario()}, i);
+                                    i++;
+                                }
+                                panelDerecho.addComponent(table);
                             }
 
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                        panelDerecho.addComponent(table);
                     }
                 });
 
                 panelIzquierdo.addComponent(asignatura);
-                panelIzquierdo.addComponent(buscar);
-                panelIzquierdo.addComponent(buscarTodo);
+                botonesBuscar.setMargin(true);
+                panelIzquierdo.addComponent(botonesBuscar);
 
             }
         };
