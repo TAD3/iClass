@@ -4,6 +4,7 @@ import com.tad3.iclass.dao.AlumnoDAO;
 import com.tad3.iclass.dao.ProfesorDAO;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.navigator.View;
@@ -30,6 +31,7 @@ import javax.servlet.annotation.WebServlet;
  * @author Laura
  */
 @Theme("mytheme")
+@Widgetset("com.tad3.iclass.MyAppWidgetset")
 public class LoginView extends CustomComponent implements View {
 
     public static final String NAME = "login";

@@ -168,4 +168,12 @@ public class AlumnoDAO {
         System.out.println(alum);
         return alum != null;
     }
+    
+     public int alumnoPorBarrio(String idLugar) throws UnknownHostException {
+        MongoClient conect = conexion();
+        DBCollection coleccion = collection(conect);
+        BasicDBObject query = new BasicDBObject("idLugar", idLugar);
+        int count = coleccion.find(query).count();
+        return count;
+    }
 }
