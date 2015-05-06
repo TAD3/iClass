@@ -70,9 +70,9 @@ public class ProfesorView extends CustomComponent implements View {
     TextField password_profesor = new TextField("Contraseña: ");
     TextField descripcion_profesor = new TextField("Descripción: ");
     TextField horario_profesor = new TextField("Horario: ");
-    Tree tree;
-    Table tableAsignaturas;
-    Table tableDragDrop;
+    Tree tree = new Tree();
+    Table tableAsignaturas = new Table();
+    Table tableDragDrop = new Table();
 
     Button modifyme = new Button("Actualizar");
     Button saveme = new Button("Guardar");
@@ -82,7 +82,7 @@ public class ProfesorView extends CustomComponent implements View {
     HorizontalLayout botonesProfesor = new HorizontalLayout(saveme, deleteme);
     FormLayout datosProfesor = new FormLayout(modifyme, id_profesor, id_lugar_profesor,
             nombre_profesor, apellidos_profesor, edad_profesor, email_profesor, movil_profesor,
-            descripcion_profesor, horario_profesor, password_profesor, manageCourses, botonesProfesor);
+            descripcion_profesor, horario_profesor, password_profesor, tableAsignaturas, manageCourses, botonesProfesor);
 
     VerticalLayout panelDerecho = new VerticalLayout();
     Layout layaoutArriba = new HorizontalLayout();
@@ -133,6 +133,7 @@ public class ProfesorView extends CustomComponent implements View {
         datosProfesor.setComponentAlignment(password_profesor, Alignment.MIDDLE_CENTER);
         datosProfesor.setComponentAlignment(descripcion_profesor, Alignment.MIDDLE_CENTER);
         datosProfesor.setComponentAlignment(horario_profesor, Alignment.MIDDLE_CENTER);
+        datosProfesor.setComponentAlignment(tableAsignaturas, Alignment.MIDDLE_CENTER);
         datosProfesor.setComponentAlignment(botonesProfesor, Alignment.MIDDLE_CENTER);
         datosProfesor.setMargin(true);
 
@@ -146,6 +147,8 @@ public class ProfesorView extends CustomComponent implements View {
         password_profesor.setRequired(true);
         descripcion_profesor.setRequired(false);
         horario_profesor.setRequired(true);
+        tableAsignaturas.setReadOnly(true);
+        tableDragDrop.setReadOnly(true);
 
         readOnly();
 
@@ -163,6 +166,7 @@ public class ProfesorView extends CustomComponent implements View {
                 password_profesor.setReadOnly(false);
                 descripcion_profesor.setReadOnly(false);
                 horario_profesor.setReadOnly(false);
+                tableDragDrop.setReadOnly(false);
             }
         });
 
@@ -181,6 +185,7 @@ public class ProfesorView extends CustomComponent implements View {
                 p.setPassword(password_profesor.getValue());
                 p.setDescripcion(descripcion_profesor.getValue());
                 p.setHorario(horario_profesor.getValue());
+                p.setAsignaturas((ArrayList)tableDragDrop.getData());
                 boolean encontrado = false;
                 try {
                     encontrado = profesor.buscarProfesor(me.getEmail());
@@ -221,7 +226,6 @@ public class ProfesorView extends CustomComponent implements View {
 
             @Override
             public void buttonClick(ClickEvent event) {
-                cargarAsignaturas();
                 dragAndDrop();
             }
         });
@@ -285,6 +289,8 @@ public class ProfesorView extends CustomComponent implements View {
         password_profesor.setReadOnly(true);
         descripcion_profesor.setReadOnly(true);
         horario_profesor.setReadOnly(true);
+        tableAsignaturas.setReadOnly(true);
+        tableDragDrop.setReadOnly(true);
     }
 
     public void misDatos() {
@@ -301,6 +307,7 @@ public class ProfesorView extends CustomComponent implements View {
             password_profesor.setValue(me.getPassword());
             descripcion_profesor.setValue(me.getDescripcion());
             horario_profesor.setValue(me.getHorario());
+            cargarAsignaturas();
         } catch (UnknownHostException ex) {
             Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -350,7 +357,6 @@ public class ProfesorView extends CustomComponent implements View {
         initializeTable(new SourceIs(tree));
 
         // Add components
-        panelDerecho.addComponent(tableAsignaturas);
         panelDerecho.addComponent(tree);
         panelDerecho.addComponent(tableDragDrop);
     }

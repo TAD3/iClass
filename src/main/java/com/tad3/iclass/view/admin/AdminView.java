@@ -855,8 +855,8 @@ public class AdminView extends CustomComponent implements View {
         });
 
         //Profesor
-        String[] columnHeadersProfesor = {"Apellidos", "Descripcion", "Edad", "Email",
-            "Horario", "ID lugar", "ID", "Móvil", "Nombre", "Contraseña",};
+        String[] columnHeadersProfesor = {"Apellidos", "Asignaturas", "Descripcion", "Edad", "Email",
+            "Horario", "ID lugar", "ID", "Móvil", "Nombre", "Contraseña"};
 
         tProfesores.setColumnHeaders(columnHeadersProfesor);
         tProfesores.setSizeFull();

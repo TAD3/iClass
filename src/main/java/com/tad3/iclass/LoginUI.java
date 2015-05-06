@@ -2,6 +2,7 @@ package com.tad3.iclass;
 
 import com.tad3.iclass.view.AlumnoView;
 import com.tad3.iclass.view.ProfesorView;
+import com.tad3.iclass.view.ProfesorView_prueba;
 import com.tad3.iclass.view.admin.AdminView;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
@@ -10,6 +11,9 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,18 +32,18 @@ public class LoginUI extends UI {
 
     @Override
     protected void init(VaadinRequest request) {
-        
+
         final VerticalLayout layout = new VerticalLayout();
-		layout.setMargin(true);
-		layout.setSpacing(true);
-		setContent(layout);
-		ComponentContainerViewDisplay viewDisplay = new ComponentContainerViewDisplay(layout);
-		navigator = new Navigator(UI.getCurrent(), viewDisplay);
-		navigator.addView("", new LoginView());
-		navigator.addView(ADMINVIEW, new AdminView());
-		navigator.addView(ALUMNOVIEW, new AlumnoView());
-		navigator.addView(PROFESORVIEW, new ProfesorView());
-                
+        layout.setMargin(true);
+        layout.setSpacing(true);
+        setContent(layout);
+        ComponentContainerViewDisplay viewDisplay = new ComponentContainerViewDisplay(layout);
+        navigator = new Navigator(UI.getCurrent(), viewDisplay);
+        navigator.addView("", new LoginView());
+        navigator.addView(ADMINVIEW, new AdminView());
+        navigator.addView(ALUMNOVIEW, new AlumnoView());
+        navigator.addView(PROFESORVIEW, new ProfesorView_prueba());
+
         getNavigator().addViewChangeListener(new ViewChangeListener() {
 
             @Override

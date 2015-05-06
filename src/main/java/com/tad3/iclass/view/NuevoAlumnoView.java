@@ -59,7 +59,6 @@ public class NuevoAlumnoView extends CustomComponent implements View {
         final TextField email = new TextField();
         final PasswordField pass = new PasswordField();
         final PasswordField pass2 = new PasswordField();
-        final TextField foto = new TextField();
         
         email.setRequired(true);
         email.setInputPrompt("Tu correo electrónico (miguel@email.com)");
@@ -112,7 +111,6 @@ public class NuevoAlumnoView extends CustomComponent implements View {
         panelPrincipal.addComponent(email);
         panelPrincipal.addComponent(pass);
         panelPrincipal.addComponent(pass2);
-        panelPrincipal.addComponent(foto);
         
         setCompositionRoot(panelPrincipal);
     }
