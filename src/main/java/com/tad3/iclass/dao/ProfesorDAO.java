@@ -125,7 +125,6 @@ public class ProfesorDAO {
         return lista;
     }
 
-    
     /*
      Borrar alumno
      */
@@ -133,7 +132,7 @@ public class ProfesorDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("email", correo));
-        
+
         return true;
     }
 
@@ -169,7 +168,7 @@ public class ProfesorDAO {
 
         DBObject query = new BasicDBObject("email", p1.getEmail());
         DBObject doc2 = new BasicDBObject();
-        
+
         doc2.put("_id", p2.getIdProfesor());
         doc2.put("idLugar", p2.getIdLugar());
         doc2.put("nombre", p2.getNombre());
@@ -181,16 +180,24 @@ public class ProfesorDAO {
         doc2.put("horario", p2.getHorario());
         doc2.put("descripcion", p2.getDescripcion());
         coleccion.update(query, doc2);
-        
+
         return true;
     }
-    
-     public boolean buscarProfesor(String email) throws UnknownHostException {
+
+    public boolean buscarProfesor(String email) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("email", email);
         DBObject profe = coleccion.findOne(query);
         System.out.println(profe);
         return profe != null;
+    }
+
+    public int profesorPorBarrio(String idLugar) throws UnknownHostException {
+        MongoClient conect = conexion();
+        DBCollection coleccion = collection(conect);
+        BasicDBObject query = new BasicDBObject("idLugar", idLugar);
+        int count = coleccion.find(query).count();
+        return count;
     }
 }

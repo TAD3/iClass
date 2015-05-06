@@ -3,6 +3,7 @@ package com.tad3.iclass;
 import com.tad3.iclass.view.AlumnoView;
 import com.tad3.iclass.view.ProfesorView;
 import com.tad3.iclass.view.admin.AdminView;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.Navigator.ComponentContainerViewDisplay;
 import com.vaadin.navigator.ViewChangeListener;
@@ -14,6 +15,8 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author Laura
  */
+
+@Widgetset("com.tad3.iclass.MyAppWidgetset")
 public class LoginUI extends UI {
 
     public Navigator navigator;

@@ -8,27 +8,34 @@ import com.tad3.iclass.entidad.Alumno;
 import com.tad3.iclass.entidad.Asignatura;
 import com.tad3.iclass.entidad.Lugar;
 import com.tad3.iclass.entidad.Profesor;
+import com.vaadin.addon.charts.Chart;
+import com.vaadin.addon.charts.model.ChartType;
+import com.vaadin.addon.charts.model.Configuration;
+import com.vaadin.addon.charts.model.HorizontalAlign;
+import com.vaadin.addon.charts.model.LayoutDirection;
+import com.vaadin.addon.charts.model.Legend;
+import com.vaadin.addon.charts.model.ListSeries;
+import com.vaadin.addon.charts.model.PlotOptionsColumn;
+import com.vaadin.addon.charts.model.Tooltip;
+import com.vaadin.addon.charts.model.VerticalAlign;
+import com.vaadin.addon.charts.model.XAxis;
+import com.vaadin.addon.charts.model.YAxis;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.FileResource;
 import com.vaadin.server.Page;
-import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
-import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
@@ -38,17 +45,9 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Upload;
-import com.vaadin.ui.Upload.Receiver;
-import com.vaadin.ui.Upload.SucceededEvent;
-import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.VerticalSplitPanel;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -181,6 +180,8 @@ public class AdminView extends CustomComponent implements View {
     VerticalSplitPanel vspProfesor = new VerticalSplitPanel(hlProfesor, tProfesores);
     HorizontalSplitPanel hspProfesor = new HorizontalSplitPanel(vspProfesor, profesorNuevo);
 
+    VerticalLayout vEstadistica = new VerticalLayout();
+
     private String getLogoutPath() {
         return getUI().getPage().getLocation().getPath();
     }
@@ -211,6 +212,9 @@ public class AdminView extends CustomComponent implements View {
                     case "Profesores":
                         panel.setContent(hspProfesor);
                         break;
+                    case "Estadisticas":
+                        panel.setContent(vEstadistica);
+                        break;
                 }
             }
         };
@@ -227,7 +231,7 @@ public class AdminView extends CustomComponent implements View {
         MenuItem alumnos = menu.addItem("Alumnos", null, mycommand);
         MenuItem asignaturas = menu.addItem("Asignaturas", null, mycommand);
         MenuItem lugares = menu.addItem("Lugares", null, mycommand);
-        lugares.addSeparator();
+        MenuItem estadisticas = menu.addItem("Estadisticas", null, mycommand);
         menu.addItem("Log out", logoutCommand);
 
         //Asignatura
@@ -674,7 +678,7 @@ public class AdminView extends CustomComponent implements View {
         hlAlumno.setComponentAlignment(buscadorAlumnos, Alignment.MIDDLE_LEFT);
         hlAlumno.setComponentAlignment(allAlumno, Alignment.MIDDLE_RIGHT);
         hlAlumno.setComponentAlignment(nuevoAlumno, Alignment.MIDDLE_RIGHT);
-        
+
         id_alumno.setRequired(true);
         id_alumno.setInputPrompt("ID alumno");
         //id_alumno.setReadOnly(true);
@@ -1098,6 +1102,67 @@ public class AdminView extends CustomComponent implements View {
                 }
             }
         });
+
+        //Estadisticas
+        
+        Chart columns = new Chart(ChartType.COLUMN);
+
+        Configuration conf1 = columns.getConfiguration();
+
+        conf1.setTitle("Número de usuarios por barrios de Sevilla");
+        conf1.setSubTitle("Usuarios: Profesores o alumnos");
+
+        XAxis x = new XAxis();
+        x.setCategories("Centro", "La Macarena", "Los Remedios", "Montequinto",
+                "Nervión", "Parque Alcosa", "Sevilla Este", "Triana");
+        conf1.addxAxis(x);
+
+        YAxis y = new YAxis();
+        y.setMin(0);
+        y.setTitle("Número de personas");
+        conf1.addyAxis(y);
+
+        Legend legend = new Legend();
+        legend.setLayout(LayoutDirection.VERTICAL);
+        legend.setBackgroundColor("#FFFFFF");
+        legend.setHorizontalAlign(HorizontalAlign.LEFT);
+        legend.setVerticalAlign(VerticalAlign.TOP);
+        legend.setX(100);
+        legend.setY(70);
+        legend.setFloating(true);
+        legend.setShadow(true);
+        conf1.setLegend(legend);
+
+        Tooltip tooltip = new Tooltip();
+        tooltip.setFormatter("this.y");
+        conf1.setTooltip(tooltip);
+
+        PlotOptionsColumn plot = new PlotOptionsColumn();
+        plot.setPointPadding(0.2);
+        plot.setBorderWidth(0);
+
+        try {
+            conf1.addSeries(new ListSeries("Profesores", profesor.profesorPorBarrio("41001CENSEV"),
+                    profesor.profesorPorBarrio("41009MACSEV"), profesor.profesorPorBarrio("41011REMSEV"),
+                    profesor.profesorPorBarrio("41089MQT2HE"), profesor.profesorPorBarrio("41005NERSEV"),
+                    profesor.profesorPorBarrio("41019ALCSEV"), profesor.profesorPorBarrio("41020SESSEV"),
+                    profesor.profesorPorBarrio("41010TRISEV")));
+            conf1.addSeries(new ListSeries("Alumnos", alumno.alumnoPorBarrio("41001CENSEV"),
+                    alumno.alumnoPorBarrio("41009MACSEV"), alumno.alumnoPorBarrio("41011REMSEV"),
+                    alumno.alumnoPorBarrio("41089MQTSEV"), alumno.alumnoPorBarrio("41005NERSEV"),
+                    alumno.alumnoPorBarrio("41019ALCSEV"), alumno.alumnoPorBarrio("41020SESSEV"),
+                    alumno.alumnoPorBarrio("41010TRISEV")));
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        columns.setSizeFull();
+        columns.drawChart(conf1);
+
+        vEstadistica.addComponent(columns);
+        vEstadistica.setMargin(true);
+        vEstadistica.setSpacing(true);
+        vEstadistica.setComponentAlignment(columns, Alignment.MIDDLE_CENTER);
 
         panel.setWidth(String.valueOf(Page.getCurrent().getBrowserWindowWidth()) + "px");
         panel.setHeight(String.valueOf(Page.getCurrent().getBrowserWindowHeight() * 0.9) + "px");
