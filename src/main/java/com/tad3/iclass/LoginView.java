@@ -51,13 +51,13 @@ public class LoginView extends CustomComponent implements View {
     public LoginView() {
         setSizeFull();
 
-        final Styles styles = Page.getCurrent().getStyles();
-
-        // inject the new color as a style
-        styles.add(".reindeer.v-app {"
-                + "        background-image: url('../VAADIN/themes/mytheme/img/pizarra.jpg');"
-                + "        background-size: cover"
-                + "    }");
+//        final Styles styles = Page.getCurrent().getStyles();
+//
+//        // inject the new color as a style
+//        styles.add(".reindeer.v-app {"
+//                + "        background-image: url('../VAADIN/themes/mytheme/img/pizarra.jpg');"
+//                + "        background-size: cover"
+//                + "    }");
 
         // Create the user input field
         user = new TextField("Usuario: ");

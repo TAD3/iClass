@@ -5,6 +5,7 @@
  */
 package com.tad3.iclass.dao;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -17,6 +18,7 @@ import com.tad3.iclass.util.CustomComparator;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -24,14 +26,14 @@ import java.util.List;
  * @author Juanlu
  */
 public class ProfesorDAO {
-
+    
     MongoClient mongoClient;
-
+    
     public MongoClient conexion() throws UnknownHostException {
         mongoClient = new MongoClient("localhost", 27017);
         return mongoClient;
     }
-
+    
     public DBCollection collection(MongoClient conect) {
         DB database = conect.getDB("iclass");
         DBCollection coleccion = database.getCollection("profesor");
@@ -42,7 +44,7 @@ public class ProfesorDAO {
      Traer lista de alumnos de mongo
      */
     public List<Profesor> listaProfesores() throws UnknownHostException {
-
+        
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         DBCursor cursor = coleccion.find();
@@ -62,8 +64,7 @@ public class ProfesorDAO {
                 p.setPassword((professorObj.getString("password")));
                 p.setHorario((professorObj.getString("horario")));
                 p.setDescripcion((professorObj.getString("descripcion")));
-                p.setAsignaturas((ArrayList) professorObj.get("asignaturas"));
-
+                p.setAsignaturas((ArrayList)(professorObj.get("asignaturas")));
                 lista.add(p);
                 //System.out.println(p.toString());
             }
@@ -95,7 +96,7 @@ public class ProfesorDAO {
         p.setHorario((professorObj.getString("horario")));
         p.setDescripcion((professorObj.getString("descripcion")));
         p.setAsignaturas((ArrayList) professorObj.get("asignaturas"));
-
+        
         return p;
     }
 
@@ -107,15 +108,15 @@ public class ProfesorDAO {
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("email", correo).append("password", pass);
         DBObject user = coleccion.findOne(query);
-
+        
         return user != null;
     }
     /*
      Traer lista de asignaturas por profesor de mongo
      */
-
+    
     public List<Asignatura> listaAsignaturasPorProfesor(String idProfesor) throws UnknownHostException {
-
+        
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("_id", idProfesor);
@@ -135,7 +136,7 @@ public class ProfesorDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("email", correo));
-
+        
         return true;
     }
 
@@ -146,7 +147,7 @@ public class ProfesorDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject objeto = new BasicDBObject();
-
+        
         objeto.put("_id", p.getIdProfesor());
         objeto.put("idLugar", p.getIdLugar());
         objeto.put("nombre", p.getNombre());
@@ -159,7 +160,7 @@ public class ProfesorDAO {
         objeto.put("password", p.getPassword());
         objeto.put("asignaturas", p.getAsignaturas());
         coleccion.insert(objeto);
-
+        
         return true;
     }
 
@@ -169,7 +170,7 @@ public class ProfesorDAO {
     public boolean modificar(Profesor p1, Profesor p2) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
-
+        
         DBObject query = new BasicDBObject("email", p1.getEmail());
         DBObject doc2 = new BasicDBObject();
         doc2.put("_id", p2.getIdProfesor());
@@ -184,10 +185,10 @@ public class ProfesorDAO {
         doc2.put("descripcion", p2.getDescripcion());
         doc2.put("asignaturas", p2.getAsignaturas());
         coleccion.update(query, doc2);
-
+        
         return true;
     }
-
+    
     public boolean buscarProfesor(String email) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
@@ -196,14 +197,14 @@ public class ProfesorDAO {
         System.out.println(profe);
         return profe != null;
     }
-
+    
     public List<Profesor> buscarProfAsig(String idLugar, String asignatura, String sitio) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
-
+        
         List<Profesor> lista = new ArrayList<>();
         if (sitio.equals("daIgual")) {
-
+            
             BasicDBObject query = new BasicDBObject("asignaturas._id", asignatura);
             DBCursor cursor = coleccion.find(query);
             while (cursor.hasNext()) {
@@ -220,7 +221,7 @@ public class ProfesorDAO {
                 p.setPassword((professorObj.getString("password")));
                 p.setHorario((professorObj.getString("horario")));
                 p.setDescripcion((professorObj.getString("descripcion")));
-
+                
                 lista.add(p);
             }
         } else {
@@ -240,7 +241,7 @@ public class ProfesorDAO {
                 p.setPassword((professorObj.getString("password")));
                 p.setHorario((professorObj.getString("horario")));
                 p.setDescripcion((professorObj.getString("descripcion")));
-
+                
                 lista.add(p);
             }
             //BasicDBObject query = new BasicDBObject("asignatura", email);

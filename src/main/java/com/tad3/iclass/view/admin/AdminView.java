@@ -163,6 +163,7 @@ public class AdminView extends CustomComponent implements View {
     TextField password_profesor = new TextField("Contraseña: ");
     TextField descripcion_profesor = new TextField("Descripción: ");
     TextField horario_profesor = new TextField("Horario: ");
+    ArrayList asignaturas_profesor = new ArrayList();
 
     Button allProfesor = new Button("Todas los profesores");
     Button nuevoProfesor = new Button("Nuevo profesor");
@@ -975,6 +976,7 @@ public class AdminView extends CustomComponent implements View {
                 horario_profesor.setValue(profesorTabla.getHorario());
                 descripcion_profesor.setValue(profesorTabla.getDescripcion());
                 password_profesor.setValue(profesorTabla.getPassword());
+                asignaturas_profesor.addAll(profesorTabla.getAsignaturas());
             }
         });
 
@@ -1005,6 +1007,7 @@ public class AdminView extends CustomComponent implements View {
                 horario_profesor.setValue("");
                 descripcion_profesor.setValue("");
                 password_profesor.setValue("");
+                asignaturas_profesor.clear();
             }
         });
 
@@ -1025,6 +1028,7 @@ public class AdminView extends CustomComponent implements View {
                 p.setDescripcion(descripcion_profesor.getValue());
                 p.setEmail(email_profesor.getValue());
                 p.setPassword(password_profesor.getValue());
+                p.setAsignaturas(asignaturas_profesor);
                 try {
                     encontrado = profesor.buscarProfesor(p.getEmail());
                     if (encontrado == true) {
@@ -1104,7 +1108,7 @@ public class AdminView extends CustomComponent implements View {
         });
 
         //Estadisticas
-        
+        vEstadistica.removeAllComponents();
         Chart columns = new Chart(ChartType.COLUMN);
 
         Configuration conf1 = columns.getConfiguration();
