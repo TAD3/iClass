@@ -1,7 +1,6 @@
 package com.tad3.iclass;
 
 import com.tad3.iclass.view.AlumnoView;
-import com.tad3.iclass.view.ProfesorView;
 import com.tad3.iclass.view.ProfesorView_prueba;
 import com.tad3.iclass.view.admin.AdminView;
 import com.vaadin.annotations.Widgetset;

@@ -8,7 +8,6 @@ import com.tad3.iclass.entidad.Alumno;
 import com.tad3.iclass.entidad.Asignatura;
 import com.tad3.iclass.entidad.Lugar;
 import com.tad3.iclass.entidad.Profesor;
-import com.vaadin.data.util.TextFileProperty;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
@@ -32,7 +31,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,7 +43,7 @@ public class AlumnoView extends CustomComponent implements View {
     public static final String NAME = "alumno";
     AlumnoDAO alumno = new AlumnoDAO();
 
-    TextField id_alumno = new TextField("ID: ");
+    TextField id_alumno = new TextField("DNI: ");
     ComboBox id_lugar_alumno = new ComboBox("ID lugar: ");
     TextField nombre_alumno = new TextField("Nombre: ");
     TextField apellidos_alumno = new TextField("Apellidos: ");
@@ -96,7 +94,12 @@ public class AlumnoView extends CustomComponent implements View {
         menuBar.setSizeFull();
         panelIzquierdo.setMargin(true);
         panelSubPrincipal.setSplitPosition(23.0f, Unit.PERCENTAGE);
+        panelIzquierdo.setSpacing(true);
         panelSubPrincipal.setLocked(true);
+        botonesAlumno.setSpacing(true);
+        botonesBuscar.setSpacing(true);
+        botonesAlumno.setMargin(true);
+        botonesBuscar.setMargin(true);
         curso_asig.setInputPrompt("Curso");
         asignatura.setInputPrompt("Asignatura");
         Collection<String> cursos = new ArrayList<>();
@@ -354,7 +357,10 @@ public class AlumnoView extends CustomComponent implements View {
                     public void buttonClick(ClickEvent event) {
                         panelDerecho.removeAllComponents();
                         Table table = new Table();
-                        table.setWidth("1100");
+                        //table.setWidth("1100");
+                        table.setSizeFull();
+                        table.setPageLength(table.size());
+                        table.setImmediate(true);
                         try {
                             table.addContainerProperty("Nombre", String.class, null);
                             table.addContainerProperty("Apellidos", String.class, null);
@@ -395,7 +401,10 @@ public class AlumnoView extends CustomComponent implements View {
                     public void buttonClick(ClickEvent event) {
                         panelDerecho.removeAllComponents();
                         Table table = new Table();
-                        table.setWidth("1100");
+                        //table.setWidth("1100");
+                        table.setSizeFull();
+                        table.setPageLength(table.size());
+                        table.setImmediate(true);
                         try {
                             table.addContainerProperty("Nombre", String.class, null);
                             table.addContainerProperty("Apellidos", String.class, null);
