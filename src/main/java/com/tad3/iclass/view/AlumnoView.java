@@ -115,9 +115,7 @@ public class AlumnoView extends CustomComponent implements View {
         curso_asig.addItems(cursos);
         /*##############################################################*/
         Collection<Lugar> lugares = new ArrayList<>();
-
         LugarDAO lugarDAO = new LugarDAO();
-
         Iterator<Lugar> it;
         try {
             it = lugarDAO.listaLugares().iterator();
@@ -125,9 +123,7 @@ public class AlumnoView extends CustomComponent implements View {
                 lugares.add(it.next());
             }
             id_lugar_alumno.setInputPrompt("Ningún lugar seleccionado");
-
             id_lugar_alumno.setWidth(100.0f, Unit.PERCENTAGE);
-
             id_lugar_alumno.setFilteringMode(FilteringMode.CONTAINS);
             id_lugar_alumno.setImmediate(true);
 
@@ -140,10 +136,9 @@ public class AlumnoView extends CustomComponent implements View {
         }
         /*##############################################################*/
         Collection<Asignatura> asig = new ArrayList<>();
-
         AsignaturaDAO asignaturaDAO = new AsignaturaDAO();
-
         Iterator<Asignatura> it1;
+        
         try {
             it1 = asignaturaDAO.listaAsignaturas().iterator();
             while (it1.hasNext()) {
@@ -251,11 +246,11 @@ public class AlumnoView extends CustomComponent implements View {
                         p.setNombre(nombre_alumno.getValue());
                         p.setApellidos(apellidos_alumno.getValue());
                         p.setEdad(edad_alumno.getValue());
-                        p.setCurso((String) curso_asig.getValue());/*##############################*/
-
+                        p.setCurso((String) curso_asig.getValue());
                         p.setEmail(email_alumno.getValue());
                         p.setPassword(password_alumno.getValue());
                         p.setPassword(repassword_alumno.getValue());
+                        
                         if (password_alumno.getValue().equals(repassword_alumno.getValue())) {
                             p.setPassword(password_alumno.getValue());
                             try {
@@ -296,6 +291,7 @@ public class AlumnoView extends CustomComponent implements View {
                     public void buttonClick(ClickEvent event) {
                         panelIzquierdo.removeComponent(repassword_alumno);
                         panelIzquierdo.removeComponent(botonesAlumno);
+                        
                         try {
                             Alumno a = alumno.alumno((String) getSession().getAttribute("user"));
                             id_alumno.setValue(a.getIdAlumno());

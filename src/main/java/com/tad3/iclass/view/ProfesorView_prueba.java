@@ -1,22 +1,20 @@
 package com.tad3.iclass.view;
 
-import com.tad3.iclass.dao.AlumnoDAO;
+import com.tad3.iclass.dao.AsignaturaDAO;
 import com.tad3.iclass.dao.LugarDAO;
 import com.tad3.iclass.dao.ProfesorDAO;
-import com.tad3.iclass.entidad.Alumno;
+import com.tad3.iclass.entidad.Asignatura;
 import com.tad3.iclass.entidad.Lugar;
 import com.tad3.iclass.entidad.Profesor;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
@@ -45,6 +43,7 @@ public class ProfesorView_prueba extends CustomComponent implements View {
     //Profesor
     TextField id_profesor = new TextField("ID: ");
     ComboBox id_lugar_profesor = new ComboBox("ID lugar: ");
+    ComboBox asignatura = new ComboBox("ID lugar: ");
     TextField nombre_profesor = new TextField("Nombre: ");
     TextField apellidos_profesor = new TextField("Apellidos: ");
     TextField edad_profesor = new TextField("Edad: ");
@@ -54,7 +53,7 @@ public class ProfesorView_prueba extends CustomComponent implements View {
     TextField repassword_profesor = new TextField("Repetir contraseña: ");
     TextField descripcion_profesor = new TextField("Descripción: ");
     TextField horario_profesor = new TextField("Horario: ");
-
+    ArrayList<Asignatura> asignaturas_profesor = new ArrayList<>();
 
     Button modifyme = new Button("Actualizar");
     Button saveme = new Button("Guardar");
@@ -67,8 +66,6 @@ public class ProfesorView_prueba extends CustomComponent implements View {
     VerticalLayout panelDerecho = new VerticalLayout();
     Layout layaoutArriba = new HorizontalLayout();
     MenuBar menuBar = new MenuBar();
-    TextField curso = new TextField();
-    TextField asignatura = new TextField();
     HorizontalSplitPanel panelSubPrincipal = new HorizontalSplitPanel();
     Panel panel = new Panel(panelSubPrincipal);
     Label text = new Label();
@@ -96,10 +93,9 @@ public class ProfesorView_prueba extends CustomComponent implements View {
         panelSubPrincipal.setSplitPosition(23.0f, Unit.PERCENTAGE);
         panelSubPrincipal.setLocked(true);
 
+        /*##############################################################*/
         Collection<Lugar> lugares = new ArrayList<>();
-
         LugarDAO lugarDAO = new LugarDAO();
-
         Iterator<Lugar> it;
         try {
             it = lugarDAO.listaLugares().iterator();
@@ -107,9 +103,7 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                 lugares.add(it.next());
             }
             id_lugar_profesor.setInputPrompt("Ningún lugar seleccionado");
-
             id_lugar_profesor.setWidth(100.0f, Unit.PERCENTAGE);
-
             id_lugar_profesor.setFilteringMode(FilteringMode.CONTAINS);
             id_lugar_profesor.setImmediate(true);
 
@@ -120,6 +114,33 @@ public class ProfesorView_prueba extends CustomComponent implements View {
         } catch (UnknownHostException ex) {
             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
         }
+        /*##############################################################*/
+
+        /*##############################################################*/
+        Collection<Asignatura> asig = new ArrayList<>();
+        AsignaturaDAO asignaturaDAO = new AsignaturaDAO();
+        Iterator<Asignatura> it1;
+
+        try {
+            it1 = asignaturaDAO.listaAsignaturas().iterator();
+            while (it1.hasNext()) {
+                asig.add(it1.next());
+            }
+            asignatura.setInputPrompt("Ningún lugar seleccionado");
+
+            asignatura.setWidth(100.0f, Unit.PERCENTAGE);
+
+            asignatura.setFilteringMode(FilteringMode.CONTAINS);
+            asignatura.setImmediate(true);
+
+            for (Asignatura asi : asig) {
+                asignatura.addItem(asi.getIdAsignatura());
+                asignatura.setItemCaption(asi.getIdAsignatura(), asi.toString());
+            }
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        /*###############################################################*/
 
         MenuBar.Command profesorCommand = new MenuBar.Command() {
             @Override
@@ -141,7 +162,6 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                     descripcion_profesor.setValue(a.getDescripcion());
                     horario_profesor.setValue(a.getHorario());
 
-
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -156,7 +176,6 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                 password_profesor.setReadOnly(true);
                 descripcion_profesor.setReadOnly(true);
                 horario_profesor.setReadOnly(true);
-
 
                 modifyme.addClickListener(new Button.ClickListener() {
 
@@ -175,6 +194,23 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                         descripcion_profesor.setReadOnly(false);
                         horario_profesor.setReadOnly(false);
 
+                        try {
+                            Profesor a = profesor.profesor((String) getSession().getAttribute("user"));
+                            id_profesor.setValue(a.getIdProfesor());
+                            id_lugar_profesor.setValue(a.getIdLugar());
+                            nombre_profesor.setValue(a.getNombre());
+                            apellidos_profesor.setValue(a.getApellidos());
+                            edad_profesor.setValue(a.getEdad());
+                            email_profesor.setValue(a.getEmail());
+                            movil_profesor.setValue(a.getMovil());
+                            password_profesor.setValue(a.getPassword());
+                            repassword_profesor.setValue(a.getPassword());
+                            descripcion_profesor.setValue(a.getDescripcion());
+                            horario_profesor.setValue(a.getHorario());
+
+                        } catch (UnknownHostException ex) {
+                            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        }
 
                         panelIzquierdo.addComponent(modifyme);
                         panelIzquierdo.addComponent(id_profesor);
@@ -205,12 +241,12 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                         p.setNombre(nombre_profesor.getValue());
                         p.setApellidos(apellidos_profesor.getValue());
                         p.setEdad(edad_profesor.getValue());
-                        p.setEmail(email_profesor.getValue());
                         p.setMovil(movil_profesor.getValue());
-                        p.setPassword(password_profesor.getValue());
-                        p.setPassword(repassword_profesor.getValue());
-                        p.setDescripcion(descripcion_profesor.getValue());
                         p.setHorario(horario_profesor.getValue());
+                        p.setDescripcion(descripcion_profesor.getValue());
+                        p.setEmail(email_profesor.getValue());
+                        p.setPassword(password_profesor.getValue());
+                        p.setAsignaturas(asignaturas_profesor);
 
                         if (password_profesor.getValue().equals(repassword_profesor.getValue())) {
                             p.setPassword(password_profesor.getValue());
@@ -252,6 +288,24 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                     public void buttonClick(ClickEvent event) {
                         panelIzquierdo.removeComponent(repassword_profesor);
                         panelIzquierdo.removeComponent(botonesProfesor);
+
+                        try {
+                            Profesor a = profesor.profesor((String) getSession().getAttribute("user"));
+                            id_profesor.setValue(a.getIdProfesor());
+                            id_lugar_profesor.setValue(a.getIdLugar());
+                            nombre_profesor.setValue(a.getNombre());
+                            apellidos_profesor.setValue(a.getApellidos());
+                            edad_profesor.setValue(a.getEdad());
+                            email_profesor.setValue(a.getEmail());
+                            movil_profesor.setValue(a.getMovil());
+                            password_profesor.setValue(a.getPassword());
+                            repassword_profesor.setValue(a.getPassword());
+                            descripcion_profesor.setValue(a.getDescripcion());
+                            horario_profesor.setValue(a.getHorario());
+
+                        } catch (UnknownHostException ex) {
+                            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        }
 
                         id_profesor.setReadOnly(true);
                         id_lugar_profesor.setReadOnly(true);
