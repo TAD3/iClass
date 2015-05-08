@@ -368,7 +368,7 @@ public class AlumnoView extends CustomComponent implements View {
 
                             ProfesorDAO alumnoDAO = new ProfesorDAO();
                             Alumno a1 = alumno.alumno((String) getSession().getAttribute("user"));
-                            Iterator<Profesor> it3 = alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "daIgual").iterator();
+                            Iterator<Profesor> it3 = alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "si").iterator();
                             int i = 1;
                             if (alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "").size() == 0) {
                                 panelDerecho.addComponent(new Label("No hay datos"));
