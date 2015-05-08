@@ -78,6 +78,7 @@ public class AsignaturaDAO {
         a.setCurso((studentObj.getString("curso")));
         a.setDescripcion((studentObj.getString("descripcion")));
 
+        conect.close();
         return a;
     }
 
@@ -88,6 +89,8 @@ public class AsignaturaDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("_id", idAsignatura));
+        
+        conect.close();
         return true;
     }
 
@@ -105,6 +108,7 @@ public class AsignaturaDAO {
         objeto.put("descripcion", a.getDescripcion());
         coleccion.insert(objeto);
 
+        conect.close();
         return true;
     }
 
@@ -123,6 +127,7 @@ public class AsignaturaDAO {
         doc2.put("descripcion", a2.getDescripcion());
         coleccion.update(query, doc2);
         
+        conect.close();
         return true;
     }
 
@@ -132,6 +137,8 @@ public class AsignaturaDAO {
         BasicDBObject query = new BasicDBObject("_id", idAsignatura);
         DBObject asig = coleccion.findOne(query);
         System.out.println(asig);
+        
+        conect.close();
         return asig != null;
     }
 }

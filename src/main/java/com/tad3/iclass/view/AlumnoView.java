@@ -370,7 +370,7 @@ public class AlumnoView extends CustomComponent implements View {
                             Alumno a1 = alumno.alumno((String) getSession().getAttribute("user"));
                             Iterator<Profesor> it3 = alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "si").iterator();
                             int i = 1;
-                            if (alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "").size() == 0) {
+                            if (alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "").isEmpty()) {
                                 panelDerecho.addComponent(new Label("No hay datos"));
                             } else {
                                 while (it3.hasNext()) {
@@ -414,7 +414,8 @@ public class AlumnoView extends CustomComponent implements View {
                             Alumno a1 = alumno.alumno((String) getSession().getAttribute("user"));
                             Iterator<Profesor> it3 = alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "daIgual").iterator();
                             int i = 1;
-                            if (alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "daIgual").size() == 0) {
+                            String x = (String) asignatura.getValue();
+                            if (alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "daIgual").isEmpty()) {
                                 panelDerecho.addComponent(new Label("No hay datos"));
                             } else {
                                 while (it3.hasNext()) {

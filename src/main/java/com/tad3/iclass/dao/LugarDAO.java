@@ -73,6 +73,7 @@ public class LugarDAO {
         l.setBarrio((studentObj.getString("barrio")));
         l.setCiudad((studentObj.getString("ciudad")));
 
+        conect.close();
         return l;
     }
 
@@ -83,6 +84,8 @@ public class LugarDAO {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("_id", idLugar));
+        
+        conect.close();
         return true;
     }
 
@@ -100,6 +103,7 @@ public class LugarDAO {
         objeto.put("ciudad", l.getCiudad());
         coleccion.insert(objeto);
 
+        conect.close();
         return true;
     }
 
@@ -117,6 +121,8 @@ public class LugarDAO {
         doc2.put("barrio", l2.getBarrio());
         doc2.put("ciudad", l2.getCiudad());
         coleccion.update(query, doc2);
+        
+        conect.close();
         return true; 
     }
 
@@ -125,6 +131,8 @@ public class LugarDAO {
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("_id", idLugar);
         DBObject lugar = coleccion.findOne(query);
+        
+        conect.close();
         return lugar != null;
     }
 }
