@@ -41,6 +41,7 @@ import javax.servlet.annotation.WebServlet;
 /**
  *
  * @author Laura
+ * @author francisco
  */
 @Theme("mytheme")
 @Widgetset("com.tad3.iclass.MyAppWidgetset")
@@ -49,9 +50,7 @@ public class LoginView extends CustomComponent implements View {
     public static final String NAME = "login";
 
     private TextField user;
-
     private PasswordField password;
-
     private Button loginButton;
 
     @Override
@@ -213,7 +212,12 @@ public class LoginView extends CustomComponent implements View {
         final TextField password_alumno = new TextField("Contraseña: ");
         final TextField repassword_alumno = new TextField("Repetir contraseña: ");
 
-        /*##############################################################*/
+        email_alumno.setRequired(true);
+        email_alumno.setInputPrompt("Tu correo electrónico (miguel@email.com)");
+        email_alumno.addValidator(new EmailValidator("El nombre de usuario debe ser un correo electrónico"));
+        email_alumno.setInvalidAllowed(false);
+
+        /*Rellenamos el objeto id_lugar_alumno con los lugares que tenemos en la coleccion lugar*/
         Collection<Lugar> lugares = new ArrayList<>();
 
         LugarDAO lugarDAO = new LugarDAO();
@@ -235,9 +239,8 @@ public class LoginView extends CustomComponent implements View {
         } catch (UnknownHostException ex) {
             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        /*##############################################################*/
 
-        /*##############################################################*/
+        /*Rellenamos el objeto curso_asig con los cursos*/
         Collection<String> cursos = new ArrayList<>();
         cursos.add("4º Primaria");
         cursos.add("5º Primaria");
@@ -249,15 +252,20 @@ public class LoginView extends CustomComponent implements View {
         cursos.add("1º Bachillerato");
         cursos.add("2º Bachillerato");
         curso_asig.addItems(cursos);
-        /*###############################################################*/
 
-        email_alumno.setRequired(true);
-        email_alumno.setInputPrompt("Tu correo electrónico (miguel@email.com)");
-        email_alumno.addValidator(new EmailValidator("El nombre de usuario debe ser un correo electrónico"));
-        email_alumno.setInvalidAllowed(false);
-
+        /**
+         * Pulsamos el boton Guardar del menu del formulario de crear un alumno
+         * nuevo
+         */
         Button guardar = new Button("Guardar", new Button.ClickListener() {
 
+            /**
+             * Metodo que se activa cuando pulsamos el boton Guardar, es el
+             * utilizado cuando queremos crear un nuevo alumno en nuestra
+             * aplicacion
+             *
+             * @param event
+             */
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
@@ -306,6 +314,7 @@ public class LoginView extends CustomComponent implements View {
                 }
             }
         });
+        /*Añadir los objetos del formulario de crear alumno en el panel principal*/
         panelPrincipal.addComponent(id_alumno);
         panelPrincipal.addComponent(id_lugar_alumno);
         panelPrincipal.addComponent(nombre_alumno);
@@ -316,6 +325,8 @@ public class LoginView extends CustomComponent implements View {
         panelPrincipal.addComponent(password_alumno);
         panelPrincipal.addComponent(repassword_alumno);
         panelPrincipal.addComponent(guardar);
+        
+        /*Alinear los objetos del formulario en el centro*/
         panelPrincipal.setComponentAlignment(id_alumno, Alignment.MIDDLE_CENTER);
         panelPrincipal.setComponentAlignment(id_lugar_alumno, Alignment.MIDDLE_CENTER);
         panelPrincipal.setComponentAlignment(nombre_alumno, Alignment.MIDDLE_CENTER);
@@ -326,13 +337,11 @@ public class LoginView extends CustomComponent implements View {
         panelPrincipal.setComponentAlignment(password_alumno, Alignment.MIDDLE_CENTER);
         panelPrincipal.setComponentAlignment(repassword_alumno, Alignment.MIDDLE_CENTER);
         panelPrincipal.setComponentAlignment(guardar, Alignment.MIDDLE_CENTER);
-        /**/
+
         /*Ventana emergente*/
         final Window window = new Window("Window");
         window.center();
-
         window.setContent(panelPrincipal);
-        /**/
 
         //boton crear alumno
         crearAlu.addClickListener(new Button.ClickListener() {
@@ -358,7 +367,12 @@ public class LoginView extends CustomComponent implements View {
         final TextField horario_profesor = new TextField("Horario: ");
         final ArrayList asignaturas_profesor = new ArrayList();
 
-        /*##############################################################*/
+        email_profesor.setRequired(true);
+        email_profesor.setInputPrompt("Tu correo electrónico (miguel@email.com)");
+        email_profesor.addValidator(new EmailValidator("El nombre de usuario debe ser un correo electrónico"));
+        email_profesor.setInvalidAllowed(false);
+
+        /*Añade los lugares al objeto id_lugar_profesor*/
         Collection<Lugar> lugares2 = new ArrayList<>();
 
         LugarDAO lugarDAO2 = new LugarDAO();
@@ -380,14 +394,17 @@ public class LoginView extends CustomComponent implements View {
         } catch (UnknownHostException ex) {
             Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        /*##############################################################*/
-        email_alumno.setRequired(true);
-        email_alumno.setInputPrompt("Tu correo electrónico (miguel@email.com)");
-        email_alumno.addValidator(new EmailValidator("El nombre de usuario debe ser un correo electrónico"));
-        email_alumno.setInvalidAllowed(false);
 
+        /*Pulsamos el boton Guardar del menu del formulario de crear un profesor nuevo*/
         Button guardar2 = new Button("Guardar", new Button.ClickListener() {
 
+            /**
+             * Metodo que se activa cuando pulsamos el boton Guardar, es el
+             * utilizado cuando queremos crear un nuevo profesor en nuestra
+             * aplicacion
+             *
+             * @param event
+             */
             @Override
             public void buttonClick(ClickEvent event) {
                 try {
@@ -439,6 +456,8 @@ public class LoginView extends CustomComponent implements View {
                 }
             }
         });
+
+        /*Añade al panel todos los objetos para el formulario de crear un nuevo profesor*/
         panelPrincipal2.addComponent(id_profesor);
         panelPrincipal2.addComponent(id_lugar_profesor);
         panelPrincipal2.addComponent(nombre_profesor);
@@ -451,6 +470,8 @@ public class LoginView extends CustomComponent implements View {
         panelPrincipal2.addComponent(repassword_profesor);
         panelPrincipal2.addComponent(horario_profesor);
         panelPrincipal2.addComponent(guardar2);
+
+        /*Para centrar los objtos del formulario*/
         panelPrincipal2.setComponentAlignment(id_profesor, Alignment.MIDDLE_CENTER);
         panelPrincipal2.setComponentAlignment(id_lugar_profesor, Alignment.MIDDLE_CENTER);
         panelPrincipal2.setComponentAlignment(nombre_profesor, Alignment.MIDDLE_CENTER);
@@ -463,15 +484,13 @@ public class LoginView extends CustomComponent implements View {
         panelPrincipal2.setComponentAlignment(password_profesor, Alignment.MIDDLE_CENTER);
         panelPrincipal2.setComponentAlignment(repassword_profesor, Alignment.MIDDLE_CENTER);
         panelPrincipal2.setComponentAlignment(guardar2, Alignment.MIDDLE_CENTER);
-        /**/
+
         /*Ventana emergente*/
         final Window window2 = new Window("Window");
         window2.center();
-
         window2.setContent(panelPrincipal2);
-        /**/
 
-        //boton crear alumno
+        //boton crear profesor
         crearPro.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -479,8 +498,7 @@ public class LoginView extends CustomComponent implements View {
                 UI.getCurrent().addWindow(window2);
             }
         });
-        
-        
+
         //viewLayout.setStyleName(Reindeer.LAYOUT_BLUE);
         setCompositionRoot(viewLayout);
     }

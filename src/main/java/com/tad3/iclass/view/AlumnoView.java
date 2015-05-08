@@ -43,6 +43,7 @@ public class AlumnoView extends CustomComponent implements View {
     public static final String NAME = "alumno";
     AlumnoDAO alumno = new AlumnoDAO();
 
+    /*Todos los objetos usados para crear la interfaz de alumno*/
     TextField id_alumno = new TextField("DNI: ");
     ComboBox id_lugar_alumno = new ComboBox("ID lugar: ");
     TextField nombre_alumno = new TextField("Nombre: ");
@@ -73,6 +74,9 @@ public class AlumnoView extends CustomComponent implements View {
     Panel panel = new Panel(panelSubPrincipal);
     Label text = new Label();
 
+    /**
+     * Boton para terminar la sesion
+     */
     Button logoutButton = new Button("Logout", new Button.ClickListener() {
         @Override
         public void buttonClick(ClickEvent event) {
@@ -81,15 +85,22 @@ public class AlumnoView extends CustomComponent implements View {
         }
     });
 
+    /**
+     * Metodo para volver a la pagina de login
+     *
+     * @return getUI().getPage().getLocation().getPath() Devuelve la ruta de la
+     * pagina login
+     */
     private String getLogoutPath() {
         return getUI().getPage().getLocation().getPath();
     }
 
+    /**
+     * Metodo para crear la vista de alumno
+     */
     public AlumnoView() {
 
-        /*
-         Menu Bar
-         */
+        /*Definiendo las caracterisiticas de los atributos creados anteriormente*/
         layaoutArriba.setSizeFull();
         menuBar.setSizeFull();
         panelIzquierdo.setMargin(true);
@@ -102,6 +113,8 @@ public class AlumnoView extends CustomComponent implements View {
         botonesBuscar.setMargin(true);
         curso_asig.setInputPrompt("Curso");
         asignatura.setInputPrompt("Asignatura");
+
+        /*Rellenando el atributo curso_asig con las asignaturas que tenemos*/
         Collection<String> cursos = new ArrayList<>();
         cursos.add("4º Primaria");
         cursos.add("5º Primaria");
@@ -113,7 +126,8 @@ public class AlumnoView extends CustomComponent implements View {
         cursos.add("1º Bachillerato");
         cursos.add("2º Bachillerato");
         curso_asig.addItems(cursos);
-        /*##############################################################*/
+
+        /*Rellenando el atributo id_lugar_alumno con los lugares que tenemos en la coleccion de lugar*/
         Collection<Lugar> lugares = new ArrayList<>();
         LugarDAO lugarDAO = new LugarDAO();
         Iterator<Lugar> it;
@@ -134,11 +148,12 @@ public class AlumnoView extends CustomComponent implements View {
         } catch (UnknownHostException ex) {
             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        /*##############################################################*/
+
+        /*Rellenando el atributo asignatura con las asignaturas que tenemos en la coleccion de asignatura*/
         Collection<Asignatura> asig = new ArrayList<>();
         AsignaturaDAO asignaturaDAO = new AsignaturaDAO();
         Iterator<Asignatura> it1;
-        
+
         try {
             it1 = asignaturaDAO.listaAsignaturas().iterator();
             while (it1.hasNext()) {
@@ -158,13 +173,23 @@ public class AlumnoView extends CustomComponent implements View {
         } catch (UnknownHostException ex) {
             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        /*###############################################################*/
+
+        /*Menu Modificar Datos del alumno*/
         MenuBar.Command alumnoCommand = new MenuBar.Command() {
+
+            /**
+             * Metodo donde definimos las acciones que contendra el menu
+             * Modificar Datos del alumno
+             *
+             * @param selectedItem
+             */
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
+                /*Borramos todo lo que haya en los paneles*/
                 panelIzquierdo.removeAllComponents();
                 panelDerecho.removeAllComponents();
 
+                /*Cargamos los datos del alumno*/
                 try {
                     Alumno a = alumno.alumno((String) getSession().getAttribute("user"));
                     id_alumno.setValue(a.getIdAlumno());
@@ -180,7 +205,7 @@ public class AlumnoView extends CustomComponent implements View {
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                 }
-
+                /*Ponemos los objetos de la interfaz que no se puedan modificar*/
                 id_alumno.setReadOnly(true);
                 id_lugar_alumno.setReadOnly(true);
                 nombre_alumno.setReadOnly(true);
@@ -190,11 +215,19 @@ public class AlumnoView extends CustomComponent implements View {
                 curso_asig.setReadOnly(true);
                 password_alumno.setReadOnly(true);
 
+                /*Pulsamos en el boton Actualizar*/
                 modifyme.addClickListener(new Button.ClickListener() {
 
+                    /**
+                     * Metodo que se activa cuando pulsamos el boton Actualizar,
+                     * es el utilizado para que se activen los botones
+                     * Modificar, Borrar y Cancelar
+                     *
+                     * @param event
+                     */
                     @Override
                     public void buttonClick(ClickEvent event) {
-
+                        /*Ponemos los objetos de la interfaz que se puedan modificar*/
                         id_alumno.setReadOnly(false);
                         id_lugar_alumno.setReadOnly(false);
                         nombre_alumno.setReadOnly(false);
@@ -204,6 +237,7 @@ public class AlumnoView extends CustomComponent implements View {
                         curso_asig.setReadOnly(false);
                         password_alumno.setReadOnly(false);
 
+                        /*Volvemos a traer los datos del alumno, lo hacemos por si la primera vez que hicimos esto y modificamos algo pero le dimos a cancelar que vuelva a cargar los datos correctamente*/
                         try {
                             Alumno a = alumno.alumno((String) getSession().getAttribute("user"));
                             id_alumno.setValue(a.getIdAlumno());
@@ -219,6 +253,8 @@ public class AlumnoView extends CustomComponent implements View {
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
+
+                        /*Añadimos todos los objetos del formulario al panel izquierdo*/
                         panelIzquierdo.addComponent(modifyme);
                         panelIzquierdo.addComponent(id_alumno);
                         panelIzquierdo.addComponent(id_lugar_alumno);
@@ -235,10 +271,18 @@ public class AlumnoView extends CustomComponent implements View {
 
                 });
 
+                /*Pulsamos en el boton Guardar*/
                 saveme.addClickListener(new Button.ClickListener() {
 
+                    /**
+                     * Metodo que se activa cuando pulsamos el boton Guardar, es
+                     * el utilizado para modificar los datos del alumno
+                     *
+                     * @param event
+                     */
                     @Override
                     public void buttonClick(ClickEvent event) {
+                        /*Guardamos en una variable de tipo alumno los datos que hemos recogidos del formulario*/
                         Alumno p = new Alumno();
 
                         p.setIdAlumno(id_alumno.getValue());
@@ -250,7 +294,8 @@ public class AlumnoView extends CustomComponent implements View {
                         p.setEmail(email_alumno.getValue());
                         p.setPassword(password_alumno.getValue());
                         p.setPassword(repassword_alumno.getValue());
-                        
+
+                        /*Comprobamos que los campo password y repassword sean iguales*/
                         if (password_alumno.getValue().equals(repassword_alumno.getValue())) {
                             p.setPassword(password_alumno.getValue());
                             try {
@@ -270,10 +315,18 @@ public class AlumnoView extends CustomComponent implements View {
                     }
                 });
 
+                /*Pulsamos en el boton Borrar*/
                 deleteme.addClickListener(new Button.ClickListener() {
 
+                    /**
+                     * Metodo que se activa cuando pulsamos el boton Borrar, es
+                     * el utilizado para borrar la cuenta de un alumno
+                     *
+                     * @param event
+                     */
                     @Override
                     public void buttonClick(ClickEvent event) {
+                        /*Borra el alumno, cierra la sesion y nos devuelve a la pagina de login*/
                         try {
                             Alumno a3 = alumno.alumno((String) getSession().getAttribute("user"));
                             alumno.borrar(a3.getEmail());
@@ -285,13 +338,21 @@ public class AlumnoView extends CustomComponent implements View {
                     }
                 });
 
+                /*Pulsamos el boton Cancelar*/
                 cancel.addClickListener(new Button.ClickListener() {
-
+                    /**
+                     * Metodo que se activa cuando pulsamos el boton Cancelar,
+                     * es el utilizado cuando queremos cancelar la accion de
+                     * modificar o borrar un alumno
+                     *
+                     * @param event
+                     */
                     @Override
                     public void buttonClick(ClickEvent event) {
+                        /*Borramos todo lo que haya en los paneles*/
                         panelIzquierdo.removeComponent(repassword_alumno);
                         panelIzquierdo.removeComponent(botonesAlumno);
-                        
+
                         try {
                             Alumno a = alumno.alumno((String) getSession().getAttribute("user"));
                             id_alumno.setValue(a.getIdAlumno());
@@ -331,29 +392,38 @@ public class AlumnoView extends CustomComponent implements View {
             }
         };
 
+        /*Menu Buscar Profesor dependiendo el lugar y la asignatura*/
         MenuBar.Command profesorCommand = new MenuBar.Command() {
+
+            /**
+             * Metodo donde definimos las acciones que contendra el menu para
+             * buscar un profesor
+             *
+             * @param selectedItem
+             */
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
-                id_alumno.setReadOnly(false);
-                id_lugar_alumno.setReadOnly(false);
-                nombre_alumno.setReadOnly(false);
-                apellidos_alumno.setReadOnly(false);
-                edad_alumno.setReadOnly(false);
-                email_alumno.setReadOnly(false);
-                curso_asig.setReadOnly(false);
-                password_alumno.setReadOnly(false);
+                /*Borramos todo lo que haya en los paneles*/
                 panelIzquierdo.removeAllComponents();
                 panelDerecho.removeAllComponents();
-                curso_asig.setInputPrompt("Curso");
-                asignatura.setInputPrompt("Asignatura");
 
+                /*Pulsamos el boton Buscar Profesor*/
                 buscar.addClickListener(new Button.ClickListener() {
 
+                    /**
+                     * Metodo que se activa cuando pulsamos el boton Buscar
+                     * Profesor, es el utilizado cuando queremos buscar un
+                     * profasor que esta en nuestro mismo barrio
+                     *
+                     * @param event
+                     */
                     @Override
                     public void buttonClick(ClickEvent event) {
+                        /*Borramos todo lo que haya en el panel derecho*/
                         panelDerecho.removeAllComponents();
+
+                        /*Creamos la tabla que mostrará los profesores encontrados*/
                         Table table = new Table();
-                        //table.setWidth("1100");
                         table.setSizeFull();
                         table.setPageLength(table.size());
                         table.setImmediate(true);
@@ -366,6 +436,7 @@ public class AlumnoView extends CustomComponent implements View {
                             table.addContainerProperty("Direccion", String.class, null);
                             table.addContainerProperty("Horario", String.class, null);
 
+                            /*Buscamos los profesores*/
                             ProfesorDAO alumnoDAO = new ProfesorDAO();
                             Alumno a1 = alumno.alumno((String) getSession().getAttribute("user"));
                             Iterator<Profesor> it3 = alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "si").iterator();
@@ -378,7 +449,7 @@ public class AlumnoView extends CustomComponent implements View {
                                     Lugar l = new Lugar();
                                     LugarDAO lugarDAO = new LugarDAO();
                                     l = lugarDAO.lugar(p.getIdLugar());
-                                    table.addItem(new Object[]{p.getNombre(), p.getApellidos(), p.getEdad(), p.getMovil(), p.getEmail(),l.getBarrio(), p.getHorario()}, i);
+                                    table.addItem(new Object[]{p.getNombre(), p.getApellidos(), p.getEdad(), p.getMovil(), p.getEmail(), l.getBarrio(), p.getHorario()}, i);
                                     i++;
                                 }
                                 panelDerecho.addComponent(table);
@@ -391,13 +462,23 @@ public class AlumnoView extends CustomComponent implements View {
                     }
                 });
 
+                /*Pulsamos el boton BP todos lugares*/
                 buscarTodo.addClickListener(new Button.ClickListener() {
 
+                    /**
+                     * Metodo que se activa cuando pulsamos el boton BP todos
+                     * lugares, es el utilizado cuando queremos buscar un
+                     * profasor sin importar el lugar
+                     *
+                     * @param event
+                     */
                     @Override
                     public void buttonClick(ClickEvent event) {
+                        /*Borramos todo lo que haya en el panel derecho*/
                         panelDerecho.removeAllComponents();
+
+                        /*Creamos la tabla que mostrará los profesores encontrados*/
                         Table table = new Table();
-                        //table.setWidth("1100");
                         table.setSizeFull();
                         table.setPageLength(table.size());
                         table.setImmediate(true);
@@ -410,6 +491,7 @@ public class AlumnoView extends CustomComponent implements View {
                             table.addContainerProperty("Direccion", String.class, null);
                             table.addContainerProperty("Horario", String.class, null);
 
+                            /*Buscamos los profesores*/
                             ProfesorDAO alumnoDAO = new ProfesorDAO();
                             Alumno a1 = alumno.alumno((String) getSession().getAttribute("user"));
                             Iterator<Profesor> it3 = alumnoDAO.buscarProfAsig(a1.getIdLugar(), (String) asignatura.getValue(), "daIgual").iterator();
@@ -423,7 +505,7 @@ public class AlumnoView extends CustomComponent implements View {
                                     Lugar l = new Lugar();
                                     LugarDAO lugarDAO = new LugarDAO();
                                     l = lugarDAO.lugar(p.getIdLugar());
-                                    table.addItem(new Object[]{p.getNombre(), p.getApellidos(), p.getEdad(), p.getMovil(), p.getEmail(),l.getBarrio(), p.getHorario()}, i);
+                                    table.addItem(new Object[]{p.getNombre(), p.getApellidos(), p.getEdad(), p.getMovil(), p.getEmail(), l.getBarrio(), p.getHorario()}, i);
                                     i++;
                                 }
                                 panelDerecho.addComponent(table);
@@ -435,15 +517,26 @@ public class AlumnoView extends CustomComponent implements View {
                     }
                 });
 
-                panelIzquierdo.addComponent(asignatura);
                 botonesBuscar.setMargin(true);
+                panelIzquierdo.addComponent(asignatura);
                 panelIzquierdo.addComponent(botonesBuscar);
 
             }
         };
+        
+        /*Menu Logout para cerrar la sesion*/
         MenuBar.Command logoutCommand = new MenuBar.Command() {
+            
+            /**
+             * Metodo donde definimos las acciones que contendra el menu
+             * Logout
+             *
+             * @param selectedItem
+             */
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
+                
+                /*Cierra la sesion y vuelve a la pagina de login*/
                 getUI().getSession().close();
                 getUI().getPage().setLocation(getLogoutPath());
             }
@@ -464,12 +557,15 @@ public class AlumnoView extends CustomComponent implements View {
         setCompositionRoot(new CssLayout(panelPrincipal));
     }
 
+    /**
+     * Metodo que nos muestra el nombre del alumno logueado al entrar
+     * 
+     * @param event 
+     */
     @Override
     public void enter(ViewChangeEvent event) {
-        // Get the user name from the session
-        String username = String.valueOf(getSession().getAttribute("user"));
 
-        // And show the username
+        String username = String.valueOf(getSession().getAttribute("user"));
         text.setValue("Hello alumno " + username);
     }
 }

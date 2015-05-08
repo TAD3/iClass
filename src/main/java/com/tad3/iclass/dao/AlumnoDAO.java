@@ -18,25 +18,45 @@ import java.util.List;
 
 /**
  *
+ * Esta clase tiene las distintas query para traer los documentos de la
+ * coleccion alumno de la base de datos iclass
+ *
  * @author francisco
  */
 public class AlumnoDAO {
 
     MongoClient mongoClient;
 
+    /**
+     * Metodo para crear la conexion con mongodb
+     *
+     * @return mongoClient Devuelve la conexion a la base de datos
+     * @throws UnknownHostException
+     */
     public MongoClient conexion() throws UnknownHostException {
         mongoClient = new MongoClient("localhost", 27017);
         return mongoClient;
     }
 
+    /**
+     * Metodo para conectarnos a la base de datos iclass y la coleccion alumno
+     *
+     * @param conect Contine la conexion a mongodb
+     * @return coleccion Devuelve la conexion a una base datos y la coleccion en
+     * concreto
+     */
     public DBCollection collection(MongoClient conect) {
         DB database = conect.getDB("iclass");
         DBCollection coleccion = database.getCollection("alumno");
         return coleccion;
     }
 
-    /*
-     Traer lista de alumnos de mongo
+    /**
+     * Metodo para extraer de la coleccion todos los alumnos
+     *
+     * @return lista Devuelve una lista con todos los alumno que se encuentra en
+     * la coleccion alumno
+     * @throws UnknownHostException
      */
     public List<Alumno> listaAlumnos() throws UnknownHostException {
 
@@ -59,7 +79,6 @@ public class AlumnoDAO {
                 a.setPassword((studentObj.getString("password")));
 
                 lista.add(a);
-                //System.out.println(a.toString());
             }
         } finally {
             cursor.close();
@@ -68,8 +87,12 @@ public class AlumnoDAO {
         return lista;
     }
 
-    /*
-     Traer datos de un alumno en particular
+    /**
+     * Metodo para extraer un alumno en concreto de la coleccion
+     * 
+     * @param correo Variable que contiene el correo del alumno que vamos a buscar
+     * @return a Devuelve el alumno
+     * @throws UnknownHostException 
      */
     public Alumno alumno(String correo) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -91,8 +114,14 @@ public class AlumnoDAO {
         return a;
     }
 
-    /*
-     Comprobar si existe alumno
+
+    /**
+     * Metodo para comprobar si existe un determinado alumno
+     * 
+     * @param correo Variable que contiene el correo del alumno a comprobar que existe
+     * @param pass Variable que contiene la contraseña del alumno a comprobar que existe
+     * @return true si el correo y la contraseña son correctas y false si no son correctas al menos una de las dos
+     * @throws UnknownHostException 
      */
     public boolean existe(String correo, String pass) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -109,8 +138,12 @@ public class AlumnoDAO {
         }
     }
 
-    /*
-     Borrar alumno
+    /**
+     * Metodo para borrar un alumno de la coleccion
+     * 
+     * @param correo Variable que contiene el correo del alumno que vamos a borrar
+     * @return true Se ha borrado correctamente
+     * @throws UnknownHostException 
      */
     public boolean borrar(String correo) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -120,8 +153,12 @@ public class AlumnoDAO {
         return true;
     }
 
-    /*
-     Crear un alumno nuevo
+    /**
+     * Metodo para crear un alumno nuevo en la coleccion
+     * 
+     * @param a Variable que contiene los datos del alumno a crear
+     * @return true Alumno creado correctamente en la coleccion
+     * @throws UnknownHostException 
      */
     public boolean crear(Alumno a) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -137,13 +174,18 @@ public class AlumnoDAO {
         objeto.put("email", a.getEmail());
         objeto.put("password", a.getPassword());
         coleccion.insert(objeto);
-        
+
         conect.close();
         return true;
     }
 
-    /*
-     Actualizar
+    /**
+     * Metodo para modificar los datos de un alumno en la coleccion
+     * 
+     * @param a1 Variable que contiene los datos antiguos del alumno a modificar
+     * @param a2 Variable que contiene los datos nuevos del alumno a modificar
+     * @return true Alumno modificado correctamente
+     * @throws UnknownHostException 
      */
     public boolean modificar(Alumno a1, Alumno a2) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -165,23 +207,37 @@ public class AlumnoDAO {
         return true;
     }
 
+    /**
+     * Metodo para buscar un alumno en la coleccion
+     * 
+     * @param email
+     * @return alum Devuelve el alumno buscado
+     * @throws UnknownHostException 
+     */
     public boolean buscar(String email) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("email", email);
         DBObject alum = coleccion.findOne(query);
         System.out.println(alum);
-        
+
         conect.close();
         return alum != null;
     }
 
+    /**
+     * Metodo que devuelve el total de alumnos que hay por barrio
+     * 
+     * @param idLugar Variable que contiene el identificador de un lugar
+     * @return count Devuelve el total de alumno por un barrio
+     * @throws UnknownHostException 
+     */
     public int alumnoPorBarrio(String idLugar) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("idLugar", idLugar);
         int count = coleccion.find(query).count();
-        
+
         conect.close();
         return count;
     }
