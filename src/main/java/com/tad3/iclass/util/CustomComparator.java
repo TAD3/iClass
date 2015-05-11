@@ -9,7 +9,7 @@ import com.tad3.iclass.entidad.Asignatura;
 import java.util.Comparator;
 
 /**
- *
+ *  Clase para comparar las asignaturas por órden alfabético según el curso al que pertenecen
  * @author Juanlu
  */
 public class CustomComparator implements Comparator<Asignatura> {

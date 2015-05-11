@@ -6,10 +6,25 @@ import com.tad3.iclass.dao.ProfesorDAO;
 import com.tad3.iclass.entidad.Asignatura;
 import com.tad3.iclass.entidad.Lugar;
 import com.tad3.iclass.entidad.Profesor;
+import com.tad3.iclass.util.ExampleUtil;
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.event.DataBoundTransferable;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.event.dd.acceptcriteria.ClientSideCriterion;
+import com.vaadin.event.dd.acceptcriteria.SourceIs;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import static com.vaadin.shared.ui.dd.VerticalDropLocation.BOTTOM;
+import static com.vaadin.shared.ui.dd.VerticalDropLocation.MIDDLE;
+import static com.vaadin.shared.ui.dd.VerticalDropLocation.TOP;
+import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
+import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -22,24 +37,33 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.TableDragMode;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.Tree.TargetItemAllowsChildren;
+import com.vaadin.ui.Tree.TreeDragMode;
 import com.vaadin.ui.VerticalLayout;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
  * @author Juanlu
+ * Vista del profesor
  */
 public class ProfesorView_prueba extends CustomComponent implements View {
 
     public static final String NAME = "profesor";
     ProfesorDAO profesor = new ProfesorDAO();
-
+    Tree tree;
+    Table tableAsignaturas = new Table();
+    Table tableDragDrop;
     //Profesor
     TextField id_profesor = new TextField("ID: ");
     ComboBox id_lugar_profesor = new ComboBox("ID lugar: ");
@@ -59,6 +83,7 @@ public class ProfesorView_prueba extends CustomComponent implements View {
     Button saveme = new Button("Guardar");
     Button deleteme = new Button("Borrar cuenta");
     Button cancel = new Button("Cancelar");
+    Button manageCourses = new Button("Gestionar asignaturas");
 
     HorizontalLayout botonesProfesor = new HorizontalLayout(saveme, deleteme, cancel);
     VerticalLayout panelPrincipal = new VerticalLayout();
@@ -83,7 +108,27 @@ public class ProfesorView_prueba extends CustomComponent implements View {
     }
 
     public ProfesorView_prueba() {
+        panelDerecho.setSpacing(true);
+        panelDerecho.setSpacing(true);
 
+        // First create the components to be able to refer to them as allowed
+        // drag sources
+        tree = new Tree("Selecciona la asignatura y arrastrala a la tabla");
+        tableDragDrop = new Table("Arrastra aqui asignaturas desde la lista");
+        tableDragDrop.setWidth("100%");
+        // Populate the tree and set up drag & drop
+        initializeTree(new SourceIs(tableDragDrop));
+
+        // Populate the tableDragDrop and set up drag & drop
+        initializeTable(new SourceIs(tree));
+
+        // Add components
+        panelDerecho.addComponent(tree);
+        panelDerecho.addComponent(tableDragDrop);
+        tableDragDrop.setVisible(false);
+        tree.setVisible(false);
+        // First create the components to be able to refer to them as allowed
+        // drag sources
         /*
          Menu Bar
          */
@@ -161,6 +206,7 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                     repassword_profesor.setValue(a.getPassword());
                     descripcion_profesor.setValue(a.getDescripcion());
                     horario_profesor.setValue(a.getHorario());
+                    cargarAsignaturas();
 
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
@@ -176,6 +222,8 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                 password_profesor.setReadOnly(true);
                 descripcion_profesor.setReadOnly(true);
                 horario_profesor.setReadOnly(true);
+                tableAsignaturas.setReadOnly(true);
+                tableDragDrop.setReadOnly(true);
 
                 modifyme.addClickListener(new Button.ClickListener() {
 
@@ -193,6 +241,8 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                         repassword_profesor.setReadOnly(false);
                         descripcion_profesor.setReadOnly(false);
                         horario_profesor.setReadOnly(false);
+                        tableAsignaturas.setReadOnly(false);
+                        tableDragDrop.setReadOnly(false);
 
                         try {
                             Profesor a = profesor.profesor((String) getSession().getAttribute("user"));
@@ -224,6 +274,8 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                         panelIzquierdo.addComponent(repassword_profesor);
                         panelIzquierdo.addComponent(descripcion_profesor);
                         panelIzquierdo.addComponent(horario_profesor);
+                        panelIzquierdo.addComponent(tableAsignaturas);
+                        panelIzquierdo.addComponent(manageCourses);
                         panelIzquierdo.addComponent(botonesProfesor);
 
                     }
@@ -246,7 +298,7 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                         p.setDescripcion(descripcion_profesor.getValue());
                         p.setEmail(email_profesor.getValue());
                         p.setPassword(password_profesor.getValue());
-                        p.setAsignaturas(asignaturas_profesor);
+                        p.setAsignaturas((ArrayList) tableDragDrop.getData());
 
                         if (password_profesor.getValue().equals(repassword_profesor.getValue())) {
                             p.setPassword(password_profesor.getValue());
@@ -279,6 +331,17 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(ProfesorView_prueba.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    }
+                });
+
+                manageCourses.addClickListener(new Button.ClickListener() {
+
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        panelDerecho.addComponent(tree);
+                        panelDerecho.addComponent(tableDragDrop);
+                        tableDragDrop.setVisible(true);
+                        tree.setVisible(true);
                     }
                 });
 
@@ -317,6 +380,8 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                         password_profesor.setReadOnly(true);
                         descripcion_profesor.setReadOnly(true);
                         horario_profesor.setReadOnly(true);
+                        tableAsignaturas.setReadOnly(true);
+                        tableDragDrop.setReadOnly(true);
 
                     }
                 });
@@ -356,6 +421,173 @@ public class ProfesorView_prueba extends CustomComponent implements View {
         panelSubPrincipal.setHeight(String.valueOf(Page.getCurrent().getBrowserWindowHeight() * 0.9) + "px");
 
         setCompositionRoot(new CssLayout(panelPrincipal));
+    }
+    /**
+     * Carga las asignaturas del profesor
+     */
+    public void cargarAsignaturas() {
+//        ArrayList<Asignatura> asignaturasProfesor = new ArrayList();
+//        try {
+//            System.out.println("id profe " + id_profesor.getValue());
+//            asignaturasProfesor = (ArrayList) profesor.listaAsignaturasPorProfesor(id_profesor.getValue());
+//        } catch (UnknownHostException ex) {
+//            Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        tableAsignaturas.addContainerProperty("Curso", String.class, null);
+//        tableAsignaturas.addContainerProperty("Asignatura", String.class, null);
+//        Iterator it = asignaturasProfesor.iterator();
+//        Asignatura a;
+//        int i = 0;
+//        while (it.hasNext()) {
+//            a = (Asignatura) it.next();
+//            tableAsignaturas.addItem(new Object[]{a.getCurso(), a.getNombre()}, i);
+//            asignaturas_profesor.add(a);
+//            i++;
+//        }
+    }
+    /**
+     * Crea el árbol donde se mostrarán los cursos y las diferentes asignaturas de cada uno para arrastrar a la tabla
+     * @param acceptCriterion 
+     */
+    private void initializeTree(final ClientSideCriterion acceptCriterion) {
+        tree.setContainerDataSource(ExampleUtil.getAsignaturaContainer());
+        tree.setItemCaptionPropertyId(ExampleUtil.as_PROPERTY_NAME);
+        // Expand all nodes
+        for (Iterator<?> it = tree.rootItemIds().iterator(); it.hasNext();) {
+            tree.expandItemsRecursively(it.next());
+        }
+        tree.setDragMode(TreeDragMode.NODE);
+        tree.setDropHandler(new DropHandler() {
+            public void drop(DragAndDropEvent dropEvent) {
+                // criteria verify that this is safe
+                DataBoundTransferable t = (DataBoundTransferable) dropEvent
+                        .getTransferable();
+                Container sourceContainer = t.getSourceContainer();
+                Object sourceItemId = t.getItemId();
+                Item sourceItem = sourceContainer.getItem(sourceItemId);
+                String curso = sourceItem.getItemProperty("curso").toString();
+                String nombre = sourceItem.getItemProperty("nombre").toString();
+
+                AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent
+                        .getTargetDetails());
+                Object targetItemId = dropData.getItemIdOver();
+
+                // find curso in target: the target node itself or its parent
+                if (targetItemId != null && nombre != null && curso != null) {
+                    String treeCurso = getTreeNodeName(tree, targetItemId);
+                    if (curso.equals(treeCurso)) {
+                        // move item from tableDragDrop to curso'
+                        Object newItemId = tree.addItem();
+                        tree.getItem(newItemId)
+                                .getItemProperty(ExampleUtil.as_PROPERTY_NAME)
+                                .setValue(nombre);
+                        tree.setParent(newItemId, targetItemId);
+                        tree.setChildrenAllowed(newItemId, false);
+
+                        sourceContainer.removeItem(sourceItemId);
+                    }
+                }
+            }
+
+            public AcceptCriterion getAcceptCriterion() {
+                // Only allow dropping of data bound transferables within
+                // folders.
+                // In this example, checking for the correct curso in drop()
+                // rather than in the criteria.
+                return new com.vaadin.event.dd.acceptcriteria.And(acceptCriterion, TargetItemAllowsChildren.get(), AcceptItem.ALL);
+            }
+        });
+    }
+    /**
+     * Metodo que construye la tabla donde se arrastrarán las asignaturas
+     * @param acceptCriterion 
+     */
+    private void initializeTable(final ClientSideCriterion acceptCriterion) {
+        final BeanItemContainer<Asignatura> tableDragDropContainer = new BeanItemContainer<>(
+                Asignatura.class);
+        // lista asignaturas del profesor
+        tableDragDrop.setContainerDataSource(tableDragDropContainer);
+        tableDragDrop.setVisibleColumns(new Object[]{"curso", "nombre"});
+
+        // Handle drop in tableDragDrop: move hardware item or subtree to the tableDragDrop
+        tableDragDrop.setDragMode(TableDragMode.ROW);
+        tableDragDrop.setDropHandler(new DropHandler() {
+            public void drop(DragAndDropEvent dropEvent) {
+                // criteria verify that this is safe
+                DataBoundTransferable t = (DataBoundTransferable) dropEvent
+                        .getTransferable();
+                if (!(t.getSourceContainer() instanceof Container.Hierarchical)) {
+                    return;
+                }
+                Container.Hierarchical source = (Container.Hierarchical) t
+                        .getSourceContainer();
+
+                Object sourceItemId = t.getItemId();
+
+                // find and convert the item(s) to move
+                Object parentItemId = source.getParent(sourceItemId);
+                // map from moved source item Id to the corresponding Asignatura
+                LinkedHashMap<Object, Asignatura> asignaturaMap = new LinkedHashMap<Object, Asignatura>();
+                if (parentItemId == null) {
+                    // move the whole subtree
+                    String curso = getTreeNodeName(source, sourceItemId);
+                    Collection<?> children = source.getChildren(sourceItemId);
+                    if (children != null) {
+                        for (Object childId : children) {
+                            String nombre = getTreeNodeName(source, childId);
+                            Asignatura a = new Asignatura();
+                            a.setCurso(curso);
+                            a.setNombre(nombre);
+                            asignaturaMap.put(childId, a);
+                        }
+                    }
+                } else {
+                    // move a single hardware item
+                    String curso = getTreeNodeName(source, parentItemId);
+                    String nombre = getTreeNodeName(source, sourceItemId);
+                    Asignatura a = new Asignatura();
+                    a.setCurso(curso);
+                    a.setNombre(nombre);
+                    asignaturaMap.put(sourceItemId, a);
+                }
+
+                // move item(s) to the correct location in the tableDragDrop
+                AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
+                Object targetItemId = dropData.getItemIdOver();
+
+                for (Object sourceId : asignaturaMap.keySet()) {
+                    Asignatura asignatura = asignaturaMap.get(sourceId);
+                    if (targetItemId != null) {
+                        switch (dropData.getDropLocation()) {
+                            case BOTTOM:
+                                tableDragDropContainer.addItemAfter(targetItemId, asignatura);
+                                break;
+                            case MIDDLE:
+                            case TOP:
+                                Object prevItemId = tableDragDropContainer
+                                        .prevItemId(targetItemId);
+                                tableDragDropContainer.addItemAfter(prevItemId, asignatura);
+                                break;
+                        }
+                    } else {
+                        tableDragDropContainer.addItem(asignatura);
+                    }
+                    source.removeItem(sourceId);
+                }
+            }
+
+            public AcceptCriterion getAcceptCriterion() {
+                return new com.vaadin.event.dd.acceptcriteria.And(acceptCriterion, TargetItemAllowsChildren.get(), AcceptItem.ALL);
+            }
+        });
+    }
+    /** 
+     * Devuelve el nombre del nodo padre del arbol 
+     */
+    private static String getTreeNodeName(Container.Hierarchical source,
+            Object sourceId) {
+        return (String) source.getItem(sourceId)
+                .getItemProperty(ExampleUtil.as_PROPERTY_NAME).getValue();
     }
 
     @Override

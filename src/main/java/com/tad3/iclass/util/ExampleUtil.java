@@ -9,19 +9,27 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/**
+ * Clase que permite Drag and Drop
+ * @author Juanlu
+ */
 public final class ExampleUtil {
 
     public static final Object as_PROPERTY_NAME = "curso";
-    private static final AsignaturaDAO asignaturas = new AsignaturaDAO();
+    private static final AsignaturaDAO asignaturasDAO = new AsignaturaDAO();
 
     private static String[][] asignatura = null;
-
+    /**
+     * Metodo que genera la vista jerárquica de cursos y asignaturas
+     * @return devuelve un árbol jerárquico
+     */
     public static HierarchicalContainer getAsignaturaContainer() {
         ArrayList<Asignatura> arrAsignaturas = new ArrayList();
         Item item;
         int itemId = 0; // Increasing numbering for itemId:s
         try {            
-            arrAsignaturas = (ArrayList) asignaturas.listaAsignaturas();
+            arrAsignaturas = (ArrayList) asignaturasDAO.listaAsignaturas();
             asignatura = new String[arrAsignaturas.size()][arrAsignaturas.size() + 1];            
         } catch (UnknownHostException ex) {
             Logger.getLogger(ExampleUtil.class.getName()).log(Level.SEVERE, null, ex);
@@ -32,8 +40,8 @@ public final class ExampleUtil {
         int k = 1;
         int pos = -1;
         ArrayList<String> listaCursos = new ArrayList();
-        for (Asignatura arrAsignatura : arrAsignaturas) {
-            a = arrAsignatura;
+        for (Asignatura elemAsignatura : arrAsignaturas) {
+            a = elemAsignatura;
             curso = a.getCurso();
             if (!listaCursos.contains(curso)) {
                 listaCursos.add(curso);
@@ -68,14 +76,10 @@ public final class ExampleUtil {
                 for (int j = 1; (j < asignatura[i].length && !vacio2); j++) {
                     // Add child items
                     item = asContainer.addItem(itemId);
-                 /*   if (asignatura[i][j] == null || asignatura[i][j] == "" ) {
-                        vacio2 = true;
-                    } else {*/
                         item.getItemProperty(as_PROPERTY_NAME).setValue(asignatura[i][j]);
                         asContainer.setParent(itemId, itemId - j);
                         asContainer.setChildrenAllowed(itemId, false);
                         itemId++;
-                  //  }
                 }
             }
         }

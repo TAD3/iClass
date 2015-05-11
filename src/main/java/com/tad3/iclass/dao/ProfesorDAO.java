@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- *
+ *  Clase DAO para las CRUD del profesor
  * @author Juanlu
  */
 public class ProfesorDAO {
@@ -38,8 +38,10 @@ public class ProfesorDAO {
         return coleccion;
     }
 
-    /*
-     Traer lista de alumnos de mongo
+    /**
+     * Devuelve una lista con todos los profesores del sistema
+     * @return Lista con los profesores
+     * @throws UnknownHostException 
      */
     public List<Profesor> listaProfesores() throws UnknownHostException {
 
@@ -73,8 +75,11 @@ public class ProfesorDAO {
         return lista;
     }
 
-    /*
-     Traer datos de un alumno en particular
+    /**
+     * Devuelve un profesor si el correo existe en la bd
+     * @param correo devuelve el profesor cuyo correo es el pasado como parámetro
+     * @return un objeto tipo Profesor con sus datos
+     * @throws UnknownHostException 
      */
     public Profesor profesor(String correo) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -99,8 +104,12 @@ public class ProfesorDAO {
         return p;
     }
 
-    /*
-     Comprobar si existe alumno
+    /**
+     * Comprueba si existe el profesor, para el login
+     * @param correo es el nombre de usuario del profesor, que lo identifica
+     * @param pass contraseña del profesor para acceder a la plataforma
+     * @return devuelve verdadero si la clave coincide con la del profesor cuyo email es el pasado como parámetro correo
+     * @throws UnknownHostException 
      */
     public boolean existe(String correo, String pass) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -111,8 +120,11 @@ public class ProfesorDAO {
         conect.close();
         return user != null;
     }
-    /*
-     Traer lista de asignaturas por profesor de mongo
+    /**
+     * Devuelve la lista de asignaturas de un profesor indicado
+     * @param idProfesor id único del profesor en la bd
+     * @return una lista con sus asignaturas
+     * @throws UnknownHostException 
      */
 
     public List<Asignatura> listaAsignaturasPorProfesor(String idProfesor) throws UnknownHostException {
@@ -121,7 +133,7 @@ public class ProfesorDAO {
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("_id", idProfesor);
         DBObject profe = coleccion.findOne(query);
-        List<Asignatura> lista = new ArrayList<>();
+        List<Asignatura> lista;
         lista = (ArrayList) profe.get("asignaturas");
         conect.close();
         CustomComparator comparador = new CustomComparator();
@@ -131,8 +143,11 @@ public class ProfesorDAO {
         return lista;
     }
 
-    /*
-     Borrar alumno
+    /**
+     * Borrar profesor del sistema
+     * @param correo nombre de usuario del profesor a borrar
+     * @return verdadero para indicar que ha sido borrado
+     * @throws UnknownHostException 
      */
     public boolean borrar(String correo) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -143,8 +158,11 @@ public class ProfesorDAO {
         return true;
     }
 
-    /*
-     Crear un alumno nuevo
+    /**
+     * Crear profesor en el sistema
+     * @param p objeto Profesor que va a ser creado en BD
+     * @return devuelve verdadero si el profesor ha sido creado correctamente
+     * @throws UnknownHostException 
      */
     public boolean crear(Profesor p) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -168,8 +186,12 @@ public class ProfesorDAO {
         return true;
     }
 
-    /*
-     Actualizar
+    /**
+     * Actualizar datos del profesor
+     * @param p1 profesor que será actualizado
+     * @param p2 datos nuevos del profesor
+     * @return verdadero si se ha actualizado correctamente
+     * @throws UnknownHostException 
      */
     public boolean modificar(Profesor p1, Profesor p2) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -194,6 +216,12 @@ public class ProfesorDAO {
         return true;
     }
 
+    /**
+     * Buscar un profesor en el sistema
+     * @param email nombre de usuario del profesor, el correo electrónico, por cual será buscado en el sistema
+     * @return verdadero si ha sido encontrado. Falso en caso contrario
+     * @throws UnknownHostException 
+     */
     public boolean buscarProfesor(String email) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
@@ -204,7 +232,14 @@ public class ProfesorDAO {
         conect.close();
         return profe != null;
     }
-
+    /**
+     * Buscar un profesor por asignatura/lugar
+     * @param idLugar lugar del profesor encontrado
+     * @param asignatura asignatura que el alumno quiere mejorar
+     * @param sitio elegido por el alumno para buscar un profesor
+     * @return
+     * @throws UnknownHostException 
+     */
     public List<Profesor> buscarProfAsig(String idLugar, String asignatura, String sitio) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
@@ -259,7 +294,13 @@ public class ProfesorDAO {
         conect.close();
         return lista;
     }
-
+    /**
+     * Buscar profesor por barrio
+     * @param idLugar se filtrará la búsqueda por el barrio seleccionado
+     * @return número de profesores encontrados
+     * @throws UnknownHostException 
+     */
+    
     public int profesorPorBarrio(String idLugar) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);

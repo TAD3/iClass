@@ -32,7 +32,20 @@ public class Profesor {
 
     public Profesor() {
     }
-
+    /**
+     * Constructor de la clase Profesor
+     * @param idProfesor    identificador unico en mongodb
+     * @param idLugar   lugar donde reside el profesor
+     * @param nombre    nombre del profesor
+     * @param apellidos apellidos del profesor
+     * @param edad  edad del profesor
+     * @param email correo electrónico del profesor. Servirá para iniciar sesión en el sistema
+     * @param movil móvil del profesor
+     * @param password  contraseña de acceso al sistema 
+     * @param horario   horario del profesor para indicar su disponibilidad
+     * @param descripcion   breve comentario sobre el profesor 
+     * @param asignaturas   asignaturas que imparte
+     */
     public Profesor(String idProfesor, String idLugar, String nombre, String apellidos, String edad, String email,
             String movil, String password, String horario, String descripcion, ArrayList asignaturas) {
         this.idProfesor = idProfesor;
@@ -187,11 +200,17 @@ public class Profesor {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
+    /**
+     * 
+     * @return lista de asignaturas
+     */
     public ArrayList<Asignatura> getAsignaturas() {
         return asignaturas;
     }
-
+    /**
+     * 
+     * @param asignaturas añade las asignaturas a su lista de asignaturas
+     */
     public void setAsignaturas(ArrayList<Asignatura> asignaturas) {
         this.asignaturas = asignaturas;
     }
