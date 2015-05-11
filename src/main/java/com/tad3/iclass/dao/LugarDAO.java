@@ -13,25 +13,45 @@ import java.util.List;
 
 /**
  *
+ * Esta clase tiene las distintas queries para obtener los documentos de la
+ * colección lugar de la base de datos iclass
+ *
  * @author Laura
  */
 public class LugarDAO {
 
     MongoClient mongoClient;
 
+    /**
+     * Método para crear la conexión con mongodb
+     *
+     * @return mongoClient Devuelve la conexión a la base de datos
+     * @throws UnknownHostException
+     */
     public MongoClient conexion() throws UnknownHostException {
         mongoClient = new MongoClient("localhost", 27017);
         return mongoClient;
     }
 
+    /**
+     * Método para conectarnos a la base de datos iclass y la colección lugar
+     *
+     * @param conect Contiene la conexión a mongodb
+     * @return coleccion Devuelve la conexión a una base datos y la colección en
+     * concreto
+     */
     public DBCollection collection(MongoClient conect) {
         DB database = conect.getDB("iclass");
         DBCollection coleccion = database.getCollection("lugar");
         return coleccion;
     }
 
-    /*
-     Traer lista de lugares de mongo
+    /**
+     * Método para extraer de la colección todos los lugares
+     *
+     * @return lista Devuelve una lista con todas los lugares que se encuentra
+     * en la colección lugar
+     * @throws UnknownHostException
      */
     public List<Lugar> listaLugares() throws UnknownHostException {
 
@@ -58,8 +78,13 @@ public class LugarDAO {
         return lista;
     }
 
-    /*
-     Traer datos de un lugar en particular
+    /**
+     * Método para extraer un lugar en concreto de la colección
+     *
+     * @param idLugar Variable que contiene el identificador del lugar que se va
+     * a buscar
+     * @return a Devuelve el lugar
+     * @throws UnknownHostException
      */
     public Lugar lugar(String idLugar) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -77,20 +102,29 @@ public class LugarDAO {
         return l;
     }
 
-    /*
-     Borrar lugar
+    /**
+     * Método para borrar un lugar de la colección
+     *
+     * @param idLugar Variable que contiene el identificador del lugar que se va
+     * a borrar
+     * @return true Se ha borrado correctamente
+     * @throws UnknownHostException
      */
     public boolean borrarLugar(String idLugar) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("_id", idLugar));
-        
+
         conect.close();
         return true;
     }
 
-    /*
-     Crear un lugar nuevo
+    /**
+     * Método para crear un lugar nuevo en la colección
+     *
+     * @param l Variable que contiene los datos del lugar a crear
+     * @return true Lugar creado correctamente en la colección
+     * @throws UnknownHostException
      */
     public boolean crearLugar(Lugar l) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -107,8 +141,15 @@ public class LugarDAO {
         return true;
     }
 
-    /*
-     Actualizar
+    /**
+     * Método para modificar los datos de un lugar en la colección
+     *
+     * @param l1 Variable que contiene los datos antiguos del lugar a
+     * modificar
+     * @param l2 Variable que contiene los datos nuevos del lugar a
+     * modificar
+     * @return true Lugar modificado correctamente
+     * @throws UnknownHostException
      */
     public boolean modificarLugar(Lugar l1, Lugar l2) throws UnknownHostException {
         MongoClient conect = conexion();
@@ -121,17 +162,25 @@ public class LugarDAO {
         doc2.put("barrio", l2.getBarrio());
         doc2.put("ciudad", l2.getCiudad());
         coleccion.update(query, doc2);
-        
+
         conect.close();
-        return true; 
+        return true;
     }
 
+    /**
+     * Método para buscar una asignatura en la coleccion
+     *
+     * @param idLugar Variable que contiene el identificador del 
+     * lugar que se va a borrar
+     * @return lugar Devuelve el lugar buscado
+     * @throws UnknownHostException
+     */
     public boolean buscarLugar(String idLugar) throws UnknownHostException {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("_id", idLugar);
         DBObject lugar = coleccion.findOne(query);
-        
+
         conect.close();
         return lugar != null;
     }

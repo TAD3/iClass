@@ -55,6 +55,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Clase que crea la vista del Admin de la aplicación
  *
  * @author Laura
  */
@@ -66,7 +67,9 @@ public class AdminView extends CustomComponent implements View {
     Layout layout = new HorizontalLayout();
     Panel panel = new Panel("Bienvenido a la página de administración");
 
-    //Asignatura
+    /**
+     * ***************************Asignatura**********************************
+     */
     AsignaturaDAO asignatura = new AsignaturaDAO();
     BeanItemContainer<Asignatura> bAsignatura = new BeanItemContainer(Asignatura.class);
     Table tAsignaturas = new Table("Asignaturas", bAsignatura);
@@ -91,7 +94,10 @@ public class AdminView extends CustomComponent implements View {
     VerticalSplitPanel vspAsignatura = new VerticalSplitPanel(hlasignatura, tAsignaturas);
     HorizontalSplitPanel hspAsignatura = new HorizontalSplitPanel(vspAsignatura, asignaturaNueva);
 
-    //Lugar
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * *******************************Lugar***********************************
+     */
     LugarDAO lugar = new LugarDAO();
     BeanItemContainer<Lugar> bLugar = new BeanItemContainer(Lugar.class);
     Table tLugares = new Table("Lugares", bLugar);
@@ -116,7 +122,10 @@ public class AdminView extends CustomComponent implements View {
     VerticalSplitPanel vspLugar = new VerticalSplitPanel(hlLugar, tLugares);
     HorizontalSplitPanel hspLugar = new HorizontalSplitPanel(vspLugar, lugarNuevo);
 
-    //Alumno
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * *********************************Alumno********************************
+     */
     AlumnoDAO alumno = new AlumnoDAO();
     BeanItemContainer<Alumno> bAlumno = new BeanItemContainer(Alumno.class);
     Table tAlumnos = new Table("Alumnos", bAlumno);
@@ -147,7 +156,10 @@ public class AdminView extends CustomComponent implements View {
     VerticalSplitPanel vspAlumno = new VerticalSplitPanel(hlAlumno, tAlumnos);
     HorizontalSplitPanel hspAlumno = new HorizontalSplitPanel(vspAlumno, alumnoNuevo);
 
-    //Profesor
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * *****************************Profesor**********************************
+     */
     ProfesorDAO profesor = new ProfesorDAO();
     BeanItemContainer<Profesor> bProfesor = new BeanItemContainer(Profesor.class);
     Table tProfesores = new Table("Profesores", bProfesor);
@@ -181,12 +193,23 @@ public class AdminView extends CustomComponent implements View {
     VerticalSplitPanel vspProfesor = new VerticalSplitPanel(hlProfesor, tProfesores);
     HorizontalSplitPanel hspProfesor = new HorizontalSplitPanel(vspProfesor, profesorNuevo);
 
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * ***************************Estadística*********************************
+     */
     VerticalLayout vEstadistica = new VerticalLayout();
 
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * Método que cierra la sesión del administrador
+     */
     private String getLogoutPath() {
         return getUI().getPage().getLocation().getPath();
     }
 
+    /**
+     * Método para crear la vista de AdminView
+     */
     public AdminView() {
 
         layout.setSizeFull();
@@ -196,7 +219,7 @@ public class AdminView extends CustomComponent implements View {
 
         layout.addComponent(menu);
 
-        // Define a common menu command for all the menu items.
+        // Definir un comando para el menú.
         MenuBar.Command mycommand = new MenuBar.Command() {
             @Override
             public void menuSelected(MenuItem selectedItem) {
@@ -235,7 +258,10 @@ public class AdminView extends CustomComponent implements View {
         MenuItem estadisticas = menu.addItem("Estadisticas", null, mycommand);
         menu.addItem("Log out", logoutCommand);
 
-        //Asignatura
+        /**
+         * *********************Administrador de
+         * Asignatura*********************
+         */
         String[] columnHeadersAsig = {"Curso", "Descripción", "ID", "Asignatura"};
 
         tAsignaturas.setColumnHeaders(columnHeadersAsig);
@@ -434,7 +460,9 @@ public class AdminView extends CustomComponent implements View {
             }
         });
 
-        //Lugar
+        /**
+         * *********************Administrador de Lugar*************************
+         */
         String[] columnHeadersLugar = {"Barrio", "Ciudad", "Codigo Postal", "ID"};
 
         tLugares.setColumnHeaders(columnHeadersLugar);
@@ -621,7 +649,9 @@ public class AdminView extends CustomComponent implements View {
             }
         });
 
-        //Alumno
+        /**
+         * *********************Administrador de Alumno************************
+         */
         String[] columnHeadersAlumno = {"Apellidos", "Curso", "Edad", "Email", "ID", "ID lugar", "Nombre", "Contraseña"};
 
         tAlumnos.setColumnHeaders(columnHeadersAlumno);
@@ -682,7 +712,6 @@ public class AdminView extends CustomComponent implements View {
 
         id_alumno.setRequired(true);
         id_alumno.setInputPrompt("ID alumno");
-        //id_alumno.setReadOnly(true);
         id_lugar_alumno.setRequired(true);
         id_lugar_alumno.setInputPrompt("ID lugar");
         nombre_alumno.setRequired(true);
@@ -855,7 +884,9 @@ public class AdminView extends CustomComponent implements View {
             }
         });
 
-        //Profesor
+        /**
+         * *********************Administrador de Profesor**********************
+         */
         String[] columnHeadersProfesor = {"Apellidos", "Asignaturas", "Descripcion", "Edad", "Email",
             "Horario", "ID lugar", "ID", "Móvil", "Nombre", "Contraseña"};
 
@@ -1107,7 +1138,9 @@ public class AdminView extends CustomComponent implements View {
             }
         });
 
-        //Estadisticas
+        /**
+         * *********************Administrador de Estadística*******************
+         */
         vEstadistica.removeAllComponents();
         Chart columns = new Chart(ChartType.COLUMN);
 
@@ -1159,7 +1192,7 @@ public class AdminView extends CustomComponent implements View {
         } catch (UnknownHostException ex) {
             Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         columns.setSizeFull();
         columns.drawChart(conf1);
 
@@ -1228,10 +1261,7 @@ public class AdminView extends CustomComponent implements View {
     @Override
 
     public void enter(ViewChangeEvent event) {
-        // Get the user name from the session
         String username = String.valueOf(getSession().getAttribute("user"));
-
-        // And show the username
         text.setValue("Hello admin " + username);
     }
 }

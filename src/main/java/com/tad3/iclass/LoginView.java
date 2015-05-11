@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import javax.servlet.annotation.WebServlet;
 
 /**
+ * Clase que crea la vista del Login de la aplicación
  *
  * @author Laura
  * @author francisco
@@ -54,22 +55,21 @@ public class LoginView extends CustomComponent implements View {
     private Button loginButton;
 
     @Override
+    /**
+     * Método que se centra en el campo email cuando se entra en el LoginView
+     */
     public void enter(ViewChangeEvent event) {
-        // focus the username field when user arrives to the login view
+        //Se centra en el campo de email cuando el usuario carga el LoginView
         user.focus();
     }
 
+    /**
+     * Método para crear la vista de LoginView
+     */
     public LoginView() {
         setSizeFull();
 
-//        final Styles styles = Page.getCurrent().getStyles();
-//
-//        // inject the new color as a style
-//        styles.add(".reindeer.v-app {"
-//                + "        background-image: url('../VAADIN/themes/mytheme/img/pizarra.jpg');"
-//                + "        background-size: cover"
-//                + "    }");
-        // Create the user input field
+        // Crear el campo de entrada usuario
         user = new TextField("Usuario: ");
 
         user.setWidth("300px");
@@ -78,7 +78,7 @@ public class LoginView extends CustomComponent implements View {
         user.addValidator(new EmailValidator("El nombre de usuario debe ser un correo electrónico"));
         user.setInvalidAllowed(false);
 
-        // Create the password input field
+        // Crear el campo de entrada contraseña
         password = new PasswordField("Contraseña: ");
         password.setWidth("300px");
         password.addValidator(new PasswordValidator());
@@ -86,19 +86,21 @@ public class LoginView extends CustomComponent implements View {
         password.setValue("");
         password.setNullRepresentation("");
 
-        // Create login button
+        // Crear el botón de Login
         loginButton = new Button("Entrar");
 
         loginButton.addClickListener(new Button.ClickListener() {
 
             @Override
+            /**
+             * Método que se activa cuando se pulsa el boton Entrar para que 
+             * un usuario pueda entrar en la aplicación
+             *
+             * @param event
+             */
             public void buttonClick(ClickEvent event
             ) {
-                //
-                // Validate the loginform using the navigator. By using validors for the
-                // loginform we reduce the amount of queries we have to use to the database
-                // for wrongly entered passwords
-                //
+                // Validar el loginform 
                 if (!user.isValid() || !password.isValid()) {
                     return;
                 }
@@ -106,10 +108,7 @@ public class LoginView extends CustomComponent implements View {
                 String username = user.getValue();
                 String pass = password.getValue();
 
-                //
-                // Validate username and password with database here. For examples sake
-                // I use a dummy username and password.
-                //
+                // Validar el correo y contraseña con la base de datos
                 boolean isValid = false;
                 boolean isAlumno = false;
                 boolean isProfesor = false;
@@ -117,18 +116,19 @@ public class LoginView extends CustomComponent implements View {
                 AlumnoDAO a = new AlumnoDAO();
                 ProfesorDAO p = new ProfesorDAO();
 
-                //admin
+                //Si el correo es admin@iclass.com es usuario Admin
                 if (username.equals("admin@iclass.com") && pass.equals("passw0rd")) {
                     isValid = true;
                     isAdmin = true;
-//                } else if (username.equals("profe@iclass.com") && pass.equals("passw0rd")) { //profesor
-//                    isValid = true;
                 } else {
+                    //Sino puede ser profesor o alumno
                     try {
-                        if (a.existe(username, pass)) { //alumno
+                        //Si el correo y la contraseña existen en la base de datos es alumno
+                        if (a.existe(username, pass)) {
                             isValid = true;
                             isAlumno = true;
-                        } else if (p.existe(username, pass)) { //profesor
+                        } //Si el correo y la contraseña existen en la base de datos es profesor
+                        else if (p.existe(username, pass)) {
                             isValid = true;
                             isProfesor = true;
                         }
@@ -139,23 +139,23 @@ public class LoginView extends CustomComponent implements View {
 
                 if (isValid) {
 
-                    // Store the current user in the service session
+                    // Almacena el usuario actural en la sesión
                     getSession().setAttribute("user", username);
 
                     if (isAdmin) {
-                        // Navigate to admin view
+                        // Navega a la vista de AdminView
                         Notification.show("Usuario " + username + " logueado");
                         getUI().getNavigator().navigateTo(LoginUI.ADMINVIEW);
                     }
 
                     if (isProfesor) {
-                        // Navigate to profe view
+                        // Navega a la vista de ProfesorView
                         Notification.show("Usuario " + username + " logueado");
                         getUI().getNavigator().navigateTo(LoginUI.PROFESORVIEW);
                     }
 
                     if (isAlumno) {
-                        // Navigate to alumno view
+                        // Navega a la vista de AlumnoView
                         Notification.show("Usuario " + username + " logueado");
                         getUI().getNavigator().navigateTo(LoginUI.ALUMNOVIEW);
                     }
@@ -166,13 +166,16 @@ public class LoginView extends CustomComponent implements View {
                     user.setValue("");
                     password.setValue(null);
                     user.focus();
-
+                    
+                    Notification.show("Usuario y/o contraseña incorrectas", "Introduzca un correo y "
+                            + "una contraseña válidos", Notification.Type.WARNING_MESSAGE);
+                    
                 }
             }
         }
         );
 
-        // Add both to a panel
+        // Añadir todos los componentes al Layout
         VerticalLayout loginform = new VerticalLayout(user, password, loginButton);
 
         loginform.setCaption("Login");
@@ -184,7 +187,7 @@ public class LoginView extends CustomComponent implements View {
         loginform.setComponentAlignment(loginButton, Alignment.MIDDLE_CENTER);
         loginform.setStyleName(Reindeer.LAYOUT_WHITE);
 
-        // The view root layout
+        
         Button crearAlu = new Button("Crear Alumno");
         Button crearPro = new Button("Crear Profesor");
         HorizontalLayout botonesCrear = new HorizontalLayout(crearAlu, crearPro);
@@ -325,7 +328,7 @@ public class LoginView extends CustomComponent implements View {
         panelPrincipal.addComponent(password_alumno);
         panelPrincipal.addComponent(repassword_alumno);
         panelPrincipal.addComponent(guardar);
-        
+
         /*Alinear los objetos del formulario en el centro*/
         panelPrincipal.setComponentAlignment(id_alumno, Alignment.MIDDLE_CENTER);
         panelPrincipal.setComponentAlignment(id_lugar_alumno, Alignment.MIDDLE_CENTER);
