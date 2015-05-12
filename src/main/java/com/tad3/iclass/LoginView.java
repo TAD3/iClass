@@ -451,8 +451,8 @@ public class LoginView extends CustomComponent implements View {
                         p.setHorario(horario_profesor.getValue());
                         p.setAsignaturas(asignaturas_profesor);
                         p.setDescripcion(descripcion_profesor.getValue());
-                        p.setEmail(email_alumno.getValue());
-                        p.setPassword(password_alumno.getValue());
+                        p.setEmail(email_profesor.getValue());
+                        p.setPassword(password_profesor.getValue());
                         Notification.show("Profesor modificado", "Se ha actualizado el "
                                 + "profesor en la base de datos", Notification.Type.TRAY_NOTIFICATION);
                         profesorDAO.crear(p);
