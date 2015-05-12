@@ -124,7 +124,7 @@ public class ProfesorView extends CustomComponent implements View {
         return getUI().getPage().getLocation().getPath();
     }
 
-    public ProfesorView() {
+    public ProfesorView() throws Exception {
 
         /*Definiendo las caracterisiticas de los atributos creados anteriormente*/
         panelIzquierdo.setSpacing(true);
@@ -211,6 +211,8 @@ public class ProfesorView extends CustomComponent implements View {
 
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 /*Ponemos los objetos de la interfaz que no se puedan modificar*/
                 id_profesor.setReadOnly(true);
@@ -270,6 +272,8 @@ public class ProfesorView extends CustomComponent implements View {
 
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
+                            Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
                         }
 
                         /*Añadimos todos los objetos del formulario al panel izquierdo*/
@@ -332,6 +336,8 @@ public class ProfesorView extends CustomComponent implements View {
 
                             } catch (UnknownHostException ex) {
                                 Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (Exception ex) {
+                                Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
                             Notification.show("No coincide los campos contraseña y repetir contraseña", Notification.Type.WARNING_MESSAGE);
@@ -357,6 +363,8 @@ public class ProfesorView extends CustomComponent implements View {
                             getUI().getSession().close();
                             getUI().getPage().setLocation(getLogoutPath());
                         } catch (UnknownHostException ex) {
+                            Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
                             Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
@@ -404,6 +412,8 @@ public class ProfesorView extends CustomComponent implements View {
                                 as = a.buscarAsignaturaNombreYCurso(values[1], values[2]);
                             } catch (UnknownHostException ex) {
                                 Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (Exception ex) {
+                                Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
                             }
                             asigs.add(as);
                         }
@@ -418,6 +428,8 @@ public class ProfesorView extends CustomComponent implements View {
                                     + "profesor en la base de datos", Notification.Type.TRAY_NOTIFICATION);
 
                         } catch (UnknownHostException ex) {
+                            Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
                             Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
                         }
 
@@ -456,6 +468,8 @@ public class ProfesorView extends CustomComponent implements View {
 
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
+                            Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
                         }
 
                         id_profesor.setReadOnly(true);
@@ -529,7 +543,7 @@ public class ProfesorView extends CustomComponent implements View {
      *
      * @param acceptCriterion
      */
-    private void initializeTree(final ClientSideCriterion acceptCriterion) {
+    private void initializeTree(final ClientSideCriterion acceptCriterion) throws Exception {
         tree.setContainerDataSource(ExampleUtil.getAsignaturaContainer());
         tree.setItemCaptionPropertyId(ExampleUtil.as_PROPERTY_NAME);
         // Expand all nodes

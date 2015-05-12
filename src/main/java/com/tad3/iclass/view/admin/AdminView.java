@@ -210,7 +210,7 @@ public class AdminView extends CustomComponent implements View {
     /**
      * Método para crear la vista de AdminView
      */
-    public AdminView() {
+    public AdminView() throws Exception {
 
         layout.setSizeFull();
 
@@ -307,9 +307,15 @@ public class AdminView extends CustomComponent implements View {
                         bAsignatura.addItem(asignatura.asignatura(select));
                     } catch (UnknownHostException ex) {
                         Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
-                    llenarTablaAsig();
+                    try {
+                        llenarTablaAsig();
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         });
@@ -363,7 +369,11 @@ public class AdminView extends CustomComponent implements View {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                llenarTablaAsig();
+                try {
+                    llenarTablaAsig();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
@@ -420,6 +430,8 @@ public class AdminView extends CustomComponent implements View {
                     }
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -455,6 +467,8 @@ public class AdminView extends CustomComponent implements View {
                                 + "asignatura para poder eliminarla de la base de datos", Notification.Type.TRAY_NOTIFICATION);
                     }
                 } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -496,9 +510,15 @@ public class AdminView extends CustomComponent implements View {
                         bLugar.addItem(lugar.lugar(select));
                     } catch (UnknownHostException ex) {
                         Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
-                    llenarTablaLugar();
+                    try {
+                        llenarTablaLugar();
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         });
@@ -552,7 +572,11 @@ public class AdminView extends CustomComponent implements View {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                llenarTablaLugar();
+                try {
+                    llenarTablaLugar();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
@@ -609,6 +633,8 @@ public class AdminView extends CustomComponent implements View {
                     }
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -644,6 +670,8 @@ public class AdminView extends CustomComponent implements View {
                                 + "lugar para poder eliminarlo de la base de datos", Notification.Type.TRAY_NOTIFICATION);
                     }
                 } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -697,9 +725,15 @@ public class AdminView extends CustomComponent implements View {
                         bAlumno.addItem(alumno.alumno(select));
                     } catch (UnknownHostException ex) {
                         Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
-                    llenarTablaAlumno();
+                    try {
+                        llenarTablaAlumno();
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         });
@@ -771,7 +805,11 @@ public class AdminView extends CustomComponent implements View {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                llenarTablaAlumno();
+                try {
+                    llenarTablaAlumno();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
@@ -840,6 +878,8 @@ public class AdminView extends CustomComponent implements View {
                     }
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -879,6 +919,8 @@ public class AdminView extends CustomComponent implements View {
                                 + "alumno para poder eliminarlo de la base de datos", Notification.Type.TRAY_NOTIFICATION);
                     }
                 } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -929,9 +971,15 @@ public class AdminView extends CustomComponent implements View {
                         bProfesor.addItem(profesor.profesor(select));
                     } catch (UnknownHostException ex) {
                         Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 } else {
-                    llenarTablaProfesor();
+                    try {
+                        llenarTablaProfesor();
+                    } catch (Exception ex) {
+                        Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         });
@@ -1015,7 +1063,11 @@ public class AdminView extends CustomComponent implements View {
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
-                llenarTablaProfesor();
+                try {
+                    llenarTablaProfesor();
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
@@ -1091,6 +1143,8 @@ public class AdminView extends CustomComponent implements View {
                     }
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -1133,6 +1187,8 @@ public class AdminView extends CustomComponent implements View {
                                 + "profesor para poder eliminarlo de la base de datos", Notification.Type.TRAY_NOTIFICATION);
                     }
                 } catch (UnknownHostException ex) {
+                    Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
                     Logger.getLogger(AdminView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -1186,7 +1242,7 @@ public class AdminView extends CustomComponent implements View {
                     profesor.profesorPorBarrio("41010TRISEV")));
             conf1.addSeries(new ListSeries("Alumnos", alumno.alumnoPorBarrio("41001CENSEV"),
                     alumno.alumnoPorBarrio("41009MACSEV"), alumno.alumnoPorBarrio("41011REMSEV"),
-                    alumno.alumnoPorBarrio("41089MQTSEV"), alumno.alumnoPorBarrio("41005NERSEV"),
+                    alumno.alumnoPorBarrio("41089MQT2HE"), alumno.alumnoPorBarrio("41005NERSEV"),
                     alumno.alumnoPorBarrio("41019ALCSEV"), alumno.alumnoPorBarrio("41020SESSEV"),
                     alumno.alumnoPorBarrio("41010TRISEV")));
         } catch (UnknownHostException ex) {
@@ -1210,7 +1266,7 @@ public class AdminView extends CustomComponent implements View {
         setCompositionRoot(new CssLayout(layout, panel));
     }
 
-    public final void llenarTablaAsig() {
+    public final void llenarTablaAsig() throws Exception {
         bAsignatura.removeAllItems();
 
         try {
@@ -1222,7 +1278,7 @@ public class AdminView extends CustomComponent implements View {
         bAsignatura.addAll(listaAsignaturas);
     }
 
-    public final void llenarTablaLugar() {
+    public final void llenarTablaLugar() throws Exception {
         bLugar.removeAllItems();
 
         try {
@@ -1234,7 +1290,7 @@ public class AdminView extends CustomComponent implements View {
         bLugar.addAll(listaLugares);
     }
 
-    public final void llenarTablaAlumno() {
+    public final void llenarTablaAlumno() throws Exception {
         bAlumno.removeAllItems();
 
         try {
@@ -1246,7 +1302,7 @@ public class AdminView extends CustomComponent implements View {
         bAlumno.addAll(listaAlumnos);
     }
 
-    public final void llenarTablaProfesor() {
+    public final void llenarTablaProfesor() throws Exception {
         bProfesor.removeAllItems();
 
         try {

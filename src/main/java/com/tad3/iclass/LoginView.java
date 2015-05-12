@@ -66,7 +66,7 @@ public class LoginView extends CustomComponent implements View {
     /**
      * Método para crear la vista de LoginView
      */
-    public LoginView() {
+    public LoginView() throws Exception {
         setSizeFull();
 
         // Crear el campo de entrada usuario
@@ -133,6 +133,8 @@ public class LoginView extends CustomComponent implements View {
                             isProfesor = true;
                         }
                     } catch (UnknownHostException ex) {
+                        Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (Exception ex) {
                         Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -314,6 +316,8 @@ public class LoginView extends CustomComponent implements View {
                     }
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -455,6 +459,8 @@ public class LoginView extends CustomComponent implements View {
                         getUI().getPage().setLocation(getUI().getPage().getLocation().getPath());
                     }
                 } catch (UnknownHostException ex) {
+                    Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
                     Logger.getLogger(LoginView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

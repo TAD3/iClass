@@ -24,7 +24,7 @@ public final class ExampleUtil {
      * Metodo que genera la vista jerárquica de cursos y asignaturas
      * @return devuelve un árbol jerárquico
      */
-    public static HierarchicalContainer getAsignaturaContainer() {
+    public static HierarchicalContainer getAsignaturaContainer() throws Exception {
         ArrayList<Asignatura> arrAsignaturas = new ArrayList();
         Item item;
         int itemId = 0; // Increasing numbering for itemId:s

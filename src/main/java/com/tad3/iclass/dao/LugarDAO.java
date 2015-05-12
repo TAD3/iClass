@@ -6,10 +6,13 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.tad3.iclass.entidad.Lugar;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
 
 /**
  *
@@ -21,6 +24,19 @@ import java.util.List;
 public class LugarDAO {
 
     MongoClient mongoClient;
+    
+    public MongoClient getMongoClient() throws Exception {
+        CloudEnvironment environment = new CloudEnvironment();
+        if (environment.getServiceDataByLabels("mongodb").size() == 0) {
+        // To connect to mongodb server
+            mongoClient = new MongoClient("localhost", 27017);
+        } else {
+            Map credential = (Map) ((Map) environment.getServiceDataByLabels("mongodb").get(0)).get("credentials");
+            String connURL = (String) credential.get("url");
+            mongoClient = new MongoClient(new MongoClientURI(connURL));
+        }
+        return mongoClient;
+    }
 
     /**
      * Método para crear la conexión con mongodb
@@ -28,8 +44,8 @@ public class LugarDAO {
      * @return mongoClient Devuelve la conexión a la base de datos
      * @throws UnknownHostException
      */
-    public MongoClient conexion() throws UnknownHostException {
-        mongoClient = new MongoClient("localhost", 27017);
+    public MongoClient conexion() throws UnknownHostException, Exception {
+        mongoClient = getMongoClient();
         return mongoClient;
     }
 
@@ -41,7 +57,7 @@ public class LugarDAO {
      * concreto
      */
     public DBCollection collection(MongoClient conect) {
-        DB database = conect.getDB("iclass");
+        DB database = conect.getDB("db");
         DBCollection coleccion = database.getCollection("lugar");
         return coleccion;
     }
@@ -53,7 +69,7 @@ public class LugarDAO {
      * en la colección lugar
      * @throws UnknownHostException
      */
-    public List<Lugar> listaLugares() throws UnknownHostException {
+    public List<Lugar> listaLugares() throws UnknownHostException, Exception {
 
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
@@ -86,7 +102,7 @@ public class LugarDAO {
      * @return a Devuelve el lugar
      * @throws UnknownHostException
      */
-    public Lugar lugar(String idLugar) throws UnknownHostException {
+    public Lugar lugar(String idLugar) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("_id", idLugar);
@@ -110,7 +126,7 @@ public class LugarDAO {
      * @return true Se ha borrado correctamente
      * @throws UnknownHostException
      */
-    public boolean borrarLugar(String idLugar) throws UnknownHostException {
+    public boolean borrarLugar(String idLugar) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("_id", idLugar));
@@ -126,7 +142,7 @@ public class LugarDAO {
      * @return true Lugar creado correctamente en la colección
      * @throws UnknownHostException
      */
-    public boolean crearLugar(Lugar l) throws UnknownHostException {
+    public boolean crearLugar(Lugar l) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject objeto = new BasicDBObject();
@@ -151,7 +167,7 @@ public class LugarDAO {
      * @return true Lugar modificado correctamente
      * @throws UnknownHostException
      */
-    public boolean modificarLugar(Lugar l1, Lugar l2) throws UnknownHostException {
+    public boolean modificarLugar(Lugar l1, Lugar l2) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
 
@@ -175,7 +191,7 @@ public class LugarDAO {
      * @return lugar Devuelve el lugar buscado
      * @throws UnknownHostException
      */
-    public boolean buscarLugar(String idLugar) throws UnknownHostException {
+    public boolean buscarLugar(String idLugar) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("_id", idLugar);

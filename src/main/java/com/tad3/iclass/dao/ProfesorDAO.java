@@ -12,6 +12,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.tad3.iclass.entidad.Asignatura;
 import com.tad3.iclass.entidad.Profesor;
 import com.tad3.iclass.util.CustomComparator;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import org.cloudfoundry.runtime.env.CloudEnvironment;
 
 /**
  * Clase DAO para las CRUD del profesor
@@ -29,14 +32,27 @@ import java.util.List;
 public class ProfesorDAO {
 
     MongoClient mongoClient;
+    
+    public MongoClient getMongoClient() throws Exception {
+        CloudEnvironment environment = new CloudEnvironment();
+        if (environment.getServiceDataByLabels("mongodb").size() == 0) {
+        // To connect to mongodb server
+            mongoClient = new MongoClient("localhost", 27017);
+        } else {
+            Map credential = (Map) ((Map) environment.getServiceDataByLabels("mongodb").get(0)).get("credentials");
+            String connURL = (String) credential.get("url");
+            mongoClient = new MongoClient(new MongoClientURI(connURL));
+        }
+        return mongoClient;
+    }
 
-    public MongoClient conexion() throws UnknownHostException {
-        mongoClient = new MongoClient("localhost", 27017);
+    public MongoClient conexion() throws UnknownHostException, Exception {
+        mongoClient = getMongoClient();
         return mongoClient;
     }
 
     public DBCollection collection(MongoClient conect) {
-        DB database = conect.getDB("iclass");
+        DB database = conect.getDB("db");
         DBCollection coleccion = database.getCollection("profesor");
         return coleccion;
     }
@@ -47,8 +63,7 @@ public class ProfesorDAO {
      * @return Lista con los profesores
      * @throws UnknownHostException
      */
-    public List<Profesor> listaProfesores() throws UnknownHostException {
-
+    public List<Profesor> listaProfesores() throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         DBCursor cursor = coleccion.find();
@@ -87,7 +102,7 @@ public class ProfesorDAO {
      * @return un objeto tipo Profesor con sus datos
      * @throws UnknownHostException
      */
-    public Profesor profesor(String correo) throws UnknownHostException {
+    public Profesor profesor(String correo) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("email", correo);
@@ -131,7 +146,7 @@ public class ProfesorDAO {
      * email es el pasado como parámetro correo
      * @throws UnknownHostException
      */
-    public boolean existe(String correo, String pass) throws UnknownHostException {
+    public boolean existe(String correo, String pass) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("email", correo).append("password", pass);
@@ -148,8 +163,7 @@ public class ProfesorDAO {
      * @return una lista con sus asignaturas
      * @throws UnknownHostException
      */
-    public List<Asignatura> listaAsignaturasPorProfesor(String idProfesor) throws UnknownHostException {
-
+    public List<Asignatura> listaAsignaturasPorProfesor(String idProfesor) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("_id", idProfesor);
@@ -171,7 +185,7 @@ public class ProfesorDAO {
      * @return verdadero para indicar que ha sido borrado
      * @throws UnknownHostException
      */
-    public boolean borrar(String correo) throws UnknownHostException {
+    public boolean borrar(String correo) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         coleccion.remove(new BasicDBObject("email", correo));
@@ -187,7 +201,7 @@ public class ProfesorDAO {
      * @return devuelve verdadero si el profesor ha sido creado correctamente
      * @throws UnknownHostException
      */
-    public boolean crear(Profesor p) throws UnknownHostException {
+    public boolean crear(Profesor p) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject objeto = new BasicDBObject();
@@ -217,7 +231,7 @@ public class ProfesorDAO {
      * @return verdadero si se ha actualizado correctamente
      * @throws UnknownHostException
      */
-    public boolean modificar(Profesor p1, Profesor p2) throws UnknownHostException {
+    public boolean modificar(Profesor p1, Profesor p2) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
 
@@ -234,7 +248,7 @@ public class ProfesorDAO {
         return true;
     }
 
-    public boolean addAsignaturas(String email, ArrayList asigs) throws UnknownHostException {
+    public boolean addAsignaturas(String email, ArrayList asigs) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         
@@ -255,7 +269,7 @@ public class ProfesorDAO {
      * @return verdadero si ha sido encontrado. Falso en caso contrario
      * @throws UnknownHostException
      */
-    public boolean buscarProfesor(String email) throws UnknownHostException {
+    public boolean buscarProfesor(String email) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("email", email);
@@ -274,7 +288,7 @@ public class ProfesorDAO {
      * @return
      * @throws UnknownHostException
      */
-    public List<Profesor> buscarProfAsig(String idLugar, String asignatura, String sitio) throws UnknownHostException {
+    public List<Profesor> buscarProfAsig(String idLugar, String asignatura, String sitio) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
 
@@ -336,7 +350,7 @@ public class ProfesorDAO {
      * @return número de profesores encontrados
      * @throws UnknownHostException
      */
-    public int profesorPorBarrio(String idLugar) throws UnknownHostException {
+    public int profesorPorBarrio(String idLugar) throws UnknownHostException, Exception {
         MongoClient conect = conexion();
         DBCollection coleccion = collection(conect);
         BasicDBObject query = new BasicDBObject("idLugar", idLugar);

@@ -10,6 +10,8 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -45,10 +47,14 @@ public class LoginUI extends UI {
 
         //Obtener la UI actual y añadir las vistas de los usuarios
         navigator = new Navigator(UI.getCurrent(), viewDisplay);
-        navigator.addView("", new LoginView());
-        navigator.addView(ADMINVIEW, new AdminView());
-        navigator.addView(ALUMNOVIEW, new AlumnoView());
-        navigator.addView(PROFESORVIEW, new ProfesorView());
+        try {
+            navigator.addView("", new LoginView());
+            navigator.addView(ADMINVIEW, new AdminView());
+            navigator.addView(ALUMNOVIEW, new AlumnoView());
+            navigator.addView(PROFESORVIEW, new ProfesorView());
+        } catch (Exception ex) {
+            Logger.getLogger(LoginUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         getNavigator().addViewChangeListener(new ViewChangeListener() {
 

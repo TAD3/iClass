@@ -103,7 +103,7 @@ public class AlumnoView extends CustomComponent implements View {
     /**
      * Metodo para crear la vista de alumno
      */
-    public AlumnoView() {
+    public AlumnoView() throws Exception {
 
         /*Definiendo las caracterisiticas de los atributos creados anteriormente*/
         layaoutArriba.setSizeFull();
@@ -209,6 +209,8 @@ public class AlumnoView extends CustomComponent implements View {
                     
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 /*Ponemos los objetos de la interfaz que no se puedan modificar*/
                 id_alumno.setReadOnly(true);
@@ -256,6 +258,8 @@ public class AlumnoView extends CustomComponent implements View {
                             repassword_alumno.setValue(a.getPassword());
                             
                         } catch (UnknownHostException ex) {
+                            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
 
@@ -313,6 +317,8 @@ public class AlumnoView extends CustomComponent implements View {
                                 
                             } catch (UnknownHostException ex) {
                                 Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                            } catch (Exception ex) {
+                                Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
                             Notification.show("No coincide los campos contraseña y repetir contraseña", Notification.Type.WARNING_MESSAGE);
@@ -338,6 +344,8 @@ public class AlumnoView extends CustomComponent implements View {
                             getUI().getSession().close();
                             getUI().getPage().setLocation(getLogoutPath());
                         } catch (UnknownHostException ex) {
+                            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
@@ -371,6 +379,8 @@ public class AlumnoView extends CustomComponent implements View {
                             repassword_alumno.setValue(a.getPassword());
                             
                         } catch (UnknownHostException ex) {
+                            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         
@@ -476,6 +486,8 @@ public class AlumnoView extends CustomComponent implements View {
                             
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
+                            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         
                     }
@@ -544,6 +556,8 @@ public class AlumnoView extends CustomComponent implements View {
                             }
                             
                         } catch (UnknownHostException ex) {
+                            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (Exception ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
