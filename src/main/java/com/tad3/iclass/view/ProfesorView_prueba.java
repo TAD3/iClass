@@ -1,5 +1,6 @@
 package com.tad3.iclass.view;
 
+import com.mongodb.BasicDBObject;
 import com.tad3.iclass.dao.AsignaturaDAO;
 import com.tad3.iclass.dao.LugarDAO;
 import com.tad3.iclass.dao.ProfesorDAO;
@@ -14,6 +15,7 @@ import com.vaadin.event.DataBoundTransferable;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.event.dd.acceptcriteria.And;
 import com.vaadin.event.dd.acceptcriteria.ClientSideCriterion;
 import com.vaadin.event.dd.acceptcriteria.SourceIs;
 import com.vaadin.navigator.View;
@@ -25,6 +27,7 @@ import static com.vaadin.shared.ui.dd.VerticalDropLocation.MIDDLE;
 import static com.vaadin.shared.ui.dd.VerticalDropLocation.TOP;
 import com.vaadin.ui.AbstractSelect.AbstractSelectTargetDetails;
 import com.vaadin.ui.AbstractSelect.AcceptItem;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -49,21 +52,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  *
- * @author Juanlu
- * Vista del profesor
+ * @author Juanlu Vista del profesor
  */
 public class ProfesorView_prueba extends CustomComponent implements View {
 
     public static final String NAME = "profesor";
     ProfesorDAO profesor = new ProfesorDAO();
     Tree tree;
-    Table tableAsignaturas = new Table();
+    List<Asignatura> listaAsignaturas = new ArrayList<>();
+
+    Table tableAsignaturas = new Table("Mis asignaturas");
     Table tableDragDrop;
+
     //Profesor
     TextField id_profesor = new TextField("ID: ");
     ComboBox id_lugar_profesor = new ComboBox("ID lugar: ");
@@ -83,12 +89,13 @@ public class ProfesorView_prueba extends CustomComponent implements View {
     Button saveme = new Button("Guardar");
     Button deleteme = new Button("Borrar cuenta");
     Button cancel = new Button("Cancelar");
+    Button guardar = new Button("Guardar asignaturas");
     Button manageCourses = new Button("Gestionar asignaturas");
 
     HorizontalLayout botonesProfesor = new HorizontalLayout(saveme, deleteme, cancel);
     VerticalLayout panelPrincipal = new VerticalLayout();
     VerticalLayout panelIzquierdo = new VerticalLayout();
-    VerticalLayout panelDerecho = new VerticalLayout();
+    HorizontalLayout panelDerecho = new HorizontalLayout();
     Layout layaoutArriba = new HorizontalLayout();
     MenuBar menuBar = new MenuBar();
     HorizontalSplitPanel panelSubPrincipal = new HorizontalSplitPanel();
@@ -108,34 +115,38 @@ public class ProfesorView_prueba extends CustomComponent implements View {
     }
 
     public ProfesorView_prueba() {
+        panelIzquierdo.setSpacing(true);
+        panelIzquierdo.setMargin(true);
         panelDerecho.setSpacing(true);
-        panelDerecho.setSpacing(true);
+        panelDerecho.setMargin(true);
+        botonesProfesor.setSpacing(true);
+        botonesProfesor.setMargin(true);
+
+        tableAsignaturas.setSizeFull();
+        tableAsignaturas.setPageLength(tableAsignaturas.size());
+        tableAsignaturas.setSelectable(true);
+        tableAsignaturas.setImmediate(true);
 
         // First create the components to be able to refer to them as allowed
         // drag sources
         tree = new Tree("Selecciona la asignatura y arrastrala a la tabla");
+        tree.setSelectable(false);
+        tree.setSizeFull();
         tableDragDrop = new Table("Arrastra aqui asignaturas desde la lista");
-        tableDragDrop.setWidth("100%");
+        tableDragDrop.setPageLength(tableDragDrop.size());
         // Populate the tree and set up drag & drop
         initializeTree(new SourceIs(tableDragDrop));
 
         // Populate the tableDragDrop and set up drag & drop
         initializeTable(new SourceIs(tree));
 
-        // Add components
-        panelDerecho.addComponent(tree);
-        panelDerecho.addComponent(tableDragDrop);
-        tableDragDrop.setVisible(false);
-        tree.setVisible(false);
-        // First create the components to be able to refer to them as allowed
-        // drag sources
         /*
          Menu Bar
          */
         layaoutArriba.setSizeFull();
         menuBar.setSizeFull();
 
-        panelSubPrincipal.setSplitPosition(23.0f, Unit.PERCENTAGE);
+        panelSubPrincipal.setSplitPosition(30.0f, Unit.PERCENTAGE);
         panelSubPrincipal.setLocked(true);
 
         /*##############################################################*/
@@ -161,33 +172,8 @@ public class ProfesorView_prueba extends CustomComponent implements View {
         }
         /*##############################################################*/
 
-        /*##############################################################*/
-        Collection<Asignatura> asig = new ArrayList<>();
-        AsignaturaDAO asignaturaDAO = new AsignaturaDAO();
-        Iterator<Asignatura> it1;
-
-        try {
-            it1 = asignaturaDAO.listaAsignaturas().iterator();
-            while (it1.hasNext()) {
-                asig.add(it1.next());
-            }
-            asignatura.setInputPrompt("Ningún lugar seleccionado");
-
-            asignatura.setWidth(100.0f, Unit.PERCENTAGE);
-
-            asignatura.setFilteringMode(FilteringMode.CONTAINS);
-            asignatura.setImmediate(true);
-
-            for (Asignatura asi : asig) {
-                asignatura.addItem(asi.getIdAsignatura());
-                asignatura.setItemCaption(asi.getIdAsignatura(), asi.toString());
-            }
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        /*###############################################################*/
-
-        MenuBar.Command profesorCommand = new MenuBar.Command() {
+        MenuBar.Command profesorCommand;
+        profesorCommand = new MenuBar.Command() {
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
                 panelIzquierdo.removeAllComponents();
@@ -206,7 +192,7 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                     repassword_profesor.setValue(a.getPassword());
                     descripcion_profesor.setValue(a.getDescripcion());
                     horario_profesor.setValue(a.getHorario());
-                    cargarAsignaturas();
+                    llenarTablaAsig(a);
 
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
@@ -340,8 +326,40 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                     public void buttonClick(ClickEvent event) {
                         panelDerecho.addComponent(tree);
                         panelDerecho.addComponent(tableDragDrop);
-                        tableDragDrop.setVisible(true);
-                        tree.setVisible(true);
+                        panelDerecho.addComponent(guardar);
+                        panelDerecho.setComponentAlignment(tree, Alignment.MIDDLE_CENTER);
+                        panelDerecho.setComponentAlignment(tableDragDrop, Alignment.MIDDLE_CENTER);
+                        panelDerecho.setComponentAlignment(guardar, Alignment.MIDDLE_CENTER);
+                    }
+                });
+
+                guardar.addClickListener(new Button.ClickListener() {
+
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        AsignaturaDAO a = new AsignaturaDAO();
+                        Collection auxAsigs = tableDragDrop.getItemIds();
+                        ArrayList<BasicDBObject> asigs = new ArrayList<>();
+                        for (Object aux : auxAsigs) {
+                            String split = aux.toString();
+                            String[] values = split.split(" - ");
+                            BasicDBObject as = null;
+                            try {
+                                as = a.buscarAsignaturaNombreYCurso(values[1], values[2]);
+                            } catch (UnknownHostException ex) {
+                                Logger.getLogger(ProfesorView_prueba.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            asigs.add(as);
+                        }
+                        try {
+                            Profesor p = profesor.profesor((String) getSession().getAttribute("user"));
+                            profesor.addAsignaturas(p.getEmail(), asigs);
+                            Notification.show("Asignaturas añadidas", "Pulse Modificar Datos para recargar la página", Notification.Type.TRAY_NOTIFICATION);
+                            llenarTablaAsig(p);
+                        } catch (UnknownHostException ex) {
+                            Logger.getLogger(ProfesorView_prueba.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        
                     }
                 });
 
@@ -397,6 +415,13 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                 panelIzquierdo.addComponent(password_profesor);
                 panelIzquierdo.addComponent(descripcion_profesor);
                 panelIzquierdo.addComponent(horario_profesor);
+                panelIzquierdo.addComponent(tableAsignaturas);
+                panelIzquierdo.addComponent(manageCourses);
+                panelIzquierdo.addComponent(botonesProfesor);
+
+                panelIzquierdo.setComponentAlignment(tableAsignaturas, Alignment.MIDDLE_CENTER);
+                panelIzquierdo.setComponentAlignment(manageCourses, Alignment.MIDDLE_CENTER);
+                panelIzquierdo.setComponentAlignment(botonesProfesor, Alignment.MIDDLE_LEFT);
 
             }
         };
@@ -422,32 +447,12 @@ public class ProfesorView_prueba extends CustomComponent implements View {
 
         setCompositionRoot(new CssLayout(panelPrincipal));
     }
+
     /**
-     * Carga las asignaturas del profesor
-     */
-    public void cargarAsignaturas() {
-//        ArrayList<Asignatura> asignaturasProfesor = new ArrayList();
-//        try {
-//            System.out.println("id profe " + id_profesor.getValue());
-//            asignaturasProfesor = (ArrayList) profesor.listaAsignaturasPorProfesor(id_profesor.getValue());
-//        } catch (UnknownHostException ex) {
-//            Logger.getLogger(ProfesorView.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        tableAsignaturas.addContainerProperty("Curso", String.class, null);
-//        tableAsignaturas.addContainerProperty("Asignatura", String.class, null);
-//        Iterator it = asignaturasProfesor.iterator();
-//        Asignatura a;
-//        int i = 0;
-//        while (it.hasNext()) {
-//            a = (Asignatura) it.next();
-//            tableAsignaturas.addItem(new Object[]{a.getCurso(), a.getNombre()}, i);
-//            asignaturas_profesor.add(a);
-//            i++;
-//        }
-    }
-    /**
-     * Crea el árbol donde se mostrarán los cursos y las diferentes asignaturas de cada uno para arrastrar a la tabla
-     * @param acceptCriterion 
+     * Crea el árbol donde se mostrarán los cursos y las diferentes asignaturas
+     * de cada uno para arrastrar a la tabla
+     *
+     * @param acceptCriterion
      */
     private void initializeTree(final ClientSideCriterion acceptCriterion) {
         tree.setContainerDataSource(ExampleUtil.getAsignaturaContainer());
@@ -460,16 +465,14 @@ public class ProfesorView_prueba extends CustomComponent implements View {
         tree.setDropHandler(new DropHandler() {
             public void drop(DragAndDropEvent dropEvent) {
                 // criteria verify that this is safe
-                DataBoundTransferable t = (DataBoundTransferable) dropEvent
-                        .getTransferable();
+                DataBoundTransferable t = (DataBoundTransferable) dropEvent.getTransferable();
                 Container sourceContainer = t.getSourceContainer();
                 Object sourceItemId = t.getItemId();
                 Item sourceItem = sourceContainer.getItem(sourceItemId);
                 String curso = sourceItem.getItemProperty("curso").toString();
                 String nombre = sourceItem.getItemProperty("nombre").toString();
 
-                AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent
-                        .getTargetDetails());
+                AbstractSelectTargetDetails dropData = ((AbstractSelectTargetDetails) dropEvent.getTargetDetails());
                 Object targetItemId = dropData.getItemIdOver();
 
                 // find curso in target: the target node itself or its parent
@@ -494,17 +497,19 @@ public class ProfesorView_prueba extends CustomComponent implements View {
                 // folders.
                 // In this example, checking for the correct curso in drop()
                 // rather than in the criteria.
-                return new com.vaadin.event.dd.acceptcriteria.And(acceptCriterion, TargetItemAllowsChildren.get(), AcceptItem.ALL);
+                return new And(acceptCriterion, TargetItemAllowsChildren.get(),
+                        AcceptItem.ALL);
             }
         });
     }
+
     /**
      * Metodo que construye la tabla donde se arrastrarán las asignaturas
-     * @param acceptCriterion 
+     *
+     * @param acceptCriterion
      */
     private void initializeTable(final ClientSideCriterion acceptCriterion) {
-        final BeanItemContainer<Asignatura> tableDragDropContainer = new BeanItemContainer<>(
-                Asignatura.class);
+        final BeanItemContainer<Asignatura> tableDragDropContainer = new BeanItemContainer<Asignatura>(Asignatura.class);
         // lista asignaturas del profesor
         tableDragDrop.setContainerDataSource(tableDragDropContainer);
         tableDragDrop.setVisibleColumns(new Object[]{"curso", "nombre"});
@@ -577,17 +582,35 @@ public class ProfesorView_prueba extends CustomComponent implements View {
             }
 
             public AcceptCriterion getAcceptCriterion() {
-                return new com.vaadin.event.dd.acceptcriteria.And(acceptCriterion, TargetItemAllowsChildren.get(), AcceptItem.ALL);
+                return new And(acceptCriterion, AcceptItem.ALL);
             }
         });
     }
-    /** 
-     * Devuelve el nombre del nodo padre del arbol 
+
+    /**
+     * Devuelve el nombre del nodo padre del arbol
      */
     private static String getTreeNodeName(Container.Hierarchical source,
             Object sourceId) {
         return (String) source.getItem(sourceId)
                 .getItemProperty(ExampleUtil.as_PROPERTY_NAME).getValue();
+    }
+
+    /**
+     * Carga las asignaturas del profesor
+     */
+    public final void llenarTablaAsig(Profesor p) {
+        tableAsignaturas.removeAllItems();
+        listaAsignaturas = p.getAsignaturas();
+        tableAsignaturas.addContainerProperty("Código - Asignatura - Curso", String.class, null);
+        Iterator it = listaAsignaturas.iterator();
+        Asignatura a;
+        int i = 0;
+        while (it.hasNext()) {
+            a = (Asignatura) it.next();
+            tableAsignaturas.addItem(new Object[]{a.toString()}, i);
+            i++;
+        }
     }
 
     @Override

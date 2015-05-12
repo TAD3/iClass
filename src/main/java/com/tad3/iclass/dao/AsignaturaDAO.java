@@ -190,4 +190,20 @@ public class AsignaturaDAO {
         conect.close();
         return asig != null;
     }
+
+    public BasicDBObject buscarAsignaturaNombreYCurso(String nombre, String curso) throws UnknownHostException {
+        MongoClient conect = conexion();
+        DBCollection coleccion = collection(conect);
+        BasicDBObject query = new BasicDBObject("nombre", nombre).append("curso", curso);
+        DBObject asig = coleccion.findOne(query);
+        System.out.println(asig);
+        BasicDBObject a = new BasicDBObject();
+        a.put("_id", asig.get("_id"));
+        a.put("nombre", asig.get("nombre"));
+        a.put("curso", asig.get("curso"));
+        a.put("descripcion", asig.get("descripcion"));
+        conect.close();
+        System.out.println("buscarDAO: " + a);
+        return a;
+    }
 }
