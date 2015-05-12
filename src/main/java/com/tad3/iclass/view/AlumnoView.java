@@ -38,7 +38,8 @@ import org.vaadin.haijian.ExcelExporter;
 import org.vaadin.haijian.PdfExporter;
 
 /**
- *
+ *Vista alumno
+ * 
  * @author francisco
  */
 public class AlumnoView extends CustomComponent implements View {

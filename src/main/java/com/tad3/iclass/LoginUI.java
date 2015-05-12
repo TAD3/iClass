@@ -1,7 +1,7 @@
 package com.tad3.iclass;
 
 import com.tad3.iclass.view.AlumnoView;
-import com.tad3.iclass.view.ProfesorView_prueba;
+import com.tad3.iclass.view.ProfesorView;
 import com.tad3.iclass.view.admin.AdminView;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
@@ -48,7 +48,7 @@ public class LoginUI extends UI {
         navigator.addView("", new LoginView());
         navigator.addView(ADMINVIEW, new AdminView());
         navigator.addView(ALUMNOVIEW, new AlumnoView());
-        navigator.addView(PROFESORVIEW, new ProfesorView_prueba());
+        navigator.addView(PROFESORVIEW, new ProfesorView());
 
         getNavigator().addViewChangeListener(new ViewChangeListener() {
 
