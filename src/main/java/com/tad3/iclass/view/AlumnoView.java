@@ -12,6 +12,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
@@ -33,13 +34,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.vaadin.haijian.ExcelExporter;
+import org.vaadin.haijian.PdfExporter;
 
 /**
  *
  * @author francisco
  */
 public class AlumnoView extends CustomComponent implements View {
-
+    
     public static final String NAME = "alumno";
     AlumnoDAO alumno = new AlumnoDAO();
 
@@ -54,22 +57,23 @@ public class AlumnoView extends CustomComponent implements View {
     TextField email_alumno = new TextField("Email: ");
     TextField password_alumno = new TextField("Contraseña: ");
     TextField repassword_alumno = new TextField("Repetir contraseña: ");
-
+    
     Button modifyme = new Button("Actualizar");
     Button saveme = new Button("Guardar");
     Button deleteme = new Button("Borrar cuenta");
     Button cancel = new Button("Cancelar");
     Button buscar = new Button("Buscar Profesor");
     Button buscarTodo = new Button("BP todos lugares");
-
+    
     HorizontalLayout botonesAlumno = new HorizontalLayout(saveme, deleteme, cancel);
     HorizontalLayout botonesBuscar = new HorizontalLayout(buscar, buscarTodo);
+    HorizontalLayout botonesExp = new HorizontalLayout();
     VerticalLayout panelPrincipal = new VerticalLayout();
     VerticalLayout panelIzquierdo = new VerticalLayout();
     VerticalLayout panelDerecho = new VerticalLayout();
     Layout layaoutArriba = new HorizontalLayout();
     MenuBar menuBar = new MenuBar();
-
+    
     HorizontalSplitPanel panelSubPrincipal = new HorizontalSplitPanel();
     Panel panel = new Panel(panelSubPrincipal);
     Label text = new Label();
@@ -140,7 +144,7 @@ public class AlumnoView extends CustomComponent implements View {
             id_lugar_alumno.setWidth(100.0f, Unit.PERCENTAGE);
             id_lugar_alumno.setFilteringMode(FilteringMode.CONTAINS);
             id_lugar_alumno.setImmediate(true);
-
+            
             for (Lugar lug : lugares) {
                 id_lugar_alumno.addItem(lug.getIdLugar());
                 id_lugar_alumno.setItemCaption(lug.getIdLugar(), lug.toString());
@@ -153,19 +157,19 @@ public class AlumnoView extends CustomComponent implements View {
         Collection<Asignatura> asig = new ArrayList<>();
         AsignaturaDAO asignaturaDAO = new AsignaturaDAO();
         Iterator<Asignatura> it1;
-
+        
         try {
             it1 = asignaturaDAO.listaAsignaturas().iterator();
             while (it1.hasNext()) {
                 asig.add(it1.next());
             }
             asignatura.setInputPrompt("Ningún lugar seleccionado");
-
+            
             asignatura.setWidth(100.0f, Unit.PERCENTAGE);
-
+            
             asignatura.setFilteringMode(FilteringMode.CONTAINS);
             asignatura.setImmediate(true);
-
+            
             for (Asignatura asi : asig) {
                 asignatura.addItem(asi.getIdAsignatura());
                 asignatura.setItemCaption(asi.getIdAsignatura(), asi.toString());
@@ -201,7 +205,7 @@ public class AlumnoView extends CustomComponent implements View {
                     email_alumno.setValue(a.getEmail());
                     password_alumno.setValue(a.getPassword());
                     repassword_alumno.setValue(a.getPassword());
-
+                    
                 } catch (UnknownHostException ex) {
                     Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -249,7 +253,7 @@ public class AlumnoView extends CustomComponent implements View {
                             email_alumno.setValue(a.getEmail());
                             password_alumno.setValue(a.getPassword());
                             repassword_alumno.setValue(a.getPassword());
-
+                            
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -266,9 +270,9 @@ public class AlumnoView extends CustomComponent implements View {
                         panelIzquierdo.addComponent(password_alumno);
                         panelIzquierdo.addComponent(repassword_alumno);
                         panelIzquierdo.addComponent(botonesAlumno);
-
+                        
                     }
-
+                    
                 });
 
                 /*Pulsamos en el boton Guardar*/
@@ -284,7 +288,7 @@ public class AlumnoView extends CustomComponent implements View {
                     public void buttonClick(ClickEvent event) {
                         /*Guardamos en una variable de tipo alumno los datos que hemos recogidos del formulario*/
                         Alumno p = new Alumno();
-
+                        
                         p.setIdAlumno(id_alumno.getValue());
                         p.setIdLugar((String) id_lugar_alumno.getValue());
                         p.setNombre(nombre_alumno.getValue());
@@ -305,7 +309,7 @@ public class AlumnoView extends CustomComponent implements View {
                                 panelDerecho.removeAllComponents();
                                 Notification.show("Alumno modificado", "Se ha actualizado el "
                                         + "alumno en la base de datos", Notification.Type.TRAY_NOTIFICATION);
-
+                                
                             } catch (UnknownHostException ex) {
                                 Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -352,7 +356,7 @@ public class AlumnoView extends CustomComponent implements View {
                         /*Borramos todo lo que haya en los paneles*/
                         panelIzquierdo.removeComponent(repassword_alumno);
                         panelIzquierdo.removeComponent(botonesAlumno);
-
+                        
                         try {
                             Alumno a = alumno.alumno((String) getSession().getAttribute("user"));
                             id_alumno.setValue(a.getIdAlumno());
@@ -364,11 +368,11 @@ public class AlumnoView extends CustomComponent implements View {
                             email_alumno.setValue(a.getEmail());
                             password_alumno.setValue(a.getPassword());
                             repassword_alumno.setValue(a.getPassword());
-
+                            
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
-
+                        
                         id_alumno.setReadOnly(true);
                         id_lugar_alumno.setReadOnly(true);
                         nombre_alumno.setReadOnly(true);
@@ -379,7 +383,7 @@ public class AlumnoView extends CustomComponent implements View {
                         password_alumno.setReadOnly(true);
                     }
                 });
-
+                
                 panelIzquierdo.addComponent(modifyme);
                 panelIzquierdo.addComponent(id_alumno);
                 panelIzquierdo.addComponent(id_lugar_alumno);
@@ -431,9 +435,9 @@ public class AlumnoView extends CustomComponent implements View {
                             table.addContainerProperty("Nombre", String.class, null);
                             table.addContainerProperty("Apellidos", String.class, null);
                             table.addContainerProperty("Edad", String.class, null);
-                            table.addContainerProperty("Movil", String.class, null);
+                            table.addContainerProperty("Móvil", String.class, null);
                             table.addContainerProperty("Correo", String.class, null);
-                            table.addContainerProperty("Direccion", String.class, null);
+                            table.addContainerProperty("Dirección", String.class, null);
                             table.addContainerProperty("Horario", String.class, null);
 
                             /*Buscamos los profesores*/
@@ -453,12 +457,26 @@ public class AlumnoView extends CustomComponent implements View {
                                     i++;
                                 }
                                 panelDerecho.addComponent(table);
+                                botonesExp.removeAllComponents();
+                                ExcelExporter excelExporter = new ExcelExporter(table);
+                                excelExporter.setCaption("Exportar a Excel");
+                                
+                                PdfExporter pdfExporter = new PdfExporter(table);
+                                pdfExporter.setCaption("Export a PDF");
+                                pdfExporter.setWithBorder(false);
+                                
+                                botonesExp.addComponents(excelExporter, pdfExporter);
+                                botonesExp.setComponentAlignment(excelExporter, Alignment.MIDDLE_LEFT);
+                                botonesExp.setComponentAlignment(pdfExporter, Alignment.MIDDLE_RIGHT);
+                                panelIzquierdo.addComponent(botonesExp);
+                                panelIzquierdo.setComponentAlignment(botonesExp, Alignment.MIDDLE_CENTER);
+                                
                             }
-
+                            
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
-
+                        
                     }
                 });
 
@@ -486,9 +504,9 @@ public class AlumnoView extends CustomComponent implements View {
                             table.addContainerProperty("Nombre", String.class, null);
                             table.addContainerProperty("Apellidos", String.class, null);
                             table.addContainerProperty("Edad", String.class, null);
-                            table.addContainerProperty("Movil", String.class, null);
+                            table.addContainerProperty("Móvil", String.class, null);
                             table.addContainerProperty("Correo", String.class, null);
-                            table.addContainerProperty("Direccion", String.class, null);
+                            table.addContainerProperty("Dirección", String.class, null);
                             table.addContainerProperty("Horario", String.class, null);
 
                             /*Buscamos los profesores*/
@@ -509,62 +527,74 @@ public class AlumnoView extends CustomComponent implements View {
                                     i++;
                                 }
                                 panelDerecho.addComponent(table);
+                                botonesExp.removeAllComponents();
+                                ExcelExporter excelExporter = new ExcelExporter(table);
+                                excelExporter.setCaption("Exportar a Excel");
+                                
+                                PdfExporter pdfExporter = new PdfExporter(table);
+                                pdfExporter.setCaption("Export a PDF");
+                                pdfExporter.setWithBorder(false);
+                                
+                                botonesExp.addComponents(excelExporter, pdfExporter);
+                                botonesExp.setComponentAlignment(excelExporter, Alignment.MIDDLE_LEFT);
+                                botonesExp.setComponentAlignment(pdfExporter, Alignment.MIDDLE_RIGHT);
+                                panelIzquierdo.addComponent(botonesExp);
+                                panelIzquierdo.setComponentAlignment(botonesExp, Alignment.MIDDLE_CENTER);
                             }
-
+                            
                         } catch (UnknownHostException ex) {
                             Logger.getLogger(AlumnoView.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
                 });
-
+                
                 botonesBuscar.setMargin(true);
                 panelIzquierdo.addComponent(asignatura);
                 panelIzquierdo.addComponent(botonesBuscar);
-
+                
             }
         };
-        
+
         /*Menu Logout para cerrar la sesion*/
         MenuBar.Command logoutCommand = new MenuBar.Command() {
-            
+
             /**
-             * Metodo donde definimos las acciones que contendra el menu
-             * Logout
+             * Metodo donde definimos las acciones que contendra el menu Logout
              *
              * @param selectedItem
              */
             @Override
             public void menuSelected(MenuBar.MenuItem selectedItem) {
-                
+
                 /*Cierra la sesion y vuelve a la pagina de login*/
                 getUI().getSession().close();
                 getUI().getPage().setLocation(getLogoutPath());
             }
         };
-
+        
         MenuBar.MenuItem alumnos = menuBar.addItem("Modificar Datos", alumnoCommand);
         MenuBar.MenuItem asignaturas = menuBar.addItem("Buscar Profesor", profesorCommand);
         menuBar.addItem("Log out", logoutCommand);
-
+        
         layaoutArriba.addComponent(menuBar);
         panelPrincipal.addComponent(layaoutArriba);
         panelPrincipal.addComponent(panelSubPrincipal);
-
+        
         panelSubPrincipal.setFirstComponent(panelIzquierdo);
         panelSubPrincipal.setSecondComponent(panelDerecho);
         panelSubPrincipal.setHeight(String.valueOf(Page.getCurrent().getBrowserWindowHeight() * 0.9) + "px");
-
+        
         setCompositionRoot(new CssLayout(panelPrincipal));
     }
 
     /**
      * Metodo que nos muestra el nombre del alumno logueado al entrar
-     * 
-     * @param event 
+     *
+     * @param event
      */
     @Override
     public void enter(ViewChangeEvent event) {
-
+        
         String username = String.valueOf(getSession().getAttribute("user"));
         text.setValue("Hello alumno " + username);
     }
